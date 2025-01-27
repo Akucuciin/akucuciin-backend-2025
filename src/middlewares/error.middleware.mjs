@@ -8,25 +8,25 @@ import {
   NotFoundError,
 } from "../errors/customErrors.mjs";
 
-const errorHandler = function (err, req, res, next) {
+const errorHandler = function (error, req, res, next) {
   console.log(">>>------------------------------------------------");
   console.log(`ERROR! ${new Date()} => ${req.method} ${req.url}`);
-  console.log(err);
+  console.log(error);
   console.log("----------------------------------------------END");
 
   if (
-    err instanceof NotFoundError ||
-    err instanceof AuthenticationError ||
-    err instanceof AuthorizationError ||
-    err instanceof BadRequestError
+    error instanceof NotFoundError ||
+    error instanceof AuthenticationError ||
+    error instanceof AuthorizationError ||
+    error instanceof BadRequestError
   ) {
-    return res.status(err.statusCode).send({
+    return res.status(error.statusCode).send({
       success: false,
-      errors: err.message,
+      errors: error.message,
     });
-  } else if (err instanceof JsonWebTokenError) {
+  } else if (error instanceof JsonWebTokenError) {
     return res.status(401).send({ success: false, errors: "Invalid payload" });
-  } else if (err instanceof TokenExpiredError) {
+  } else if (error instanceof TokenExpiredError) {
     return res.status(401).send({ success: false, errors: "Expired" });
   } else {
     return res.status(500).send({
