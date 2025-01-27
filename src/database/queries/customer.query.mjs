@@ -19,16 +19,6 @@ const CustomerQuery = {
     );
     return results;
   },
-  deactivateResetPasswordToken: async function (token) {
-    const [results] = await db.query(
-      `
-        INSERT INTO used_reset_password_tokens(reset_token)
-        VALUES(?)
-      `,
-      [token]
-    );
-    return results;
-  },
   deleteCustomerByEmail: async function (email) {
     const [results] = await db.query(`DELETE FROM customers WHERE email = ?`, [
       email,
@@ -78,16 +68,9 @@ const CustomerQuery = {
     );
     return results[0].isExist;
   },
-  isResetPasswordTokenUsed: async function (token) {
-    const [results] = await db.query(
-      `SELECT count(reset_token) as isUsed FROM used_reset_password_tokens WHERE reset_token = ?`,
-      [token]
-    );
-    return results[0].isUsed;
-  },
   isValidCustomer: async function (id) {
     const [results] = await db.query(
-      `SELECT count(email) as isExist FROM customers WHERE id = ?`,
+      `SELECT count(email) as isExist FROM customers WHERE id = ? AND isActive = 1`,
       [id]
     );
     return results[0].isExist;

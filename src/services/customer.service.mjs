@@ -2,6 +2,7 @@ import bcrypt from "bcrypt";
 import { v7 as uuidV7 } from "uuid";
 
 import AppConfig from "../configs/app.config.mjs";
+import AuthQuery from "../database/queries/auth.query.mjs";
 import CustomerQuery from "../database/queries/customer.query.mjs";
 import {
   AuthenticationError,
@@ -75,6 +76,7 @@ const CustomerService = {
     const resetPasswordToken =
       TokenService.generateRequestResetPasswordToken(email);
 
+    await AuthQuery.addResetPasswordToken(resetPasswordToken);
     await MailService.sendRequestResetPassword(email, resetPasswordToken);
     return `Requested to ${email}`;
   },
@@ -86,10 +88,10 @@ const CustomerService = {
 
     const { email: emailFromParams, reset_password_token } = req.params;
 
-    const isTokenUsed = await CustomerQuery.isResetPasswordTokenUsed(
+    const isTokenExist = await AuthQuery.isResetPasswordTokenExist(
       reset_password_token
     );
-    if (isTokenUsed) throw new BadRequestError("Token already used");
+    if (!isTokenExist) throw new BadRequestError("Token not exist");
 
     const { email: emailFromToken } = TokenService.verifyToken(
       reset_password_token,
@@ -104,7 +106,7 @@ const CustomerService = {
 
     newPassword = await bcrypt.hash(newPassword, 10);
     await CustomerQuery.changePassword(newPassword, emailFromToken);
-    await CustomerQuery.deactivateResetPasswordToken(reset_password_token);
+    await AuthQuery.deleteResetPasswordToken(reset_password_token);
     return `Password for ${emailFromToken} changed succesfully`;
   },
 };
