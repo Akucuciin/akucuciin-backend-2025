@@ -17,7 +17,7 @@ const transporter = nodemailer.createTransport({
 });
 
 const MailService = {
-  sendVerifyEmail: async (email, registerToken) => {
+  sendVerifyEmail: (email, registerToken) => {
     var mailOptions;
     mailOptions = {
       from: sender,
@@ -30,19 +30,15 @@ const MailService = {
       } minutes.</body></html>`,
     };
 
-    await new Promise((resolve, reject) => {
-      transporter.sendMail(mailOptions, (err, info) => {
-        if (err) {
-          console.error(err);
-          reject(err);
-        } else {
-          console.log(info);
-          resolve(info);
-        }
-      });
+    transporter.sendMail(mailOptions, (err, info) => {
+      if (err) {
+        console.error("Error sending email:", err);
+      } else {
+        console.log("Email sent:", info.response);
+      }
     });
   },
-  sendRequestResetPassword: async (email, resetPasswordToken) => {
+  sendRequestResetPassword: (email, resetPasswordToken) => {
     var mailOptions;
     mailOptions = {
       from: sender,
@@ -55,16 +51,12 @@ const MailService = {
       } minutes</body></html>`,
     };
 
-    await new Promise((resolve, reject) => {
-      transporter.sendMail(mailOptions, (err, info) => {
-        if (err) {
-          console.error(err);
-          reject(err);
-        } else {
-          console.log(info);
-          resolve(info);
-        }
-      });
+    transporter.sendMail(mailOptions, (err, info) => {
+      if (err) {
+        console.error("Error sending email:", err);
+      } else {
+        console.log("Email sent:", info.response);
+      }
     });
   },
 };
