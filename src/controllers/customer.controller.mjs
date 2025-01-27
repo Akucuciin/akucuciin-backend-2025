@@ -15,8 +15,8 @@ const CustomerController = {
     try {
       const result = await CustomerService.getProfile(req);
       return res.status(200).json({ success: true, data: result });
-    } catch (e) {
-      next(e);
+    } catch (error) {
+      next(error);
     }
   },
   register: async (req, res, next) => {
@@ -26,8 +26,8 @@ const CustomerController = {
         success: true,
         data: result,
       });
-    } catch (e) {
-      next(e);
+    } catch (error) {
+      next(error);
     }
   },
   login: async (req, res, next) => {
@@ -37,8 +37,8 @@ const CustomerController = {
         success: true,
         data: result,
       });
-    } catch (e) {
-      next(e);
+    } catch (error) {
+      next(error);
     }
   },
   logout: async (req, res, next) => {
@@ -48,17 +48,17 @@ const CustomerController = {
         success: true,
         data: result,
       });
-    } catch (e) {
-      next(e);
+    } catch (error) {
+      next(error);
     }
   },
   verify: async (req, res, next) => {
     try {
       const result = await CustomerService.verify(req);
       res.redirect(AppConfig.URL.verifyEmailSuccess);
-    } catch (e) {
-      console.log(e.message);
-      if (e instanceof TokenExpiredError) {
+    } catch (error) {
+      console.log(error.message);
+      if (error instanceof TokenExpiredError) {
         try {
           const { email } = req.params;
           const isActive = await CustomerQuery.isCustomerActive(email);
@@ -67,10 +67,10 @@ const CustomerController = {
           } else {
             await CustomerQuery.deleteCustomerByEmail(email);
           }
-        } catch (e) {}
-      } else if (e instanceof TokenInvalidError) {
+        } catch (error) {}
+      } else if (error instanceof TokenInvalidError) {
         return res.redirect(AppConfig.URL.verifyEmailInvalid);
-      } else if (e instanceof AuthenticationError) {
+      } else if (error instanceof AuthenticationError) {
         return res.redirect(AppConfig.URL.verifyEmailAlreadyActive);
       }
       return res.redirect(AppConfig.URL.verifyEmailExpired);
@@ -83,8 +83,8 @@ const CustomerController = {
         success: true,
         data: result,
       });
-    } catch (e) {
-      next(e);
+    } catch (error) {
+      next(error);
     }
   },
   changePassword: async (req, res, next) => {
@@ -94,8 +94,8 @@ const CustomerController = {
         success: true,
         data: result,
       });
-    } catch (e) {
-      next(e);
+    } catch (error) {
+      next(error);
     }
   },
 };

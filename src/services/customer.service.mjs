@@ -30,7 +30,7 @@ const CustomerService = {
     if (isEmailExists) throw new BadRequestError("Email sudah terdaftar");
 
     newCustomer.id = uuidV7();
-    newCustomer.password = await bcrypt.hash(newCustomer.password, 10);
+    newCustomer.password = await bcrypt.hash(newCustomer.password, 12);
 
     await CustomerQuery.registerCustomer(
       newCustomer.id,
@@ -44,7 +44,7 @@ const CustomerService = {
       newCustomer.id,
       newCustomer.email
     );
-    await MailService.sendVerifyEmail(newCustomer.email, registerToken);
+    MailService.sendVerifyEmail(newCustomer.email, registerToken);
 
     return {
       id: newCustomer.id,
@@ -77,7 +77,7 @@ const CustomerService = {
       TokenService.generateRequestResetPasswordToken(email);
 
     await AuthQuery.addResetPasswordToken(resetPasswordToken);
-    await MailService.sendRequestResetPassword(email, resetPasswordToken);
+    MailService.sendRequestResetPassword(email, resetPasswordToken);
     return `Requested to ${email}`;
   },
   changePassword: async (req) => {

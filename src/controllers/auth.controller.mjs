@@ -8,8 +8,8 @@ const AuthController = {
         success: true,
         data: result,
       });
-    } catch (e) {
-      next(e);
+    } catch (error) {
+      next(error);
     }
   },
 };
