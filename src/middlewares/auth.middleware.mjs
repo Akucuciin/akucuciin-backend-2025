@@ -1,6 +1,6 @@
 import passport from "passport";
 
-const authenticateHandler = (strategy) => {
+const authorize = (strategy) => {
   return (req, res, next) => {
     passport.authenticate(strategy, { session: false }, (err, user, info) => {
       if (err) {
@@ -17,4 +17,4 @@ const authenticateHandler = (strategy) => {
   };
 };
 
-export default authenticateHandler;
+export default authorize;

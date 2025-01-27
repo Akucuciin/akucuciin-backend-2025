@@ -1,12 +1,12 @@
 import { Router } from "express";
 import CustomerController from "../controllers/customer.controller.mjs";
-import authenticateHandler from "../middlewares/auth.middleware.mjs";
+import authorize from "../middlewares/auth.middleware.mjs";
 
 const CustomerRouter = Router();
 
 CustomerRouter.get(
   "/api/customer",
-  authenticateHandler("customer-jwt"),
+  authorize("customer-jwt"),
   async (req, res, next) => CustomerController.getProfile(req, res, next)
 );
 
