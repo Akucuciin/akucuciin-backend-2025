@@ -23,6 +23,29 @@ const CustomerService = {
     // customer is guaranteed to be found if authenticated
     return customer;
   },
+  updateProfile: async (req) => {
+    const updatedCustomer = validate(CustomerSchema.update, req.body);
+
+    const customer = await CustomerQuery.getCustomerProfileByEmail(
+      req.user.email
+    );
+
+    const values = {
+      id: req.user.id,
+      name: updatedCustomer.name || customer.name,
+      address: updatedCustomer.address || customer.address,
+      telephone: updatedCustomer.telephone || customer.telephone,
+    };
+
+    await CustomerQuery.updateCustomer(
+      values.id,
+      values.name,
+      values.address,
+      values.telephone
+    );
+
+    return values;
+  },
   register: async (req) => {
     const newCustomer = validate(CustomerSchema.register, req.body);
 

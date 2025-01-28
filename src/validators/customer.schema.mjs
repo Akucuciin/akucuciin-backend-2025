@@ -16,6 +16,11 @@ const CustomerSchema = {
     password: Joi.string().required(),
     confirm_password: Joi.ref("password"),
   }).with("password", "confirm_password"),
+  update: Joi.object({
+    name: Joi.string().min(1).max(120).optional(),
+    address: Joi.string().min(1).max(255).optional(),
+    telephone: Joi.string().pattern(new RegExp(/^\d+$/)).optional(),
+  }),
 };
 
 export default CustomerSchema;
