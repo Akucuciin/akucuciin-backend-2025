@@ -24,6 +24,50 @@ const AdminController = {
       next(error);
     }
   },
+  getLaundryPartners: async (req, res, next) => {
+    try {
+      const result = await AdminService.getLaundryPartners(req);
+      return res.status(201).json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+  registerLaundryPartner: async (req, res, next) => {
+    try {
+      const result = await AdminService.registerLaundryPartner(req);
+      return res.status(201).json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+  deleteLaundryPartner: async (req, res, next) => {
+    try {
+      const result = await AdminService.deleteLaundryPartner(req);
+      return res.status(201).json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+  updateLaundryPartner: async (req, res, next) => {
+    try {
+      const result = await AdminService.updateLaundryPartner(req);
+      return res.status(201).json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
 };
 
 export default AdminController;
