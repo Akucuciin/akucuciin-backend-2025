@@ -19,6 +19,14 @@ const CustomerController = {
       next(error);
     }
   },
+  updateProfile: async (req, res, next) => {
+    try {
+      const result = await CustomerService.updateProfile(req);
+      return res.status(200).json({ success: true, data: result });
+    } catch (error) {
+      next(error);
+    }
+  },
   register: async (req, res, next) => {
     try {
       const result = await CustomerService.register(req);

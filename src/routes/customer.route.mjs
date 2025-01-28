@@ -9,6 +9,11 @@ CustomerRouter.get(
   authorize("customer-jwt"),
   async (req, res, next) => CustomerController.getProfile(req, res, next)
 );
+CustomerRouter.put(
+  "/api/customer",
+  authorize("customer-jwt"),
+  async (req, res, next) => CustomerController.updateProfile(req, res, next)
+);
 
 CustomerRouter.post("/api/customer", async (req, res, next) =>
   CustomerController.register(req, res, next)

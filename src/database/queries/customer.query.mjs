@@ -85,11 +85,22 @@ const CustomerQuery = {
   ) {
     const [results] = await db.query(
       `
-        INSERT INTO Customers(id, email, password, name, address, telephone)
+        INSERT INTO customers(id, email, password, name, address, telephone)
         VALUES(?, ?, ?, ?, ?, ?)
     `,
       [id, email, password, name, address, telephone]
     );
+  },
+  updateCustomer: async function (id, name, address, telephone) {
+    const [results] = await db.query(
+      `
+        UPDATE customers
+        SET name = ?, address = ?, telephone = ?
+        WHERE id = ?
+    `,
+      [name, address, telephone, id]
+    );
+    return results;
   },
 };
 
