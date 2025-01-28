@@ -24,6 +24,24 @@ const AdminQuery = {
     );
     return results;
   },
+  getLaundryPartners: async function () {
+    const [results] = await db.query(
+      `
+      SELECT 
+        id, 
+        name, 
+        email, 
+        telephone, 
+        address, 
+        city,
+        area,
+        latitude, 
+        longitude
+      FROM laundry_partners
+    `
+    );
+    return results;
+  },
   isValidAdmin: async function (id) {
     const [results] = await db.query(
       `SELECT count(email) as isExist FROM admins WHERE id = ?`,
