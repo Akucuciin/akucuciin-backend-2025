@@ -28,6 +28,13 @@ const LaundryPartnerQuery = {
     );
     return results[0];
   },
+  getPartnersLocations: async function () {
+    const [results] = await db.query(`
+    SELECT city, area FROM laundry_partners
+    ORDER BY city, area
+    `);
+    return results;
+  },
   isEmailExists: async function (email) {
     const [results] = await db.query(
       `SELECT count(email) as isExist FROM laundry_partners WHERE email = ?`,

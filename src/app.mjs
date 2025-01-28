@@ -10,6 +10,7 @@ import CustomerRouter from "./routes/customer.route.mjs";
 
 import "./auth/passport.auth.mjs";
 import AdminRouter from "./routes/admin.route.mjs";
+import LaundryPartnerRouter from "./routes/laundryPartner.route.mjs";
 
 const app = express();
 app.disable("x-powered-by");
@@ -26,6 +27,7 @@ app.use(passport.initialize());
 app.use(AdminRouter);
 app.use(CustomerRouter);
 app.use(AuthRouter);
+app.use(LaundryPartnerRouter);
 
 app.use(errorHandler);
 
