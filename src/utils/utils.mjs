@@ -1,6 +1,7 @@
-function capitalizeFirstLetter(val) {
+function lowerAndCapitalizeFirstLetter(val) {
+  val = val.toLowerCase();
   return String(val).charAt(0).toUpperCase() + String(val).slice(1);
 }
 
-export { capitalizeFirstLetter };
+export { lowerAndCapitalizeFirstLetter };
 

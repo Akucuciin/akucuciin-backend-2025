@@ -4,7 +4,7 @@ import { v7 as uuidV7 } from "uuid";
 import AdminQuery from "../database/queries/admin.query.mjs";
 import LaundryPartnerQuery from "../database/queries/laundryPartner.query.mjs";
 import { BadRequestError, NotFoundError } from "../errors/customErrors.mjs";
-import { capitalizeFirstLetter } from "../utils/utils.mjs";
+import { lowerAndCapitalizeFirstLetter } from "../utils/utils.mjs";
 import LaundryPartnerSchema from "../validators/laundryPartner.schema.mjs";
 import validate from "../validators/validator.mjs";
 
@@ -27,8 +27,8 @@ const AdminService = {
 
     laundryPartner.id = uuidV7();
     laundryPartner.password = await bcrypt.hash(laundryPartner.password, 12);
-    laundryPartner.city = capitalizeFirstLetter(laundryPartner.city);
-    laundryPartner.area = capitalizeFirstLetter(laundryPartner.area);
+    laundryPartner.city = lowerAndCapitalizeFirstLetter(laundryPartner.city);
+    laundryPartner.area = lowerAndCapitalizeFirstLetter(laundryPartner.area);
 
     await LaundryPartnerQuery.register(
       laundryPartner.id,
@@ -83,8 +83,8 @@ const AdminService = {
       latitude: updatedLaundryPartner.latitude || laundryPartner.latitude,
       longitude: updatedLaundryPartner.longitude || laundryPartner.longitude,
     };
-    values.city = capitalizeFirstLetter(values.city);
-    values.area = capitalizeFirstLetter(values.area);
+    values.city = lowerAndCapitalizeFirstLetter(values.city);
+    values.area = lowerAndCapitalizeFirstLetter(values.area);
 
     await LaundryPartnerQuery.update(
       values.id,
