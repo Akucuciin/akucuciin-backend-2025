@@ -5,6 +5,7 @@ const LaundryPartnerSchema = {
     name: Joi.string().min(1).max(100).required(),
     email: Joi.string().email().required(),
     password: Joi.string().required(),
+    description: Joi.string().min(1).max(500).required(),
     confirm_password: Joi.ref("password"),
     telephone: Joi.string().pattern(new RegExp(/^\d+$/)).required(),
     address: Joi.string().min(1).max(255).required(),
@@ -15,6 +16,7 @@ const LaundryPartnerSchema = {
   }).with("password", "confirm_password"),
   update: Joi.object({
     name: Joi.string().min(1).max(100).allow("").optional(),
+    description: Joi.string().min(1).max(500).allow("").optional(),
     telephone: Joi.string().pattern(new RegExp(/^\d+$/)).allow("").optional(),
     address: Joi.string().min(1).max(255).allow("").optional(),
     city: Joi.string().min(1).allow("").optional(),

@@ -37,6 +37,7 @@ const AdminService = {
       laundryPartner.name,
       laundryPartner.email,
       laundryPartner.password,
+      laundryPartner.description,
       laundryPartner.telephone,
       laundryPartner.address,
       laundryPartner.city,
@@ -78,6 +79,8 @@ const AdminService = {
     const values = {
       id,
       name: updatedLaundryPartner.name || laundryPartner.name,
+      description:
+        updatedLaundryPartner.description || laundryPartner.description,
       telephone: updatedLaundryPartner.telephone || laundryPartner.telephone,
       address: updatedLaundryPartner.address || laundryPartner.address,
       city: updatedLaundryPartner.city || laundryPartner.city,
@@ -91,6 +94,7 @@ const AdminService = {
     await LaundryPartnerQuery.update(
       values.id,
       values.name,
+      values.description,
       values.telephone,
       values.address,
       values.city,

@@ -15,12 +15,15 @@ const LaundryPartnerQuery = {
       id, 
       name, 
       email, 
+      description,
       telephone, 
       address, 
       city,
       area,
       latitude, 
-      longitude
+      longitude,
+      created_at,
+      updated_at
     FROM laundry_partners
     WHERE id = ?
   `,
@@ -47,6 +50,7 @@ const LaundryPartnerQuery = {
     name,
     email,
     password,
+    description,
     telephone,
     address,
     city,
@@ -61,6 +65,7 @@ const LaundryPartnerQuery = {
         name, 
         email, 
         password, 
+        description,
         telephone, 
         address, 
         city,
@@ -68,13 +73,14 @@ const LaundryPartnerQuery = {
         latitude, 
         longitude
       )
-      VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `,
       [
         id,
         name,
         email,
         password,
+        description,
         telephone,
         address,
         city,
@@ -87,6 +93,7 @@ const LaundryPartnerQuery = {
   update: async function (
     id,
     name,
+    description,
     telephone,
     address,
     city,
@@ -97,10 +104,20 @@ const LaundryPartnerQuery = {
     const [results] = await db.query(
       `
       UPDATE laundry_partners
-      SET name = ?, address = ?, telephone = ?, city = ?, area = ?, latitude = ?, longitude = ?
+      SET name = ?, address = ?, description = ?, telephone = ?, city = ?, area = ?, latitude = ?, longitude = ?
       WHERE id = ?
   `,
-      [name, address, telephone, city, area, latitude, longitude, id]
+      [
+        name,
+        address,
+        description,
+        telephone,
+        city,
+        area,
+        latitude,
+        longitude,
+        id,
+      ]
     );
     return results;
   },

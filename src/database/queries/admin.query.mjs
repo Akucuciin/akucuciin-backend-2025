@@ -31,12 +31,15 @@ const AdminQuery = {
         id, 
         name, 
         email, 
+        description,
         telephone, 
         address, 
         city,
         area,
         latitude, 
-        longitude
+        longitude,
+        created_at,
+        updated_at
       FROM laundry_partners
     `
     );
