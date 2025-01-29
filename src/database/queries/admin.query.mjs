@@ -1,6 +1,30 @@
 import db from "../connection.mjs";
 
 const AdminQuery = {
+  addLaundryPartnerPackage: async function (
+    id,
+    laundry_partner_id,
+    name,
+    description,
+    features,
+    price_text
+  ) {
+    const [results] = await db.query(
+      `
+      INSERT INTO laundry_partners_packages(id, laundry_partner_id, name, description, features, price_text)
+      VALUES(?, ?, ?, ?, ?, ?)
+    `,
+      [id, laundry_partner_id, name, description, features, price_text]
+    );
+    return results;
+  },
+  deleteLaundryPartnerPackage: async function (laundry_partner_id, package_id) {
+    const [results] = await db.query(
+      `DELETE FROM laundry_partners_packages WHERE id = ? AND laundry_partner_id = ?`,
+      [package_id, laundry_partner_id]
+    );
+    return results;
+  },
   getAdminForAuth: async function (email) {
     const [results] = await db.query(`SELECT * FROM admins WHERE email = ?`, [
       email,

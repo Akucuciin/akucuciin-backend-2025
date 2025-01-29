@@ -7,6 +7,9 @@ const AdminRouter = Router();
 AdminRouter.post("/api/admin/login", async (req, res, next) =>
   AdminController.login(req, res, next)
 );
+AdminRouter.post("/api/admin/logout", async (req, res, next) =>
+  AdminController.logout(req, res, next)
+);
 
 // CUSTOMER
 AdminRouter.get(
@@ -24,7 +27,8 @@ AdminRouter.get(
 AdminRouter.post(
   "/api/admin/laundry_partner",
   authorize("admin-jwt"),
-  async (req, res, next) => AdminController.registerLaundryPartner(req, res, next)
+  async (req, res, next) =>
+    AdminController.registerLaundryPartner(req, res, next)
 );
 AdminRouter.delete(
   "/api/admin/laundry_partner/:id",
@@ -37,5 +41,30 @@ AdminRouter.put(
   async (req, res, next) => AdminController.updateLaundryPartner(req, res, next)
 );
 
-export default AdminRouter;
+// laundry partners packages  CRUD
+AdminRouter.post(
+  "/api/admin/laundry_partner/:id/package",
+  authorize("admin-jwt"),
+  async (req, res, next) =>
+    AdminController.addLaundryPartnerPackage(req, res, next)
+);
+AdminRouter.get(
+  "/api/admin/laundry_partner/:id/package/:package_id",
+  authorize("admin-jwt"),
+  async (req, res, next) =>
+    AdminController.getLaundryPartnerPackage(req, res, next)
+);
+AdminRouter.put(
+  "/api/admin/laundry_partner/:id/package/:package_id",
+  authorize("admin-jwt"),
+  async (req, res, next) =>
+    AdminController.updateLaundryPartnerPackage(req, res, next)
+);
+AdminRouter.delete(
+  "/api/admin/laundry_partner/:id/package/:package_id",
+  authorize("admin-jwt"),
+  async (req, res, next) =>
+    AdminController.deleteLaundryPartnerPackage(req, res, next)
+);
 
+export default AdminRouter;
