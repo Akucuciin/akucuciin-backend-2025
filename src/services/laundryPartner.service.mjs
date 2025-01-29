@@ -1,4 +1,5 @@
 import LaundryPartnerQuery from "../database/queries/laundryPartner.query.mjs";
+import { lowerAndCapitalizeFirstLetter } from "../utils/utils.mjs";
 
 const LaundryPartnerService = {
   getPartnersLocations: async (req) => {
@@ -18,6 +19,14 @@ const LaundryPartnerService = {
     });
 
     return groupedLocations;
+  },
+  getPartnersByCity: async (req) => {
+    let { city } = req.params;
+    city = lowerAndCapitalizeFirstLetter(city);
+
+    const laundryPartners = await LaundryPartnerQuery.getPartnersByCity(city);
+
+    return laundryPartners;
   },
 };
 

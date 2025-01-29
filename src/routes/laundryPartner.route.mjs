@@ -9,5 +9,10 @@ LaundryPartnerRouter.get(
     LaundryPartnerController.getPartnersLocations(req, res, next);
   }
 );
+LaundryPartnerRouter.get(
+  "/api/laundry_partners/locations/:city",
+  async (req, res, next) =>
+    LaundryPartnerController.getPartnersByCity(req, res, next)
+);
 
 export default LaundryPartnerRouter;

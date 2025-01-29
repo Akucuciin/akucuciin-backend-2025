@@ -41,10 +41,11 @@ class ServerError extends Error {
 }
 
 export {
-  BadRequestError,
   AuthenticationError,
   AuthorizationError,
-  TokenInvalidError,
+  BadRequestError,
   NotFoundError,
   ServerError,
+  TokenInvalidError
 };
+

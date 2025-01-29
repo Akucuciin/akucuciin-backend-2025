@@ -31,6 +31,29 @@ const LaundryPartnerQuery = {
     );
     return results[0];
   },
+  getPartnersByCity: async function (city) {
+    const [results] = await db.query(
+      `
+    SELECT 
+      id, 
+      name, 
+      email, 
+      description,
+      telephone, 
+      address, 
+      city,
+      area,
+      latitude, 
+      longitude,
+      created_at,
+      updated_at
+    FROM laundry_partners
+    WHERE city = ?
+  `,
+      [city]
+    );
+    return results;
+  },
   getPartnersLocations: async function () {
     const [results] = await db.query(`
     SELECT city, area FROM laundry_partners
