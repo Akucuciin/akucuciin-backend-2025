@@ -1,5 +1,5 @@
-import { v7 as uuidV7 } from "uuid";
 import OrderQuery from "../database/queries/order.query.mjs";
+import { generateUuidWithPrefix } from "../utils/utils.mjs";
 import OrderSchema from "../validators/order.schema.mjs";
 import validate from "../validators/validator.mjs";
 
@@ -7,7 +7,7 @@ const OrderService = {
   create: async (req) => {
     const order = validate(OrderSchema.create, req.body);
 
-    order.id = uuidV7();
+    order.id = generateUuidWithPrefix("ORDER");
     order.customer_id = req.user.id;
 
     await OrderQuery.create(
