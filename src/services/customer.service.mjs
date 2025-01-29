@@ -9,7 +9,7 @@ import {
   NotFoundError,
   TokenInvalidError,
 } from "../errors/customErrors.mjs";
-import { generateUUID } from "../utils/utils.mjs";
+import { generateUuidWithPrefix } from "../utils/utils.mjs";
 import CustomerSchema from "../validators/customer.schema.mjs";
 import validate from "../validators/validator.mjs";
 import MailService from "./mail.service.mjs";
@@ -52,7 +52,7 @@ const CustomerService = {
     const isEmailExists = await CustomerQuery.isEmailExists(newCustomer.email);
     if (isEmailExists) throw new BadRequestError("Email sudah terdaftar");
 
-    newCustomer.id = generateUUID("CUST");
+    newCustomer.id = generateUuidWithPrefix("CUST");
     newCustomer.password = await bcrypt.hash(newCustomer.password, 12);
 
     await CustomerQuery.registerCustomer(
