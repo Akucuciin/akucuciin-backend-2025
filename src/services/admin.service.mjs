@@ -1,10 +1,12 @@
 import bcrypt from "bcrypt";
-import { v7 as uuidV7 } from "uuid";
 
 import AdminQuery from "../database/queries/admin.query.mjs";
 import LaundryPartnerQuery from "../database/queries/laundryPartner.query.mjs";
 import { BadRequestError, NotFoundError } from "../errors/customErrors.mjs";
-import { lowerAndCapitalizeFirstLetter } from "../utils/utils.mjs";
+import {
+  generateUUID,
+  lowerAndCapitalizeFirstLetter,
+} from "../utils/utils.mjs";
 import LaundryPartnerSchema from "../validators/laundryPartner.schema.mjs";
 import validate from "../validators/validator.mjs";
 
@@ -25,7 +27,7 @@ const AdminService = {
     );
     if (isEmailExists) throw new BadRequestError("Email sudah terdaftar");
 
-    laundryPartner.id = uuidV7();
+    laundryPartner.id = generateUUID("LP");
     laundryPartner.password = await bcrypt.hash(laundryPartner.password, 12);
     laundryPartner.city = lowerAndCapitalizeFirstLetter(laundryPartner.city);
     laundryPartner.area = lowerAndCapitalizeFirstLetter(laundryPartner.area);
