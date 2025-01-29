@@ -105,6 +105,86 @@ const AdminService = {
 
     return values;
   },
+  addLaundryPartnerPackage: async (req) => {
+    const { id: laundry_partner_id } = req.params;
+    const npackage = validate(LaundryPartnerSchema.addPackage, req.body);
+
+    npackage.id = generateUuidWithPrefix("LPPACKAGES");
+    npackage.laundry_partner_id = laundry_partner_id;
+
+    const result = await AdminQuery.addLaundryPartnerPackage(
+      npackage.id,
+      npackage.laundry_partner_id,
+      npackage.name,
+      npackage.description,
+      npackage.features,
+      npackage.price_text
+    );
+
+    if (!result.affectedRows)
+      throw new BadRequestError("Failed, cant add laundry packages");
+
+    return npackage;
+  },
+  getLaundryPartnerPackage: async (req) => {
+    const { id: laundry_partner_id, package_id } = req.params;
+    const npackage = await LaundryPartnerQuery.getPackageOfPartnerById(
+      laundry_partner_id,
+      package_id
+    );
+
+    if (!npackage) throw new NotFoundError("Failed package not found");
+
+    return npackage;
+  },
+  deleteLaundryPartnerPackage: async (req) => {
+    const { id: laundry_partner_id, package_id } = req.params;
+
+    const result = await AdminQuery.deleteLaundryPartnerPackage(
+      laundry_partner_id,
+      package_id
+    );
+
+    if (!result.affectedRows)
+      throw new BadRequestError("Failed delete package");
+
+    return `${package_id} successfully deleted`;
+  },
+  updateLaundryPartnerPackage: async (req) => {
+    const { id: laundry_partner_id, package_id } = req.params;
+
+    const updatedPackage = validate(
+      LaundryPartnerSchema.updatePackage,
+      req.body
+    );
+
+    const npackage = await LaundryPartnerQuery.getPackageOfPartnerById(
+      laundry_partner_id,
+      package_id
+    );
+    if (!npackage)
+      throw new NotFoundError("Failed, package of laundry not found");
+
+    const values = {
+      id: package_id,
+      name: updatedPackage.name || npackage.name,
+      description: updatedPackage.description || npackage.description,
+      features: updatedPackage.features || npackage.features,
+      price_text: updatedPackage.price_text || npackage.price_text,
+    };
+
+    const result = await LaundryPartnerQuery.updatePackage(
+      values.id,
+      values.name,
+      values.description,
+      values.features,
+      values.price_text
+    );
+
+    if (!result.affectedRows) throw new BadRequestError("Failed to update");
+
+    return values;
+  },
 };
 
 export default AdminService;

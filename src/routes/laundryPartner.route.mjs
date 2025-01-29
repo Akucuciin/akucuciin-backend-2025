@@ -3,6 +3,9 @@ import LaundryPartnerController from "../controllers/laundryPartner.controller.m
 
 const LaundryPartnerRouter = Router();
 
+LaundryPartnerRouter.get("/api/laundry_partner/:id", async (req, res, next) =>
+  LaundryPartnerController.getPartnerByIdWithPackages(req, res, next)
+);
 LaundryPartnerRouter.get(
   "/api/laundry_partners/locations",
   async (req, res, next) => {

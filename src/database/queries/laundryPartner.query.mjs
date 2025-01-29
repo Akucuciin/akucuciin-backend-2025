@@ -31,6 +31,26 @@ const LaundryPartnerQuery = {
     );
     return results[0];
   },
+  getPackagesOfPartnerById: async function (laundry_partner_id) {
+    const [results] = await db.query(
+      `
+      SELECT id, name, description, features, price_text FROM laundry_partners_packages
+      WHERE laundry_partner_id = ?
+      `,
+      [laundry_partner_id]
+    );
+    return results;
+  },
+  getPackageOfPartnerById: async function (laundry_partner_id, id) {
+    const [results] = await db.query(
+      `
+      SELECT id, name, description, features, price_text FROM laundry_partners_packages
+      WHERE laundry_partner_id = ? AND id = ?
+      `,
+      [laundry_partner_id, id]
+    );
+    return results[0];
+  },
   getPartnersByCity: async function (city) {
     const [results] = await db.query(
       `
@@ -141,6 +161,23 @@ const LaundryPartnerQuery = {
         longitude,
         id,
       ]
+    );
+    return results;
+  },
+  updatePackage: async function (
+    package_id,
+    name,
+    description,
+    features,
+    price_text
+  ) {
+    const [results] = await db.query(
+      `
+        UPDATE laundry_partners_packages
+        SET name = ?, description = ?, features = ?, price_text = ?
+        WHERE id = ?
+      `,
+      [name, description, features, price_text, package_id]
     );
     return results;
   },

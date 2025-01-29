@@ -24,6 +24,18 @@ const LaundryPartnerSchema = {
     latitude: Joi.number().precision(8).allow("").optional(),
     longitude: Joi.number().precision(8).allow("").optional(),
   }),
+  addPackage: Joi.object({
+    name: Joi.string().min(1).max(50).required(),
+    description: Joi.string().min(1).max(500).required(),
+    features: Joi.string().required(),
+    price_text: Joi.number().required(),
+  }),
+  updatePackage: Joi.object({
+    name: Joi.string().min(1).max(50).allow("").optional(),
+    description: Joi.string().min(1).max(500).allow("").optional(),
+    features: Joi.string().allow("").optional(),
+    price_text: Joi.number().allow("").optional(),
+  }),
 };
 
 export default LaundryPartnerSchema;
