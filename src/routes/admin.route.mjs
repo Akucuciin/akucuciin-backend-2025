@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { uploadPartnerImage } from "../configs/multer.config.mjs";
 import AdminController from "../controllers/admin.controller.mjs";
 import authorize from "../middlewares/auth.middleware.mjs";
 
@@ -39,6 +40,20 @@ AdminRouter.put(
   "/api/admin/laundry_partner/:id",
   authorize("admin-jwt"),
   async (req, res, next) => AdminController.updateLaundryPartner(req, res, next)
+);
+
+AdminRouter.post(
+  "/api/admin/laundry_partner/:id/image",
+  authorize("admin-jwt"),
+  uploadPartnerImage,
+  async (req, res, next) =>
+    AdminController.addLaundryPartnerImage(req, res, next)
+);
+AdminRouter.delete(
+  "/api/admin/laundry_partner/:id/image/:image_id",
+  authorize("admin-jwt"),
+  async (req, res, next) =>
+    AdminController.deleteLaundryPartnerImage(req, res, next)
 );
 
 // laundry partners packages  CRUD

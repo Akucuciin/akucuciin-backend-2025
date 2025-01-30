@@ -1,6 +1,7 @@
 import pkg from "jsonwebtoken";
 const { JsonWebTokenError, TokenExpiredError } = pkg;
 
+import { MulterError } from "multer";
 import {
   AuthenticationError,
   AuthorizationError,
@@ -24,6 +25,8 @@ const errorHandler = function (error, req, res, next) {
       success: false,
       errors: error.message,
     });
+  } else if (error instanceof MulterError) {
+    return res.status(400).send({ success: false, errors: error.message });
   } else if (error instanceof JsonWebTokenError) {
     return res.status(401).send({ success: false, errors: "Invalid payload" });
   } else if (error instanceof TokenExpiredError) {

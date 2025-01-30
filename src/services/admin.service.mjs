@@ -1,9 +1,14 @@
 import bcrypt from "bcrypt";
-
+import fs from "fs";
 import AdminQuery from "../database/queries/admin.query.mjs";
 import LaundryPartnerQuery from "../database/queries/laundryPartner.query.mjs";
+import LaundryPartnerImageQuery from "../database/queries/laundryPartnerImage.query.mjs";
 import OrderQuery from "../database/queries/order.query.mjs";
-import { BadRequestError, NotFoundError } from "../errors/customErrors.mjs";
+import {
+  BadRequestError,
+  NotFoundError,
+  ServerError,
+} from "../errors/customErrors.mjs";
 import {
   generateUuidWithPrefix,
   lowerAndCapitalizeFirstLetter,
@@ -186,6 +191,32 @@ const AdminService = {
 
     return values;
   },
+  addLaundryPartnerImage: async (req) => {
+    const { id: laundry_partner_id } = req.params;
+    const id = generateUuidWithPrefix("img");
+
+    await LaundryPartnerImageQuery.addImage(
+      id,
+      laundry_partner_id,
+      req.file.filename
+    );
+
+    return { id, laundry_partner_id, filepath: req.file.filename };
+  },
+  deleteLaundryPartnerImage: async (req) => {
+    const { image_id } = req.params;
+
+    const image = await LaundryPartnerImageQuery.getImageById(image_id);
+
+    fs.unlink(`storage/${image.filepath}`, (err) => {
+      if (err) {
+        throw new ServerError("Failed delete image");
+      }
+    });
+    await LaundryPartnerImageQuery.deleteImageById(image_id);
+
+    return "File succesfully deleted";
+  },
   getOrdersJoined: async (req) => {
     const orders = await OrderQuery.getOrdersJoined();
 
@@ -217,7 +248,7 @@ const AdminService = {
         id: row.p_id,
         name: row.p_name,
         price_text: row.p_price_text,
-        description: row.p_description
+        description: row.p_description,
       },
     }));
 

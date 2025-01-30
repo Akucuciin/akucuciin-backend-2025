@@ -6,6 +6,10 @@ const LaundryPartnerRouter = Router();
 LaundryPartnerRouter.get("/api/laundry_partner/:id", async (req, res, next) =>
   LaundryPartnerController.getPartnerByIdWithPackages(req, res, next)
 );
+LaundryPartnerRouter.get("/api/laundry_partner/:id/images", async (req, res, next) =>
+  LaundryPartnerController.getPartnerImages(req, res, next)
+);
+
 LaundryPartnerRouter.get(
   "/api/laundry_partners/locations",
   async (req, res, next) => {
