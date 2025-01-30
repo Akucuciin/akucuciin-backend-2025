@@ -195,7 +195,7 @@ const AdminService = {
       status: row.status,
       weight: row.weight,
       price: row.price,
-      coutpon_code: row.coutpon_code,
+      coupon_code: row.coupon_code,
       created_at: row.created_at,
       customer: {
         id: row.c_id,
