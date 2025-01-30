@@ -14,6 +14,7 @@ const OrderService = {
       order.id,
       order.customer_id,
       order.laundry_partner_id,
+      order.package_id,
       order.content,
       order.status,
       order.weight,

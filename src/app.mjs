@@ -25,6 +25,7 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(passport.initialize());
 
+app.use("/static", express.static("storage"));
 app.use(AdminRouter);
 app.use(CustomerRouter);
 app.use(AuthRouter);

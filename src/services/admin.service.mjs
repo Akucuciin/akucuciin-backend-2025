@@ -2,6 +2,7 @@ import bcrypt from "bcrypt";
 
 import AdminQuery from "../database/queries/admin.query.mjs";
 import LaundryPartnerQuery from "../database/queries/laundryPartner.query.mjs";
+import OrderQuery from "../database/queries/order.query.mjs";
 import { BadRequestError, NotFoundError } from "../errors/customErrors.mjs";
 import {
   generateUuidWithPrefix,
@@ -184,6 +185,43 @@ const AdminService = {
     if (!result.affectedRows) throw new BadRequestError("Failed to update");
 
     return values;
+  },
+  getOrdersJoined: async (req) => {
+    const orders = await OrderQuery.getOrdersJoined();
+
+    const ordersFormatted = orders.map((row) => ({
+      id: row.id,
+      content: row.content,
+      status: row.status,
+      weight: row.weight,
+      price: row.price,
+      coutpon_code: row.coutpon_code,
+      created_at: row.created_at,
+      customer: {
+        id: row.c_id,
+        name: row.c_name,
+        email: row.c_email,
+        address: row.c_address,
+        telephone: row.c_telephone,
+      },
+      laundry_partner: {
+        id: row.lp_id,
+        name: row.lp_name,
+        email: row.lp_email,
+        address: row.lp_address,
+        city: row.lp_city,
+        area: row.lp_area,
+        telephone: row.lp_telephone,
+      },
+      package: {
+        id: row.p_id,
+        name: row.p_name,
+        price_text: row.p_price_text,
+        description: row.p_description
+      },
+    }));
+
+    return ordersFormatted;
   },
 };
 

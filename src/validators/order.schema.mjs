@@ -3,6 +3,7 @@ import Joi from "joi";
 const OrderSchema = {
   create: Joi.object({
     laundry_partner_id: Joi.string().required(),
+    package_id: Joi.string().required(),
     content: Joi.string().required(),
     status: Joi.string()
       .valid(

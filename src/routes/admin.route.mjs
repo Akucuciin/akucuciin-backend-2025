@@ -67,4 +67,11 @@ AdminRouter.delete(
     AdminController.deleteLaundryPartnerPackage(req, res, next)
 );
 
+// ORDER
+AdminRouter.get(
+  "/api/admin/orders",
+  authorize("admin-jwt"),
+  async (req, res, next) => AdminController.getOrdersJoined(req, res, next)
+);
+
 export default AdminRouter;
