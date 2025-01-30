@@ -1,4 +1,5 @@
 import LaundryPartnerQuery from "../database/queries/laundryPartner.query.mjs";
+import LaundryPartnerImageQuery from "../database/queries/laundryPartnerImage.query.mjs";
 import { NotFoundError } from "../errors/customErrors.mjs";
 import { lowerAndCapitalizeFirstLetter } from "../utils/utils.mjs";
 
@@ -12,14 +13,25 @@ const LaundryPartnerService = {
     const laundryPartnerPackages =
       await LaundryPartnerQuery.getPackagesOfPartnerById(id);
 
-    const formattedLaundryPartnerPackages = laundryPartnerPackages.map((pkg) => ({
-      ...pkg,
-      features: pkg.features.split(", ").map((f) => f.trim()),
-    }));
+    const formattedLaundryPartnerPackages = laundryPartnerPackages.map(
+      (pkg) => ({
+        ...pkg,
+        features: pkg.features.split(", ").map((f) => f.trim()),
+      })
+    );
 
     laundryPartner.packages = formattedLaundryPartnerPackages;
 
     return laundryPartner;
+  },
+  getPartnerImages: async (req) => {
+    const { id: laundry_partner_id } = req.params;
+
+    const images = await LaundryPartnerImageQuery.getImagesOfPartnerById(
+      laundry_partner_id
+    );
+
+    return images;
   },
   getPartnersLocations: async (req) => {
     const locations = await LaundryPartnerQuery.getPartnersLocations();

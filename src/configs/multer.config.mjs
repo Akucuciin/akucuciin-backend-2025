@@ -1,6 +1,7 @@
 import multer from "multer";
 import crypto from "node:crypto";
 import path from "node:path";
+import { BadRequestError } from "../errors/customErrors.mjs";
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -8,23 +9,32 @@ const storage = multer.diskStorage({
   },
   filename: (req, file, cb) => {
     const ext = path.extname(file.originalname);
-    cb(null, Date.now() + "-" + crypto.randomBytes(16).toString("hex") + ext);
+    cb(null, Date.now() + "-" + crypto.randomBytes(32).toString("hex") + ext);
   },
 });
 
-const fileFilter = (req, file, cb) => {
-  console.log(file);
-  if (file.mimetype.startsWith("image/")) {
-    cb(null, true);
-  } else {
-    cb(new Error("Only image files are allowed!"), false);
-  }
-};
+const maxSizeMb = 2;
+const maxSize = maxSizeMb * 1024 * 1024; // 5MB
 
-const upload = multer({
+const uploadPartnerImage = multer({
   storage: storage,
-  fileFilter: fileFilter,
-  limits: { fileSize: 2 * 1024 * 1024 },
-});
+  limits: { fileSize: maxSize },
+  fileFilter: function (req, file, cb) {
+    checkFileType(file, cb);
+  },
+}).single("image");
 
-export default upload;
+function checkFileType(file, cb) {
+  const filetypes = /jpeg|jpg|png/;
+  const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+  const mimetype = filetypes.test(file.mimetype);
+
+  if (mimetype && extname) {
+    return cb(null, true);
+  } else {
+    cb(new BadRequestError("Failed, image only"));
+  }
+}
+
+export { uploadPartnerImage };
+

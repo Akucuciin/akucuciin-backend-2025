@@ -123,6 +123,28 @@ const AdminController = {
       next(error);
     }
   },
+  addLaundryPartnerImage: async (req, res, next) => {
+    try {
+      const result = await AdminService.addLaundryPartnerImage(req);
+      return res.status(201).json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+  deleteLaundryPartnerImage: async (req, res, next) => {
+    try {
+      const result = await AdminService.deleteLaundryPartnerImage(req);
+      return res.status(200).json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
   getOrdersJoined: async (req, res, next) => {
     try {
       const result = await AdminService.getOrdersJoined(req);
