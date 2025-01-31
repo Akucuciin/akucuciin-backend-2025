@@ -35,6 +35,17 @@ const AdminController = {
       next(error);
     }
   },
+  getCustomerOrders: async (req, res, next) => {
+    try {
+      const result = await AdminService.getCustomerOrders(req);
+      return res.status(200).json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
   getLaundryPartners: async (req, res, next) => {
     try {
       const result = await AdminService.getLaundryPartners(req);

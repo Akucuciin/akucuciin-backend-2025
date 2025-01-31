@@ -21,6 +21,11 @@ AdminRouter.get(
   authorize("admin-jwt"),
   async (req, res, next) => AdminController.getCustomers(req, res, next)
 );
+AdminRouter.get(
+  "/api/admin/customer/:id/orders",
+  authorize("admin-jwt"),
+  async (req, res, next) => AdminController.getCustomerOrders(req, res, next)
+);
 
 // Laundry Partners CRUD
 AdminRouter.get(
