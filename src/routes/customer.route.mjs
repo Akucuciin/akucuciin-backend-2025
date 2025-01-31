@@ -26,6 +26,12 @@ CustomerRouter.post("/api/customer/logout", async (req, res, next) =>
 );
 
 CustomerRouter.get(
+  "/api/customer/orders",
+  authorize("customer-jwt"),
+  async (req, res, next) => CustomerController.getOrders(req, res, next)
+);
+
+CustomerRouter.get(
   "/verify/customer/:email/:register_token",
   async (req, res, next) => {
     CustomerController.verify(req, res, next);

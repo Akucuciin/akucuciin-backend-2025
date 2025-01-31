@@ -91,7 +91,8 @@ const AdminService = {
         updatedLaundryPartner.description || laundryPartner.description,
       telephone: updatedLaundryPartner.telephone || laundryPartner.telephone,
       address: updatedLaundryPartner.address || laundryPartner.address,
-      maps_pinpoint: updatedLaundryPartner.maps_pinpoint || laundryPartner.maps_pinpoint,
+      maps_pinpoint:
+        updatedLaundryPartner.maps_pinpoint || laundryPartner.maps_pinpoint,
       city: updatedLaundryPartner.city || laundryPartner.city,
       area: updatedLaundryPartner.area || laundryPartner.area,
       latitude: updatedLaundryPartner.latitude || laundryPartner.latitude,
@@ -248,6 +249,7 @@ const AdminService = {
         city: row.lp_city,
         area: row.lp_area,
         telephone: row.lp_telephone,
+        maps_pinpoint: row.lp_maps_pinpoint,
       },
       package: {
         id: row.p_id,
