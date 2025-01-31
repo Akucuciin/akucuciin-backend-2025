@@ -18,6 +18,7 @@ const OrderService = {
       order.package_id,
       order.content,
       order.status,
+      order.maps_pinpoint,
       order.weight,
       order.price,
       order.coupon_code
@@ -29,6 +30,7 @@ const OrderService = {
       id: row.id,
       content: row.content,
       status: row.status,
+      maps_pinpoint: row.maps_pinpoint,
       weight: row.weight,
       price: row.price,
       coupon_code: row.coupon_code,
@@ -67,9 +69,11 @@ const OrderService = {
         ord.customer.name
       }\nEmail: ${ord.customer.email}\nAlamat: ${
         ord.customer.address
-      }\n\n==LAUNDRY==\n${ord.laundry_partner.name}, ${
-        ord.laundry_partner.area
-      },${ord.laundry_partner.city}\nNo HP laundry: https://wa.me/${
+      }\nPinpoint: ${ord.maps_pinpoint}\n\n==LAUNDRY==\n${
+        ord.laundry_partner.name
+      }, ${ord.laundry_partner.area},${
+        ord.laundry_partner.city
+      }\nNo HP laundry: https://wa.me/${
         ord.laundry_partner.telephone
       }\n\nPaket Laundry: ${ord.package.name}\nContent: ${
         ord.content
@@ -85,11 +89,11 @@ const OrderService = {
       `${ord.laundry_partner.telephone}@s.whatsapp.net`,
       `*Order masuk*\n\n==Customer==\nNama: ${ord.customer.name}\nEmail: ${
         ord.customer.email
-      }\nAlamat: ${ord.customer.address}\nNo HP Cust: https://wa.me/${
-        ord.customer.telephone
-      }\n\n==LAUNDRY==\n${ord.laundry_partner.name}, ${
-        ord.laundry_partner.area
-      },${ord.laundry_partner.city}\nEmail:  ${
+      }\nAlamat: ${ord.customer.address}\nPinpoint: ${
+        ord.maps_pinpoint
+      }\nNo HP Cust: https://wa.me/${ord.customer.telephone}\n\n==LAUNDRY==\n${
+        ord.laundry_partner.name
+      }, ${ord.laundry_partner.area},${ord.laundry_partner.city}\nEmail:  ${
         ord.laundry_partner.email
       }\n\nPaket Laundry: ${ord.package.name}\nContent: ${
         ord.content

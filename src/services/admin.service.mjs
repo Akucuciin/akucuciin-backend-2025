@@ -224,6 +224,7 @@ const AdminService = {
       id: row.id,
       content: row.content,
       status: row.status,
+      maps_pinpoint: row.maps_pinpoint,
       weight: row.weight,
       price: row.price,
       coupon_code: row.coupon_code,

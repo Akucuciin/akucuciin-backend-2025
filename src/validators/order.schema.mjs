@@ -15,6 +15,7 @@ const OrderSchema = {
         "kesalahan"
       )
       .required(),
+    maps_pinpoint: Joi.string().required(),
     weight: Joi.number().min(0).required(),
     price: Joi.number().min(0).required(),
     coupon_code: Joi.string().max(25).allow("").optional(),

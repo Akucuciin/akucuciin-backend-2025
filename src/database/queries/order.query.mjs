@@ -24,6 +24,7 @@ const OrderQuery = {
         lpp.description AS p_description ,
         o.content ,
         o.status,
+        o.maps_pinpoint,
         o.weight ,
         o.price,
         o.coupon_code ,
@@ -59,6 +60,7 @@ const OrderQuery = {
         lpp.description AS p_description ,
         o.content ,
         o.status,
+        o.maps_pinpoint,
         o.weight ,
         o.price,
         o.coupon_code ,
@@ -80,6 +82,7 @@ const OrderQuery = {
     package_id,
     content,
     status,
+    maps_pinpoint,
     weight,
     price,
     coupon_code
@@ -87,8 +90,8 @@ const OrderQuery = {
     const [results] = await db.query(
       `
         INSERT INTO orders
-        (id, customer_id, laundry_partner_id, package_id, content, status, weight, price, coupon_code)
-        VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)
+        (id, customer_id, laundry_partner_id, package_id, content, status, maps_pinpoint, weight, price, coupon_code)
+        VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `,
       [
         id,
@@ -97,6 +100,7 @@ const OrderQuery = {
         package_id,
         content,
         status,
+        maps_pinpoint,
         weight,
         price,
         coupon_code,
