@@ -2,4 +2,4 @@
 .env
 todo.txt
 /storage/*
-/auth
+/auth/whatsapp/*
