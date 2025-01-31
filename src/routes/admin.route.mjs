@@ -1,12 +1,16 @@
 import { Router } from "express";
 import { uploadPartnerImage } from "../configs/multer.config.mjs";
+import useRateLimiter from "../configs/rateLimiter.config.mjs";
 import AdminController from "../controllers/admin.controller.mjs";
 import authorize from "../middlewares/auth.middleware.mjs";
 
 const AdminRouter = Router();
 
-AdminRouter.post("/api/admin/login", async (req, res, next) =>
-  AdminController.login(req, res, next)
+// Auth
+AdminRouter.post(
+  "/api/admin/login",
+  useRateLimiter(5, 2),
+  async (req, res, next) => AdminController.login(req, res, next)
 );
 AdminRouter.post("/api/admin/logout", async (req, res, next) =>
   AdminController.logout(req, res, next)

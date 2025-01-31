@@ -1,4 +1,5 @@
 import { Router } from "express";
+import useRateLimiter from "../configs/rateLimiter.config.mjs";
 import CustomerController from "../controllers/customer.controller.mjs";
 import authorize from "../middlewares/auth.middleware.mjs";
 
@@ -18,8 +19,10 @@ CustomerRouter.put(
 CustomerRouter.post("/api/customer", async (req, res, next) =>
   CustomerController.register(req, res, next)
 );
-CustomerRouter.post("/api/customer/login", async (req, res, next) =>
-  CustomerController.login(req, res, next)
+CustomerRouter.post(
+  "/api/customer/login",
+  useRateLimiter(5, 2),
+  async (req, res, next) => CustomerController.login(req, res, next)
 );
 CustomerRouter.post("/api/customer/logout", async (req, res, next) =>
   CustomerController.logout(req, res, next)
