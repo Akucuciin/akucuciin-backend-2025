@@ -57,7 +57,11 @@ const OrderService = {
       },
     }))[0];
 
-    sendMessage(
+    ord.created_at_tz = new Date(ord.created_at).toLocaleString("id-ID", {
+      timeZone: "Asia/Bangkok",
+    });
+
+    await sendMessage(
       `${ord.customer.telephone}@s.whatsapp.net`,
       `*Order anda telah diterima*\n\n==Customer==\nNama: ${
         ord.customer.name
@@ -71,11 +75,13 @@ const OrderService = {
         ord.content
       }\n\nKupon : ${
         ord.coupon_code || "-"
-      }\n\n_Pesan ini dibuat otomatis oleh sistem Akucuciin_\n\n_${ord.id}_
+      }\n====================\n\n_Pesan ini dibuat otomatis oleh sistem Akucuciin_\n_${
+        ord.id
+      }_\n\nTanggal: ${ord.created_at_tz}
       `
     );
 
-    sendMessage(
+    await sendMessage(
       `${ord.laundry_partner.telephone}@s.whatsapp.net`,
       `*Order masuk*\n\n==Customer==\nNama: ${ord.customer.name}\nEmail: ${
         ord.customer.email
@@ -89,7 +95,9 @@ const OrderService = {
         ord.content
       }\n\nKupon : ${
         ord.coupon_code || "-"
-      }\n\n_Pesan ini dibuat otomatis oleh sistem Akucuciin_\n\n_${ord.id}_
+      }\n====================\n\n_Pesan ini dibuat otomatis oleh sistem Akucuciin_\n_${
+        ord.id
+      }_\n\nTanggal: ${ord.created_at_tz}
       `
     );
 
