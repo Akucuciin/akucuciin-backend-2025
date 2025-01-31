@@ -58,6 +58,7 @@ const AdminQuery = {
         description,
         telephone, 
         address, 
+        maps_pinpoint,
         city,
         area,
         latitude, 

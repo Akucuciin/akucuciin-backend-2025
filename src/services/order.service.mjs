@@ -50,6 +50,7 @@ const OrderService = {
         city: row.lp_city,
         area: row.lp_area,
         telephone: row.lp_telephone,
+        maps_pinpoint: row.maps_pinpoint
       },
       package: {
         id: row.p_id,

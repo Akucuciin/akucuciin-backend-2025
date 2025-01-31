@@ -20,6 +20,7 @@ const LaundryPartnerQuery = {
       address, 
       city,
       area,
+      maps_pinpoint,
       latitude, 
       longitude,
       created_at,
@@ -63,6 +64,7 @@ const LaundryPartnerQuery = {
       address, 
       city,
       area,
+      maps_pinpoint,
       latitude, 
       longitude,
       created_at,
@@ -96,6 +98,7 @@ const LaundryPartnerQuery = {
     description,
     telephone,
     address,
+    maps_pinpoint,
     city,
     area,
     latitude,
@@ -111,12 +114,13 @@ const LaundryPartnerQuery = {
         description,
         telephone, 
         address, 
+        maps_pinpoint,
         city,
         area,
         latitude, 
         longitude
       )
-      VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)
       `,
       [
         id,
@@ -126,6 +130,7 @@ const LaundryPartnerQuery = {
         description,
         telephone,
         address,
+        maps_pinpoint,
         city,
         area,
         latitude,
@@ -139,6 +144,7 @@ const LaundryPartnerQuery = {
     description,
     telephone,
     address,
+    maps_pinpoint,
     city,
     area,
     latitude,
@@ -147,7 +153,7 @@ const LaundryPartnerQuery = {
     const [results] = await db.query(
       `
       UPDATE laundry_partners
-      SET name = ?, address = ?, description = ?, telephone = ?, city = ?, area = ?, latitude = ?, longitude = ?
+      SET name = ?, address = ?, description = ?, telephone = ?, city = ?, area = ?, latitude = ?, longitude = ?, maps_pinpoint = ?
       WHERE id = ?
   `,
       [
@@ -159,6 +165,7 @@ const LaundryPartnerQuery = {
         area,
         latitude,
         longitude,
+        maps_pinpoint,
         id,
       ]
     );
