@@ -11,6 +11,9 @@ AdminRouter.post("/api/admin/login", async (req, res, next) =>
 AdminRouter.post("/api/admin/logout", async (req, res, next) =>
   AdminController.logout(req, res, next)
 );
+AdminRouter.get("api/admin/status", authorize("admin-jwt"), (req, res, next) =>
+  res.status(200).json({ data: "Authenticated Admin" })
+);
 
 // CUSTOMER
 AdminRouter.get(
