@@ -14,6 +14,7 @@ import {
   lowerAndCapitalizeFirstLetter,
 } from "../utils/utils.mjs";
 import LaundryPartnerSchema from "../validators/laundryPartner.schema.mjs";
+import OrderSchema from "../validators/order.schema.mjs";
 import validate from "../validators/validator.mjs";
 
 const AdminService = {
@@ -260,6 +261,30 @@ const AdminService = {
     }));
 
     return ordersFormatted;
+  },
+  updateOrderStatus: async (req) => {
+    const { id: order_id } = req.params;
+    const updated = validate(OrderSchema.updateStatus, req.body);
+
+    const order = await OrderQuery.getOrderById(order_id);
+
+    const values = {
+      order_id,
+      status: updated.status || order.status,
+      weight: updated.weight || order.weight,
+      price: updated.price || order.price,
+    };
+
+    const result = await OrderQuery.updateStatus(
+      values.order_id,
+      values.status,
+      values.weight,
+      values.price
+    );
+
+    if (!result.affectedRows) throw new BadRequestError("Failed to update");
+
+    return values;
   },
 };
 

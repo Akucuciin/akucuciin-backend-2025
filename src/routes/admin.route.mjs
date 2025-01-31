@@ -92,4 +92,10 @@ AdminRouter.get(
   async (req, res, next) => AdminController.getOrdersJoined(req, res, next)
 );
 
+AdminRouter.put(
+  "/api/admin/order/:id/status",
+  authorize("admin-jwt"),
+  async (req, res, next) => AdminController.updateOrderStatus(req, res, next)
+);
+
 export default AdminRouter;

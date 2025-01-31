@@ -1,6 +1,12 @@
 import db from "../connection.mjs";
 
 const OrderQuery = {
+  getOrderById: async function (order_id) {
+    const [results] = await db.query(`SELECT * FROM orders WHERE id = ?`, [
+      order_id,
+    ]);
+    return results[0];
+  },
   getOrdersJoined: async function () {
     const [results] = await db.query(
       `
@@ -147,6 +153,17 @@ const OrderQuery = {
         coupon_code,
       ]
     );
+  },
+  updateStatus: async function (order_id, status, weight, price) {
+    const [results] = await db.query(
+      `
+      UPDATE orders
+      SET status = ?, weight = ?, price = ?
+      WHERE id = ?
+      `,
+      [status, weight, price, order_id]
+    );
+    return results;
   },
 };
 
