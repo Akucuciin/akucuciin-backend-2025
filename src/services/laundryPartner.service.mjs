@@ -57,6 +57,13 @@ const LaundryPartnerService = {
 
     const laundryPartners = await LaundryPartnerQuery.getPartnersByCity(city);
 
+    for (const partner of laundryPartners) {
+      const images = await LaundryPartnerImageQuery.getImagesOfPartnerById(
+        partner.id
+      );
+      partner.image = images[0];
+    }
+
     return laundryPartners;
   },
 };
