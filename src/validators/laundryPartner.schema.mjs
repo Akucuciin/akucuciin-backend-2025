@@ -4,7 +4,7 @@ const LaundryPartnerSchema = {
   register: Joi.object({
     name: Joi.string().min(1).max(100).required(),
     email: Joi.string().email().required(),
-    password: Joi.string().required(),
+    password: Joi.string().min(8).required(),
     description: Joi.string().min(1).max(500).required(),
     confirm_password: Joi.ref("password"),
     telephone: Joi.string().pattern(new RegExp(/^\d+$/)).required(),
