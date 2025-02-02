@@ -1,4 +1,6 @@
 import OrderQuery from "../database/queries/order.query.mjs";
+import { BadRequestError } from "../errors/customErrors.mjs";
+import formatOrdersFromDb from "../utils/order.utils.mjs";
 import { generateUuidWithPrefix } from "../utils/utils.mjs";
 import OrderSchema from "../validators/order.schema.mjs";
 import validate from "../validators/validator.mjs";
@@ -11,6 +13,11 @@ const OrderService = {
     order.id = generateUuidWithPrefix("ORDER");
     order.customer_id = req.user.id;
 
+    if (order.coupon_code) {
+      const coupon = await OrderQuery.isCouponExist(order.coupon_code);
+      if (!coupon) throw new BadRequestError("Kupon tidak ditemukan");
+    }
+
     await OrderQuery.create(
       order.id,
       order.customer_id,
@@ -21,44 +28,14 @@ const OrderService = {
       order.maps_pinpoint,
       order.weight,
       order.price,
-      order.coupon_code
+      order.coupon_code,
+      order.note,
+      order.pickup_date
     );
 
     const orderFromDb = await OrderQuery.getOrderJoinedById(order.id);
 
-    const ord = orderFromDb.map((row) => ({
-      id: row.id,
-      content: row.content,
-      status: row.status,
-      maps_pinpoint: row.maps_pinpoint,
-      weight: row.weight,
-      price: row.price,
-      coupon_code: row.coupon_code,
-      created_at: row.created_at,
-      customer: {
-        id: row.c_id,
-        name: row.c_name,
-        email: row.c_email,
-        address: row.c_address,
-        telephone: row.c_telephone,
-      },
-      laundry_partner: {
-        id: row.lp_id,
-        name: row.lp_name,
-        email: row.lp_email,
-        address: row.lp_address,
-        city: row.lp_city,
-        area: row.lp_area,
-        telephone: row.lp_telephone,
-        maps_pinpoint: row.lp_maps_pinpoint
-      },
-      package: {
-        id: row.p_id,
-        name: row.p_name,
-        price_text: row.p_price_text,
-        description: row.p_description,
-      },
-    }))[0];
+    const ord = formatOrdersFromDb(orderFromDb)[0];
 
     ord.created_at_tz = new Date(ord.created_at).toLocaleString("id-ID", {
       timeZone: "Asia/Bangkok",
@@ -76,9 +53,9 @@ const OrderService = {
         ord.laundry_partner.city
       }\nNo HP laundry: https://wa.me/${
         ord.laundry_partner.telephone
-      }\n\nPaket Laundry: ${ord.package.name}\nContent: ${
-        ord.content
-      }\n\nKupon : ${
+      }\n\nPaket Laundry: ${ord.package.name}\nContent: ${ord.content}\nNote: ${
+        ord.note
+      }\nPickup Date: ${ord.pickup_date}\n\nKupon : ${
         ord.coupon_code || "-"
       }\n====================\n\n_Pesan ini dibuat otomatis oleh sistem Akucuciin_\n_${
         ord.id
@@ -96,9 +73,9 @@ const OrderService = {
         ord.laundry_partner.name
       }, ${ord.laundry_partner.area},${ord.laundry_partner.city}\nEmail:  ${
         ord.laundry_partner.email
-      }\n\nPaket Laundry: ${ord.package.name}\nContent: ${
-        ord.content
-      }\n\nKupon : ${
+      }\n\nPaket Laundry: ${ord.package.name}\nContent: ${ord.content}\nNote: ${
+        ord.note
+      }\nPickup Date: ${ord.pickup_date}\n\nKupon : ${
         ord.coupon_code || "-"
       }\n====================\n\n_Pesan ini dibuat otomatis oleh sistem Akucuciin_\n_${
         ord.id

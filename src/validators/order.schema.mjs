@@ -19,6 +19,8 @@ const OrderSchema = {
     weight: Joi.number().min(0).required(),
     price: Joi.number().min(0).required(),
     coupon_code: Joi.string().max(25).allow("").optional(),
+    note: Joi.string().max(255).allow("").required(),
+    pickup_date: Joi.string().max(255).required(),
   }),
   updateStatus: Joi.object({
     status: Joi.string()

@@ -35,6 +35,8 @@ const OrderQuery = {
         o.weight ,
         o.price,
         o.coupon_code ,
+        o.note,
+        o.pickup_date,
         o.created_at 
         FROM orders o 
         INNER JOIN customers c ON o.customer_id = c.id
@@ -72,6 +74,8 @@ const OrderQuery = {
         o.weight ,
         o.price,
         o.coupon_code ,
+        o.note,
+        o.pickup_date,
         o.created_at 
         FROM orders o 
         INNER JOIN customers c ON o.customer_id = c.id
@@ -111,6 +115,8 @@ const OrderQuery = {
         o.weight ,
         o.price,
         o.coupon_code ,
+        o.note,
+        o.pickup_date,
         o.created_at 
         FROM orders o 
         INNER JOIN customers c ON o.customer_id = c.id
@@ -132,13 +138,15 @@ const OrderQuery = {
     maps_pinpoint,
     weight,
     price,
-    coupon_code
+    coupon_code,
+    note,
+    pickup_date
   ) {
     const [results] = await db.query(
       `
         INSERT INTO orders
-        (id, customer_id, laundry_partner_id, package_id, content, status, maps_pinpoint, weight, price, coupon_code)
-        VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        (id, customer_id, laundry_partner_id, package_id, content, status, maps_pinpoint, weight, price, coupon_code, note, pickup_date)
+        VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )
     `,
       [
         id,
@@ -151,8 +159,17 @@ const OrderQuery = {
         weight,
         price,
         coupon_code,
+        note,
+        pickup_date,
       ]
     );
+  },
+  isCouponExist: async function (coupon) {
+    const [results] = await db.query(
+      `SELECT * FROM coupons WHERE name = ?`,
+      [coupon]
+    );
+    return results[0];
   },
   updateStatus: async function (order_id, status, weight, price) {
     const [results] = await db.query(
