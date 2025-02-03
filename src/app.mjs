@@ -12,7 +12,6 @@ import "./auth/passport.auth.mjs";
 import AdminRouter from "./routes/admin.route.mjs";
 import LaundryPartnerRouter from "./routes/laundryPartner.route.mjs";
 import OrderRouter from "./routes/order.route.mjs";
-import { startWhatsAppBot } from "./services/whatsapp.service.mjs";
 
 const app = express();
 app.disable("x-powered-by");
@@ -25,8 +24,6 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(passport.initialize());
-
-await startWhatsAppBot();
 
 app.use("/static", express.static("storage"));
 app.use(AdminRouter);

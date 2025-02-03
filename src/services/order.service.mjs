@@ -4,7 +4,6 @@ import formatOrdersFromDb from "../utils/order.utils.mjs";
 import { generateUuidWithPrefix } from "../utils/utils.mjs";
 import OrderSchema from "../validators/order.schema.mjs";
 import validate from "../validators/validator.mjs";
-import { sendMessage } from "./whatsapp.service.mjs";
 
 const OrderService = {
   create: async (req) => {
@@ -41,7 +40,7 @@ const OrderService = {
       timeZone: "Asia/Bangkok",
     });
 
-    await sendMessage(
+    /* await sendMessage(
       `${ord.customer.telephone}@s.whatsapp.net`,
       `*Order anda telah diterima*\n\n==Customer==\nNama: ${
         ord.customer.name
@@ -81,7 +80,7 @@ const OrderService = {
         ord.id
       }_\n\nTanggal: ${ord.created_at_tz}
       `
-    );
+    ); */
 
     return ord;
   },

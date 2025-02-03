@@ -3,7 +3,6 @@ import { uploadPartnerImage } from "../configs/multer.config.mjs";
 import useRateLimiter from "../configs/rateLimiter.config.mjs";
 import AdminController from "../controllers/admin.controller.mjs";
 import authorize from "../middlewares/auth.middleware.mjs";
-
 const AdminRouter = Router();
 
 // Auth
