@@ -178,6 +178,17 @@ const AdminController = {
       next(error);
     }
   },
+  registerDriver: async (req, res, next) => {
+    try {
+      const result = await AdminService.registerDriver(req);
+      return res.status(201).json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
 };
 
 export default AdminController;

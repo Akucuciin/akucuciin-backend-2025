@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import fs from "fs";
 import AdminQuery from "../database/queries/admin.query.mjs";
+import DriverQuery from "../database/queries/driver.query.mjs";
 import LaundryPartnerQuery from "../database/queries/laundryPartner.query.mjs";
 import LaundryPartnerImageQuery from "../database/queries/laundryPartnerImage.query.mjs";
 import OrderQuery from "../database/queries/order.query.mjs";
@@ -14,6 +15,7 @@ import {
   generateUuidWithPrefix,
   lowerAndCapitalizeFirstLetter,
 } from "../utils/utils.mjs";
+import DriverSchema from "../validators/driver.schema.mjs";
 import LaundryPartnerSchema from "../validators/laundryPartner.schema.mjs";
 import OrderSchema from "../validators/order.schema.mjs";
 import validate from "../validators/validator.mjs";
@@ -296,6 +298,30 @@ const AdminService = {
     if (!result.affectedRows) throw new BadRequestError("Failed to update");
 
     return values;
+  },
+  registerDriver: async (req) => {
+    const driver = validate(DriverSchema.register, req.body);
+
+    const isEmailExists = await DriverQuery.isEmailExists(driver.email);
+    if (isEmailExists) throw new BadRequestError("Email sudah terdaftar");
+
+    driver.id = generateUuidWithPrefix("DRIVER");
+    driver.password = await bcrypt.hash(driver.password, 14);
+    driver.city = lowerAndCapitalizeFirstLetter(driver.city);
+
+    await DriverQuery.register(
+      driver.id,
+      driver.name,
+      driver.email,
+      driver.password,
+      driver.telephone,
+      driver.address,
+      driver.city
+    );
+
+    return {
+      id: driver.id,
+    };
   },
 };
 
