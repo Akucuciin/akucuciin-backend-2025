@@ -6,6 +6,7 @@ const authorize = (strategy) => {
       let message = "Unauthorized";
       if (strategy == "customer-jwt") message = "Unauthorized, only customer";
       else if (strategy == "admin-jwt") message = "Unauthorized, only admin";
+      else if (strategy == "driver-jwt") message = "Unauthorized, only driver";
       if (err) {
         return next(err);
       }
