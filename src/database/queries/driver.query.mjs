@@ -42,6 +42,13 @@ const DriverQuery = {
     );
     return results[0].isExist;
   },
+  isValidDriver: async function (id) {
+    const [results] = await db.query(
+      `SELECT count(email) as isExist FROM drivers WHERE id = ?`,
+      [id]
+    );
+    return results[0].isExist;
+  },
   register: async function (
     id,
     name,
