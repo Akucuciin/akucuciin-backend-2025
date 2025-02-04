@@ -22,4 +22,11 @@ DriverRouter.get(
   async (req, res, next) => DriverController.getProfile(req, res, next)
 );
 
+// Order
+DriverRouter.get(
+  "/api/driver/orders",
+  authorize("driver-jwt"),
+  async (req, res, next) => DriverController.getOrdersAssigned(req, res, next)
+);
+
 export default DriverRouter;
