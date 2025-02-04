@@ -113,4 +113,10 @@ AdminRouter.post(
   async (req, res, next) => AdminController.registerDriver(req, res, next)
 );
 
+AdminRouter.put(
+  "/api/admin/driver/:id",
+  authorize("admin-jwt"),
+  async (req, res, next) => AdminController.updateDriver(req, res, next)
+);
+
 export default AdminRouter;

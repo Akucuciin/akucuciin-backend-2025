@@ -189,6 +189,17 @@ const AdminController = {
       next(error);
     }
   },
+  updateDriver: async (req, res, next) => {
+    try {
+      const result = await AdminService.updateDriver(req);
+      return res.status(201).json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
 };
 
 export default AdminController;

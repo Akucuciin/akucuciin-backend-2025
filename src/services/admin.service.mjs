@@ -127,6 +127,13 @@ const AdminService = {
       req.body
     );
 
+    if (updatedLaundryPartner.email) {
+      const isEmailExists = await LaundryPartnerQuery.isEmailExists(
+        updatedLaundryPartner.email
+      );
+      if (isEmailExists) throw new BadRequestError("Email sudah terdaftar");
+    }
+
     const laundryPartner = await LaundryPartnerQuery.getById(id);
     if (!laundryPartner) throw new NotFoundError("Failed laundry not found");
 
@@ -324,6 +331,39 @@ const AdminService = {
     return {
       id: driver.id,
     };
+  },
+  updateDriver: async (req) => {
+    const { id: driver_id } = req.params;
+
+    const updatedDriver = validate(DriverSchema.update, req.body);
+
+    if (updatedDriver.email) {
+      const isEmailExists = await DriverQuery.isEmailExists(updatedDriver.email);
+      if (isEmailExists) throw new BadRequestError("Email sudah terdaftar");
+    }
+
+    const driver = await DriverQuery.getById(driver_id);
+    if (!driver) throw new NotFoundError("Failed, driver not found");
+
+    const values = {
+      name: updatedDriver.name || driver.name,
+      email: updatedDriver.email || driver.email,
+      telephone: updatedDriver.telephone || driver.telephone,
+      address: updatedDriver.address || driver.address,
+      city: updatedDriver.city || driver.city,
+    };
+    values.city = lowerAndCapitalizeFirstLetter(values.city);
+
+    await DriverQuery.update(
+      driver_id,
+      values.name,
+      values.email,
+      values.telephone,
+      values.address,
+      values.city
+    );
+
+    return values;
   },
 };
 
