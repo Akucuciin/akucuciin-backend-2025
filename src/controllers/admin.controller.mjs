@@ -178,6 +178,50 @@ const AdminController = {
       next(error);
     }
   },
+  registerDriver: async (req, res, next) => {
+    try {
+      const result = await AdminService.registerDriver(req);
+      return res.status(201).json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+  updateDriver: async (req, res, next) => {
+    try {
+      const result = await AdminService.updateDriver(req);
+      return res.status(200).json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+  getDrivers: async (req, res, next) => {
+    try {
+      const result = await AdminService.getDrivers(req);
+      return res.status(200).json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+  deleteDriver: async (req, res, next) => {
+    try {
+      const result = await AdminService.deleteDriver(req);
+      return res.status(200).json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
 };
 
 export default AdminController;

@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import fs from "fs";
 import AdminQuery from "../database/queries/admin.query.mjs";
+import DriverQuery from "../database/queries/driver.query.mjs";
 import LaundryPartnerQuery from "../database/queries/laundryPartner.query.mjs";
 import LaundryPartnerImageQuery from "../database/queries/laundryPartnerImage.query.mjs";
 import OrderQuery from "../database/queries/order.query.mjs";
@@ -14,6 +15,7 @@ import {
   generateUuidWithPrefix,
   lowerAndCapitalizeFirstLetter,
 } from "../utils/utils.mjs";
+import DriverSchema from "../validators/driver.schema.mjs";
 import LaundryPartnerSchema from "../validators/laundryPartner.schema.mjs";
 import OrderSchema from "../validators/order.schema.mjs";
 import validate from "../validators/validator.mjs";
@@ -125,12 +127,20 @@ const AdminService = {
       req.body
     );
 
+    if (updatedLaundryPartner.email) {
+      const isEmailExists = await LaundryPartnerQuery.isEmailExists(
+        updatedLaundryPartner.email
+      );
+      if (isEmailExists) throw new BadRequestError("Email sudah terdaftar");
+    }
+
     const laundryPartner = await LaundryPartnerQuery.getById(id);
     if (!laundryPartner) throw new NotFoundError("Failed laundry not found");
 
     const values = {
       id,
       name: updatedLaundryPartner.name || laundryPartner.name,
+      email: updatedLaundryPartner.email || laundryPartner.email,
       description:
         updatedLaundryPartner.description || laundryPartner.description,
       telephone: updatedLaundryPartner.telephone || laundryPartner.telephone,
@@ -146,6 +156,7 @@ const AdminService = {
     values.area = lowerAndCapitalizeFirstLetter(values.area);
 
     await LaundryPartnerQuery.update(
+      values.email,
       values.id,
       values.name,
       values.description,
@@ -296,6 +307,84 @@ const AdminService = {
     if (!result.affectedRows) throw new BadRequestError("Failed to update");
 
     return values;
+  },
+  registerDriver: async (req) => {
+    const driver = validate(DriverSchema.register, req.body);
+
+    const isEmailExists = await DriverQuery.isEmailExists(driver.email);
+    if (isEmailExists) throw new BadRequestError("Email sudah terdaftar");
+
+    driver.id = generateUuidWithPrefix("DRIVER");
+    driver.password = await bcrypt.hash(driver.password, 14);
+    driver.city = lowerAndCapitalizeFirstLetter(driver.city);
+
+    await DriverQuery.register(
+      driver.id,
+      driver.name,
+      driver.email,
+      driver.password,
+      driver.telephone,
+      driver.address,
+      driver.city
+    );
+
+    return {
+      id: driver.id,
+    };
+  },
+  updateDriver: async (req) => {
+    const { id: driver_id } = req.params;
+
+    const updatedDriver = validate(DriverSchema.update, req.body);
+
+    if (updatedDriver.email) {
+      const isEmailExists = await DriverQuery.isEmailExists(
+        updatedDriver.email
+      );
+      if (isEmailExists) throw new BadRequestError("Email sudah terdaftar");
+    }
+
+    const driver = await DriverQuery.getById(driver_id);
+    if (!driver) throw new NotFoundError("Failed, driver not found");
+
+    const values = {
+      name: updatedDriver.name || driver.name,
+      email: updatedDriver.email || driver.email,
+      telephone: updatedDriver.telephone || driver.telephone,
+      address: updatedDriver.address || driver.address,
+      city: updatedDriver.city || driver.city,
+    };
+    values.city = lowerAndCapitalizeFirstLetter(values.city);
+
+    await DriverQuery.update(
+      driver_id,
+      values.name,
+      values.email,
+      values.telephone,
+      values.address,
+      values.city
+    );
+
+    return values;
+  },
+  getDrivers: async (req) => {
+    const drivers = await DriverQuery.getAll();
+
+    for (const driver of drivers) {
+      delete driver.password;
+    }
+
+    return drivers;
+  },
+  deleteDriver: async (req) => {
+    const { id: driver_id } = req.params;
+
+    const driver = await DriverQuery.getById(driver_id);
+    if (!driver) throw new NotFoundError("Failed, driver not found");
+
+    await DriverQuery.deleteById(driver_id);
+
+    return `Driver with id : ${driver_id}, succesfully deleted`;
   },
 };
 

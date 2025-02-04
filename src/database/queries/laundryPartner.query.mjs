@@ -139,6 +139,7 @@ const LaundryPartnerQuery = {
     );
   },
   update: async function (
+    email,
     id,
     name,
     description,
@@ -153,10 +154,11 @@ const LaundryPartnerQuery = {
     const [results] = await db.query(
       `
       UPDATE laundry_partners
-      SET name = ?, address = ?, description = ?, telephone = ?, city = ?, area = ?, latitude = ?, longitude = ?, maps_pinpoint = ?
+      SET email = ?, name = ?, address = ?, description = ?, telephone = ?, city = ?, area = ?, latitude = ?, longitude = ?, maps_pinpoint = ?
       WHERE id = ?
   `,
       [
+        email,
         name,
         address,
         description,
