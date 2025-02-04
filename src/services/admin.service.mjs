@@ -133,6 +133,7 @@ const AdminService = {
     const values = {
       id,
       name: updatedLaundryPartner.name || laundryPartner.name,
+      email: updatedLaundryPartner.email || laundryPartner.email,
       description:
         updatedLaundryPartner.description || laundryPartner.description,
       telephone: updatedLaundryPartner.telephone || laundryPartner.telephone,
@@ -148,6 +149,7 @@ const AdminService = {
     values.area = lowerAndCapitalizeFirstLetter(values.area);
 
     await LaundryPartnerQuery.update(
+      values.email,
       values.id,
       values.name,
       values.description,

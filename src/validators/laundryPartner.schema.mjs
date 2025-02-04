@@ -17,6 +17,7 @@ const LaundryPartnerSchema = {
   }).with("password", "confirm_password"),
   update: Joi.object({
     name: Joi.string().min(1).max(100).allow("").optional(),
+    email: Joi.string().email().allow("").optional(),
     description: Joi.string().min(1).max(500).allow("").optional(),
     telephone: Joi.string().pattern(new RegExp(/^\d+$/)).allow("").optional(),
     address: Joi.string().min(1).max(255).allow("").optional(),
