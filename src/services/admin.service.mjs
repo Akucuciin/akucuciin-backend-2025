@@ -338,7 +338,9 @@ const AdminService = {
     const updatedDriver = validate(DriverSchema.update, req.body);
 
     if (updatedDriver.email) {
-      const isEmailExists = await DriverQuery.isEmailExists(updatedDriver.email);
+      const isEmailExists = await DriverQuery.isEmailExists(
+        updatedDriver.email
+      );
       if (isEmailExists) throw new BadRequestError("Email sudah terdaftar");
     }
 
@@ -364,6 +366,15 @@ const AdminService = {
     );
 
     return values;
+  },
+  getDrivers: async (req) => {
+    const drivers = await DriverQuery.getAll();
+
+    for (const driver of drivers) {
+      delete driver.password;
+    }
+
+    return drivers;
   },
 };
 

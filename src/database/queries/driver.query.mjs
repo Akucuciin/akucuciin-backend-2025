@@ -10,6 +10,14 @@ const DriverQuery = {
     );
     return results[0];
   },
+  getAll: async function () {
+    const [results] = await db.query(
+      `
+      SELECT * FROM drivers
+      `
+    );
+    return results;
+  },
   isEmailExists: async function (email) {
     const [results] = await db.query(
       `SELECT count(email) as isExist FROM drivers WHERE email = ?`,

@@ -192,7 +192,18 @@ const AdminController = {
   updateDriver: async (req, res, next) => {
     try {
       const result = await AdminService.updateDriver(req);
-      return res.status(201).json({
+      return res.status(200).json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+  getDrivers: async (req, res, next) => {
+    try {
+      const result = await AdminService.getDrivers(req);
+      return res.status(200).json({
         success: true,
         data: result,
       });
