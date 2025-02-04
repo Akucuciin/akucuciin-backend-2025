@@ -18,6 +18,15 @@ const DriverQuery = {
     );
     return results[0];
   },
+  getByEmailForAuth: async function (email) {
+    const [results] = await db.query(
+      `
+      SELECT id, email, password FROM drivers WHERE email = ?
+      `,
+      [email]
+    );
+    return results[0];
+  },
   getAll: async function () {
     const [results] = await db.query(
       `

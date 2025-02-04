@@ -10,6 +10,7 @@ import CustomerRouter from "./routes/customer.route.mjs";
 
 import "./auth/passport.auth.mjs";
 import AdminRouter from "./routes/admin.route.mjs";
+import DriverRouter from "./routes/driver.route.mjs";
 import LaundryPartnerRouter from "./routes/laundryPartner.route.mjs";
 import OrderRouter from "./routes/order.route.mjs";
 
@@ -27,6 +28,7 @@ app.use(passport.initialize());
 
 app.use("/static", express.static("storage"));
 app.use(AdminRouter);
+app.use(DriverRouter);
 app.use(CustomerRouter);
 app.use(AuthRouter);
 app.use(LaundryPartnerRouter);
