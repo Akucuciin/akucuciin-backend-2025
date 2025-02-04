@@ -1,6 +1,14 @@
 import db from "../connection.mjs";
 
 const DriverQuery = {
+  deleteById: async function (id) {
+    const [results] = await db.query(
+      `
+      DELETE FROM drivers WHERE id = ?
+      `,
+      [id]
+    );
+  },
   getById: async function (id) {
     const [results] = await db.query(
       `

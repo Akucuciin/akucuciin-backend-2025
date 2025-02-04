@@ -376,6 +376,16 @@ const AdminService = {
 
     return drivers;
   },
+  deleteDriver: async (req) => {
+    const { id: driver_id } = req.params;
+
+    const driver = await DriverQuery.getById(driver_id);
+    if (!driver) throw new NotFoundError("Failed, driver not found");
+
+    await DriverQuery.deleteById(driver_id);
+
+    return `Driver with id : ${driver_id}, succesfully deleted`;
+  },
 };
 
 export default AdminService;

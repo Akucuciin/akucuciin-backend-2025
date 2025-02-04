@@ -125,4 +125,10 @@ AdminRouter.get(
   async (req, res, next) => AdminController.getDrivers(req, res, next)
 );
 
+AdminRouter.delete(
+  "/api/admin/driver/:id",
+  authorize("admin-jwt"),
+  async (req, res, next) => AdminController.deleteDriver(req, res, next)
+);
+
 export default AdminRouter;
