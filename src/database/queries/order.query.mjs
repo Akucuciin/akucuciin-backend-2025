@@ -264,6 +264,17 @@ const OrderQuery = {
     );
     return results;
   },
+  cancelAssignedDriver: async function (order_id) {
+    const [results] = await db.query(
+      `
+      UPDATE orders
+      SET driver_id = NULL
+      WHERE id = ?
+      `,
+      [order_id]
+    );
+    return results;
+  },
 };
 
 export default OrderQuery;

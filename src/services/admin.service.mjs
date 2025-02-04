@@ -294,6 +294,19 @@ const AdminService = {
 
     return `Assigned ${order_id} to driver ${driver_id}`;
   },
+  cancelAssignedDriverOfOrder: async (req) => {
+    const { order_id } = req.params;
+    const order = await OrderQuery.getOrderById(order_id);
+    if (!order) throw new NotFoundError("Failed, order not found");
+    if (order.status === "selesai")
+      throw new BadRequestError(
+        `Failed, order status is already [${order.status}]`
+      );
+
+    await OrderQuery.cancelAssignedDriver(order_id);
+
+    return `${order_id} driver removed`;
+  },
   registerDriver: async (req) => {
     const driver = validate(DriverSchema.register, req.body);
 

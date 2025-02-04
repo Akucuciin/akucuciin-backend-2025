@@ -189,6 +189,17 @@ const AdminController = {
       next(error);
     }
   },
+  cancelAssignedDriverOfOrder: async (req, res, next) => {
+    try {
+      const result = await AdminService.cancelAssignedDriverOfOrder(req);
+      return res.status(200).json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
   registerDriver: async (req, res, next) => {
     try {
       const result = await AdminService.registerDriver(req);
