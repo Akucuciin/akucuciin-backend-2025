@@ -106,6 +106,12 @@ AdminRouter.put(
   async (req, res, next) => AdminController.updateOrderStatus(req, res, next)
 );
 
+AdminRouter.post(
+  "/api/admin/order/:order_id/driver/:driver_id",
+  authorize("admin-jwt"),
+  async (req, res, next) => AdminController.assignOrderToDriver(req, res, next)
+);
+
 // DRIVER
 AdminRouter.post(
   "/api/admin/driver",
@@ -130,5 +136,4 @@ AdminRouter.delete(
   authorize("admin-jwt"),
   async (req, res, next) => AdminController.deleteDriver(req, res, next)
 );
-
 export default AdminRouter;

@@ -1,6 +1,17 @@
 import db from "../connection.mjs";
 
 const OrderQuery = {
+  assignDriver: async function (order_id, driver_id) {
+    const [results] = await db.query(
+      `
+      UPDATE orders
+      SET driver_id = ?
+      WHERE id = ?
+      `,
+      [driver_id, order_id]
+    );
+    return results;
+  },
   getOrderById: async function (order_id) {
     const [results] = await db.query(`SELECT * FROM orders WHERE id = ?`, [
       order_id,
@@ -29,6 +40,10 @@ const OrderQuery = {
         lpp.name AS p_name,
         lpp.price_text AS p_price_text,
         lpp.description AS p_description ,
+        o.driver_id AS d_id,
+        d.name AS d_name,
+        d.email AS d_email,
+        d.telephone AS d_telephone,
         o.content ,
         o.status,
         o.maps_pinpoint,
@@ -42,6 +57,7 @@ const OrderQuery = {
         INNER JOIN customers c ON o.customer_id = c.id
         INNER JOIN laundry_partners lp ON o.laundry_partner_id  = lp.id 
         INNER JOIN laundry_partners_packages lpp ON o.package_id = lpp.id
+        LEFT JOIN drivers d ON o.driver_id = d.id
       `
     );
     return results;
@@ -68,6 +84,10 @@ const OrderQuery = {
         lpp.name AS p_name,
         lpp.price_text AS p_price_text,
         lpp.description AS p_description ,
+        o.driver_id AS d_id,
+        d.name AS d_name,
+        d.email AS d_email,
+        d.telephone AS d_telephone,
         o.content ,
         o.status,
         o.maps_pinpoint,
@@ -81,6 +101,7 @@ const OrderQuery = {
         INNER JOIN customers c ON o.customer_id = c.id
         INNER JOIN laundry_partners lp ON o.laundry_partner_id  = lp.id 
         INNER JOIN laundry_partners_packages lpp ON o.package_id = lpp.id
+        LEFT JOIN drivers d ON o.driver_id = d.id
         WHERE o.customer_id = ?
       `,
       [customer_id]
@@ -109,6 +130,10 @@ const OrderQuery = {
         lpp.name AS p_name,
         lpp.price_text AS p_price_text,
         lpp.description AS p_description ,
+        o.driver_id AS d_id,
+        d.name AS d_name,
+        d.email AS d_email,
+        d.telephone AS d_telephone,
         o.content ,
         o.status,
         o.maps_pinpoint,
@@ -122,6 +147,7 @@ const OrderQuery = {
         INNER JOIN customers c ON o.customer_id = c.id
         INNER JOIN laundry_partners lp ON o.laundry_partner_id  = lp.id 
         INNER JOIN laundry_partners_packages lpp ON o.package_id = lpp.id
+        LEFT JOIN drivers d ON o.driver_id = d.id
         WHERE o.id = ?
       `,
       [orderId]
@@ -165,10 +191,9 @@ const OrderQuery = {
     );
   },
   isCouponExist: async function (coupon) {
-    const [results] = await db.query(
-      `SELECT * FROM coupons WHERE name = ?`,
-      [coupon]
-    );
+    const [results] = await db.query(`SELECT * FROM coupons WHERE name = ?`, [
+      coupon,
+    ]);
     return results[0];
   },
   updateStatus: async function (order_id, status, weight, price) {
@@ -179,6 +204,17 @@ const OrderQuery = {
       WHERE id = ?
       `,
       [status, weight, price, order_id]
+    );
+    return results;
+  },
+  updateStatusByDriver: async function (order_id, status) {
+    const [results] = await db.query(
+      `
+      UPDATE orders
+      SET status = ?
+      WHERE id = ?
+      `,
+      [status, order_id]
     );
     return results;
   },

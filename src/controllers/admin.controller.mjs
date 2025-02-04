@@ -178,6 +178,17 @@ const AdminController = {
       next(error);
     }
   },
+  assignOrderToDriver: async (req, res, next) => {
+    try {
+      const result = await AdminService.assignOrderToDriver(req);
+      return res.status(200).json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
   registerDriver: async (req, res, next) => {
     try {
       const result = await AdminService.registerDriver(req);

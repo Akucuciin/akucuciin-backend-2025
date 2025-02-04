@@ -32,39 +32,7 @@ const AdminService = {
       customer_id
     );
 
-    const customerOrdersFormatted = customerOrders.map((row) => ({
-      id: row.id,
-      content: row.content,
-      status: row.status,
-      maps_pinpoint: row.maps_pinpoint,
-      weight: row.weight,
-      price: row.price,
-      coupon_code: row.coupon_code,
-      created_at: row.created_at,
-      customer: {
-        id: row.c_id,
-        name: row.c_name,
-        email: row.c_email,
-        address: row.c_address,
-        telephone: row.c_telephone,
-      },
-      laundry_partner: {
-        id: row.lp_id,
-        name: row.lp_name,
-        email: row.lp_email,
-        address: row.lp_address,
-        city: row.lp_city,
-        area: row.lp_area,
-        telephone: row.lp_telephone,
-        maps_pinpoint: row.lp_maps_pinpoint,
-      },
-      package: {
-        id: row.p_id,
-        name: row.p_name,
-        price_text: row.p_price_text,
-        description: row.p_description,
-      },
-    }));
+    const customerOrdersFormatted = formatOrdersFromDb(customerOrders);
     return customerOrdersFormatted;
   },
   getLaundryPartners: async (req) => {
@@ -307,6 +275,24 @@ const AdminService = {
     if (!result.affectedRows) throw new BadRequestError("Failed to update");
 
     return values;
+  },
+  assignOrderToDriver: async (req) => {
+    const { driver_id, order_id } = req.params;
+
+    const driver = await DriverQuery.getById(driver_id);
+    if (!driver) throw new NotFoundError("Failed, driver not found");
+    delete driver.password;
+
+    const order = await OrderQuery.getOrderById(order_id);
+    if (!order) throw new NotFoundError("Failed, order not found");
+    if (order.status === "selesai" || order.status === "penjemputan")
+      throw new BadRequestError(
+        `Failed, order status is already [${order.status}]`
+      );
+
+    await OrderQuery.assignDriver(order_id, driver_id);
+
+    return `Assigned ${order_id} to driver ${driver_id}`;
   },
   registerDriver: async (req) => {
     const driver = validate(DriverSchema.register, req.body);

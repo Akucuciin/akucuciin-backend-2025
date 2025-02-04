@@ -33,6 +33,12 @@ const formatOrdersFromDb = function (orders) {
       price_text: row.p_price_text,
       description: row.p_description,
     },
+    driver: {
+      id: row.d_id,
+      name: row.d_name,
+      email: row.d_email,
+      telephone: row.d_telephone,
+    },
   }));
 };
 
