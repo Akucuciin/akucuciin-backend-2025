@@ -36,6 +36,18 @@ const OrderSchema = {
     weight: Joi.number().min(0).allow("").optional(),
     price: Joi.number().min(0).allow("").optional(),
   }),
+  updateStatusByDriver: Joi.object({
+    status: Joi.string()
+      .valid(
+        "pending",
+        "penjemputan",
+        "pencucian",
+        "selesai",
+        "batal",
+        "kesalahan"
+      )
+      .required(),
+  }),
 };
 
 export default OrderSchema;
