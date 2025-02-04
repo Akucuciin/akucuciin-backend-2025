@@ -28,5 +28,10 @@ DriverRouter.get(
   authorize("driver-jwt"),
   async (req, res, next) => DriverController.getOrdersAssigned(req, res, next)
 );
+DriverRouter.put(
+  "/api/driver/order/:id",
+  authorize("driver-jwt"),
+  async (req, res, next) => DriverController.updateOrderStatus(req, res, next)
+);
 
 export default DriverRouter;

@@ -46,6 +46,17 @@ const DriverController = {
       next(error);
     }
   },
+  updateOrderStatus: async (req, res, next) => {
+    try {
+      const result = await DriverService.updateOrderStatus(req);
+      return res.status(200).json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
 };
 
 export default DriverController;
