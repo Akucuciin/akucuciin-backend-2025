@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Verifikasi Akun</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        text-align: center;
+        padding: 20px;
+      }
+      .container {
+        max-width: 600px;
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+      }
+      .button {
+        background: #007bff;
+        color: white;
+        padding: 10px 20px;
+        text-decoration: none;
+        border-radius: 5px;
+        display: inline-block;
+        margin-top: 20px;
+      }
+      .footer {
+        font-size: 12px;
+        color: #666;
+        margin-top: 20px;
+      }
+      img {
+        display: block;
+        margin: 0 auto;
+        border-radius: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Aktivasi Akun AkuCuciin</h2>
+      <p>Terima kasih telah mendaftar di AkuCuciin!</p>
+      <p>
+        Klik tombol di bawah ini untuk memverifikasi akun Anda. Link ini hanya
+        berlaku selama <%= expirationTime %> menit.
+      </p>
+      <a href="<%= verifyLink %>" class="button">Verifikasi Email</a>
+      <p class="footer">
+        Jika Anda tidak mendaftar di AkuCuciin, abaikan email ini.
+      </p>
+    </div>
+  </body>
+</html>

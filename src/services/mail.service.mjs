@@ -1,6 +1,11 @@
+import ejs from "ejs";
+import { dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 import nodemailer from "nodemailer";
-
+import path from "path";
 import AppConfig from "../configs/app.config.mjs";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const sender = `"${AppConfig.MAILER.sender}" <${AppConfig.MAILER.email}>`;
 
@@ -17,17 +22,20 @@ const transporter = nodemailer.createTransport({
 });
 
 const MailService = {
-  sendVerifyEmail: (email, registerToken) => {
+  sendVerifyEmail: async (email, registerToken) => {
+    const emailContent = await ejs.renderFile(
+      path.join(__dirname, "../views/emails/register.ejs"),
+      {
+        verifyLink: `${AppConfig.URL.verifyServer}${email}/${registerToken}`,
+        expirationTime: Number(AppConfig.JWT.verifyRegisterMaxAge) / 60,
+      }
+    );
     var mailOptions;
     mailOptions = {
       from: sender,
       to: email,
       subject: "Aktivasi akun AkuCuciin",
-      html: `<html><body>Please activate your AkuCuciin account. If you feel you are not registered, please ignore this message. Press <a href="${
-        AppConfig.URL.verifyServer
-      }${email}/${registerToken}">Verify Email</a> to verify, only valid for ${
-        AppConfig.JWT.verifyRegisterMaxAge / 60
-      } minutes.</body></html>`,
+      html: emailContent,
     };
 
     transporter.sendMail(mailOptions, (err, info) => {
@@ -38,17 +46,20 @@ const MailService = {
       }
     });
   },
-  sendRequestResetPassword: (email, resetPasswordToken) => {
+  sendRequestResetPassword: async (email, resetPasswordToken) => {
+    const emailContent = await ejs.renderFile(
+      path.join(__dirname, "../views/emails/resetPassword.ejs"),
+      {
+        resetLink: `${AppConfig.URL.requestResetPasswordForm}${email}/${resetPasswordToken}`,
+        expirationTime: Number(AppConfig.JWT.resetPasswordMaxAge) / 60,
+      }
+    );
     var mailOptions;
     mailOptions = {
       from: sender,
       to: email,
       subject: "Permintaan reset password akun AkuCuciin",
-      html: `<html><body>We received a request to reset your password for your Akucuciin account. If you didnt request a password reset, you can safely ignore this email. To reset your password, click the link below: <a href="${
-        AppConfig.URL.requestResetPasswordForm
-      }${email}/${resetPasswordToken}">Reset Password</a>. For security purposes, this link will expire in ${
-        AppConfig.JWT.resetPasswordMaxAge / 60
-      } minutes</body></html>`,
+      html: emailContent,
     };
 
     transporter.sendMail(mailOptions, (err, info) => {

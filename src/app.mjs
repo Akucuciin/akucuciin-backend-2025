@@ -15,6 +15,7 @@ import LaundryPartnerRouter from "./routes/laundryPartner.route.mjs";
 import OrderRouter from "./routes/order.route.mjs";
 
 const app = express();
+app.set("view engine", "ejs");
 app.disable("x-powered-by");
 
 const corsOptions = {
