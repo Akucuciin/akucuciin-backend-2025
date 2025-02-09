@@ -240,6 +240,17 @@ const OrderQuery = {
       ]
     );
   },
+  cancelOrder: async function (order_id) {
+    const [results] = await db.query(
+      `
+      UPDATE orders
+      SET status = "batal"
+      WHERE id = ?
+      `,
+      [order_id]
+    );
+    return results;
+  },
   isCouponExist: async function (coupon) {
     const [results] = await db.query(`SELECT * FROM coupons WHERE name = ?`, [
       coupon,

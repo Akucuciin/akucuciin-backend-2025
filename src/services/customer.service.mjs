@@ -6,6 +6,7 @@ import CustomerQuery from "../database/queries/customer.query.mjs";
 import OrderQuery from "../database/queries/order.query.mjs";
 import {
   AuthenticationError,
+  AuthorizationError,
   BadRequestError,
   NotFoundError,
   TokenInvalidError,
@@ -83,6 +84,26 @@ const CustomerService = {
     const orders = await OrderQuery.getOrdersJoinedByCustomer(req.user.id);
     const ordersFormatted = formatOrdersFromDb(orders);
     return ordersFormatted;
+  },
+  cancelOrder: async (req) => {
+    const { order_id } = req.params;
+    const order = await OrderQuery.getOrderById(order_id);
+    if (!order) throw new NotFoundError("Failed, order not found");
+    if (order.customer_id != req.user.id)
+      throw new AuthorizationError("Failed, order is not yours");
+    if (
+      order.status === "selesai" ||
+      order.status === "penjemputan" ||
+      order.status === "pencucian" ||
+      order.status === "batal"
+    )
+      throw new BadRequestError(
+        `Failed, order status is already [${order.status}]`
+      );
+
+    await OrderQuery.cancelOrder(order_id);
+
+    return `Order ${order_id} cancelled, confirm to whatsapp for more informations`;
   },
   verify: async (req) => {
     const { register_token, email: emailParams } = req.params;

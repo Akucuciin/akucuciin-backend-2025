@@ -71,6 +71,17 @@ const CustomerController = {
       next(error);
     }
   },
+  cancelOrder: async (req, res, next) => {
+    try {
+      const result = await CustomerService.cancelOrder(req);
+      return res.status(200).json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
   verify: async (req, res, next) => {
     try {
       const result = await CustomerService.verify(req);

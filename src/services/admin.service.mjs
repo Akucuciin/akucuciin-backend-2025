@@ -257,6 +257,10 @@ const AdminService = {
     const updated = validate(OrderSchema.updateStatus, req.body);
 
     const order = await OrderQuery.getOrderById(order_id);
+    if (order.status === "batal")
+      throw new BadRequestError(
+        `Failed, order status is already [${order.status}]`
+      );
 
     const values = {
       order_id,
@@ -290,7 +294,8 @@ const AdminService = {
     if (
       order.status === "selesai" ||
       order.status === "penjemputan" ||
-      order.status === "pencucian"
+      order.status === "pencucian" ||
+      order.status === "batal"
     )
       throw new BadRequestError(
         `Failed, order status is already [${order.status}]`

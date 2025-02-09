@@ -33,6 +33,11 @@ CustomerRouter.get(
   authorize("customer-jwt"),
   async (req, res, next) => CustomerController.getOrders(req, res, next)
 );
+CustomerRouter.delete(
+  "/api/customer/order/:order_id",
+  authorize("customer-jwt"),
+  async (req, res, next) => CustomerController.cancelOrder(req, res, next)
+);
 
 CustomerRouter.get(
   "/verify/customer/:email/:register_token",
