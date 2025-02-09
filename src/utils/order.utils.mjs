@@ -3,6 +3,7 @@ const formatOrdersFromDb = function (orders) {
     id: row.id,
     content: row.content,
     status: row.status,
+    status_payment: row.status_payment,
     maps_pinpoint: row.maps_pinpoint,
     weight: row.weight,
     price: row.price,

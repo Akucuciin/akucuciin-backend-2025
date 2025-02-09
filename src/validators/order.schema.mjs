@@ -33,6 +33,7 @@ const OrderSchema = {
         "kesalahan"
       )
       .required(),
+    status_payment: Joi.string().valid("belum bayar", "sudah bayar").required(),
     weight: Joi.number().min(0).allow("").optional(),
     price: Joi.number().min(0).allow("").optional(),
   }),

@@ -46,6 +46,7 @@ const OrderQuery = {
         d.telephone AS d_telephone,
         o.content ,
         o.status,
+        o.status_payment,
         o.maps_pinpoint,
         o.weight ,
         o.price,
@@ -90,6 +91,7 @@ const OrderQuery = {
         d.telephone AS d_telephone,
         o.content ,
         o.status,
+        o.status_payment,
         o.maps_pinpoint,
         o.weight ,
         o.price,
@@ -136,6 +138,7 @@ const OrderQuery = {
         d.telephone AS d_telephone,
         o.content ,
         o.status,
+        o.status_payment,
         o.maps_pinpoint,
         o.weight ,
         o.price,
@@ -182,6 +185,7 @@ const OrderQuery = {
         d.telephone AS d_telephone,
         o.content ,
         o.status,
+        o.status_payment,
         o.maps_pinpoint,
         o.weight ,
         o.price,
@@ -242,14 +246,20 @@ const OrderQuery = {
     ]);
     return results[0];
   },
-  updateStatus: async function (order_id, status, weight, price) {
+  updateStatus: async function (
+    order_id,
+    status,
+    weight,
+    price,
+    status_payment
+  ) {
     const [results] = await db.query(
       `
       UPDATE orders
-      SET status = ?, weight = ?, price = ?
+      SET status = ?, weight = ?, price = ?, status_payment = ?
       WHERE id = ?
       `,
-      [status, weight, price, order_id]
+      [status, weight, price, status_payment, order_id]
     );
     return results;
   },

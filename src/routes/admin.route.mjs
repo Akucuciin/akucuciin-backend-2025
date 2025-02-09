@@ -115,7 +115,8 @@ AdminRouter.post(
 AdminRouter.delete(
   "/api/admin/order/:order_id/driver",
   authorize("admin-jwt"),
-  async (req, res, next) => AdminController.cancelAssignedDriverOfOrder(req, res, next)
+  async (req, res, next) =>
+    AdminController.cancelAssignedDriverOfOrder(req, res, next)
 );
 
 // DRIVER

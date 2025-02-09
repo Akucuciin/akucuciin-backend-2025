@@ -263,13 +263,15 @@ const AdminService = {
       status: updated.status || order.status,
       weight: updated.weight || order.weight,
       price: updated.price || order.price,
+      status_payment: updated.status_payment || order.status_payment,
     };
 
     const result = await OrderQuery.updateStatus(
       values.order_id,
       values.status,
       values.weight,
-      values.price
+      values.price,
+      values.status_payment
     );
 
     if (!result.affectedRows) throw new BadRequestError("Failed to update");
@@ -285,7 +287,11 @@ const AdminService = {
 
     const order = await OrderQuery.getOrderById(order_id);
     if (!order) throw new NotFoundError("Failed, order not found");
-    if (order.status === "selesai" || order.status === "penjemputan")
+    if (
+      order.status === "selesai" ||
+      order.status === "penjemputan" ||
+      order.status === "pencucian"
+    )
       throw new BadRequestError(
         `Failed, order status is already [${order.status}]`
       );
