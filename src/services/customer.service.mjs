@@ -49,6 +49,31 @@ const CustomerService = {
 
     return values;
   },
+  createReferralCode: async (req) => {
+    const { referral_code } = validate(
+      CustomerSchema.createReferralCode,
+      req.body
+    );
+
+    const customer = await CustomerQuery.getCustomerProfileByEmail(
+      req.user.email
+    );
+    if (customer.referral_code) {
+      throw new BadRequestError("Failed, you already have referral code");
+    }
+
+    const isReferralCodeExist = await CustomerQuery.isReferralCodeExist(
+      referral_code
+    );
+    if (isReferralCodeExist)
+      throw new BadRequestError(
+        "Failed, referral code already used by another"
+      );
+
+    await CustomerQuery.createReferralCode(referral_code, req.user.id);
+
+    return `Referral code ${referral_code} created!`;
+  },
   register: async (req) => {
     const newCustomer = validate(CustomerSchema.register, req.body);
 

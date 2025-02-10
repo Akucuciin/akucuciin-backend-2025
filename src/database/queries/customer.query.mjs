@@ -10,6 +10,15 @@ const CustomerQuery = {
     );
     return results;
   },
+  createReferralCode: async function (referral_code, customer_id) {
+    const [results] = await db.query(
+      `
+        UPDATE customers SET referral_code = ? WHERE id = ?
+      `,
+      [referral_code, customer_id]
+    );
+    return results;
+  },
   changePassword: async function (newPassword, email) {
     const [results] = await db.query(
       `
@@ -33,6 +42,7 @@ const CustomerQuery = {
         , name
         , address
         , telephone
+        , referral_code
         , created_at
         , updated_at
        FROM customers WHERE email = ?
@@ -65,6 +75,13 @@ const CustomerQuery = {
     const [results] = await db.query(
       `SELECT count(email) as isExist FROM customers WHERE email = ?`,
       [email]
+    );
+    return results[0].isExist;
+  },
+  isReferralCodeExist: async function (referral_code) {
+    const [results] = await db.query(
+      `SELECT count(referral_code) as isExist FROM customers WHERE referral_code = ?`,
+      [referral_code]
     );
     return results[0].isExist;
   },

@@ -21,6 +21,9 @@ const CustomerSchema = {
     address: Joi.string().min(1).max(255).optional(),
     telephone: Joi.string().pattern(new RegExp(/^\d+$/)).optional(),
   }),
+  createReferralCode: Joi.object({
+    referral_code: Joi.string().min(1).max(20).required(),
+  }),
 };
 
 export default CustomerSchema;
