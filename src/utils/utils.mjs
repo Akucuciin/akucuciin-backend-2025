@@ -1,6 +1,6 @@
 import { nanoid } from "nanoid";
 
-function generateUuidWithPrefix(prefix = "") {
+function generateNanoidWithPrefix(prefix = "") {
   return prefix + "-" + nanoid(21);
 }
 
@@ -9,5 +9,5 @@ function lowerAndCapitalizeFirstLetter(val) {
   return String(val).charAt(0).toUpperCase() + String(val).slice(1);
 }
 
-export { generateUuidWithPrefix, lowerAndCapitalizeFirstLetter };
+export { generateNanoidWithPrefix, lowerAndCapitalizeFirstLetter };
 

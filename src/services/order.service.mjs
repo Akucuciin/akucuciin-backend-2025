@@ -1,7 +1,7 @@
 import OrderQuery from "../database/queries/order.query.mjs";
 import { BadRequestError } from "../errors/customErrors.mjs";
 import formatOrdersFromDb from "../utils/order.utils.mjs";
-import { generateUuidWithPrefix } from "../utils/utils.mjs";
+import { generateNanoidWithPrefix } from "../utils/utils.mjs";
 import OrderSchema from "../validators/order.schema.mjs";
 import validate from "../validators/validator.mjs";
 
@@ -9,7 +9,7 @@ const OrderService = {
   create: async (req) => {
     const order = validate(OrderSchema.create, req.body);
 
-    order.id = generateUuidWithPrefix("ORDER");
+    order.id = generateNanoidWithPrefix("ORDER");
     order.customer_id = req.user.id;
 
     if (order.coupon_code) {

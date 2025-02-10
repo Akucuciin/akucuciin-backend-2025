@@ -12,7 +12,7 @@ import {
 } from "../errors/customErrors.mjs";
 import formatOrdersFromDb from "../utils/order.utils.mjs";
 import {
-  generateUuidWithPrefix,
+  generateNanoidWithPrefix,
   lowerAndCapitalizeFirstLetter,
 } from "../utils/utils.mjs";
 import DriverSchema from "../validators/driver.schema.mjs";
@@ -47,7 +47,7 @@ const AdminService = {
     );
     if (isEmailExists) throw new BadRequestError("Email sudah terdaftar");
 
-    laundryPartner.id = generateUuidWithPrefix("LP");
+    laundryPartner.id = generateNanoidWithPrefix("LP");
     laundryPartner.password = await bcrypt.hash(laundryPartner.password, 12);
     laundryPartner.city = lowerAndCapitalizeFirstLetter(laundryPartner.city);
     laundryPartner.area = lowerAndCapitalizeFirstLetter(laundryPartner.area);
@@ -143,7 +143,7 @@ const AdminService = {
     const { id: laundry_partner_id } = req.params;
     const npackage = validate(LaundryPartnerSchema.addPackage, req.body);
 
-    npackage.id = generateUuidWithPrefix("LPPACKAGES");
+    npackage.id = generateNanoidWithPrefix("LPPACKAGES");
     npackage.laundry_partner_id = laundry_partner_id;
 
     const result = await AdminQuery.addLaundryPartnerPackage(
@@ -221,7 +221,7 @@ const AdminService = {
   },
   addLaundryPartnerImage: async (req) => {
     const { id: laundry_partner_id } = req.params;
-    const id = generateUuidWithPrefix("img");
+    const id = generateNanoidWithPrefix("img");
 
     await LaundryPartnerImageQuery.addImage(
       id,
@@ -324,7 +324,7 @@ const AdminService = {
     const isEmailExists = await DriverQuery.isEmailExists(driver.email);
     if (isEmailExists) throw new BadRequestError("Email sudah terdaftar");
 
-    driver.id = generateUuidWithPrefix("DRIVER");
+    driver.id = generateNanoidWithPrefix("DRIVER");
     driver.password = await bcrypt.hash(driver.password, 14);
     driver.city = lowerAndCapitalizeFirstLetter(driver.city);
 
