@@ -1,7 +1,7 @@
-import { v7 } from "uuid";
+import { nanoid } from "nanoid";
 
 function generateUuidWithPrefix(prefix = "") {
-  return prefix + "-" + v7();
+  return prefix + "-" + nanoid(21);
 }
 
 function lowerAndCapitalizeFirstLetter(val) {
