@@ -1,3 +1,4 @@
+import CustomerQuery from "../database/queries/customer.query.mjs";
 import OrderQuery from "../database/queries/order.query.mjs";
 import { BadRequestError } from "../errors/customErrors.mjs";
 import formatOrdersFromDb from "../utils/order.utils.mjs";
@@ -16,6 +17,13 @@ const OrderService = {
       const coupon = await OrderQuery.isCouponExist(order.coupon_code);
       if (!coupon) throw new BadRequestError("Kupon tidak ditemukan");
     }
+    if (order.referral_code) {
+      const referral_code = await CustomerQuery.isReferralCodeExist(
+        order.referral_code
+      );
+      if (!referral_code)
+        throw new BadRequestError("Kode referral tidak ditemukan");
+    }
 
     await OrderQuery.create(
       order.id,
@@ -29,7 +37,8 @@ const OrderService = {
       order.price,
       order.coupon_code,
       order.note,
-      order.pickup_date
+      order.pickup_date,
+      order.referral_code
     );
 
     const orderFromDb = await OrderQuery.getOrderJoinedById(order.id);

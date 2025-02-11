@@ -59,7 +59,9 @@ const CustomerService = {
       req.user.email
     );
     if (customer.referral_code) {
-      throw new BadRequestError("Failed, you already have referral code");
+      throw new BadRequestError(
+        `Gagal, kamu sudah pernah membuat referral code yaitu [${customer.referral_code}]`
+      );
     }
 
     const isReferralCodeExist = await CustomerQuery.isReferralCodeExist(
@@ -67,7 +69,7 @@ const CustomerService = {
     );
     if (isReferralCodeExist)
       throw new BadRequestError(
-        "Failed, referral code already used by another"
+        "Gagal, referral code sudah dipakai orang lain"
       );
 
     await CustomerQuery.createReferralCode(referral_code, req.user.id);

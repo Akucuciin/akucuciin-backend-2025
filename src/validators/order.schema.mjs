@@ -21,6 +21,7 @@ const OrderSchema = {
     coupon_code: Joi.string().max(25).allow("").optional(),
     note: Joi.string().max(255).allow("").required(),
     pickup_date: Joi.string().max(255).required(),
+    referral_code: Joi.string().max(20).allow("").optional(),
   }),
   updateStatus: Joi.object({
     status: Joi.string()
