@@ -21,6 +21,9 @@ const OrderService = {
       const referral_code = await CustomerQuery.isReferralCodeExist(
         order.referral_code
       );
+      if (!referral_code)
+        throw new BadRequestError("Kode referral tidak ditemukan");
+      
       const customer = await CustomerQuery.getCustomerProfileByEmail(
         req.user.email
       );
@@ -28,8 +31,6 @@ const OrderService = {
         throw new BadRequestError(
           "Gagal, gunakan kode referral selain punya anda"
         );
-      if (!referral_code)
-        throw new BadRequestError("Kode referral tidak ditemukan");
     }
 
     await OrderQuery.create(
