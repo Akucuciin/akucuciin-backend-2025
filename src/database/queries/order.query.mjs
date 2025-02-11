@@ -51,6 +51,7 @@ const OrderQuery = {
         o.weight ,
         o.price,
         o.coupon_code ,
+        o.referral_code ,
         o.note,
         o.pickup_date,
         o.created_at 
@@ -96,6 +97,7 @@ const OrderQuery = {
         o.weight ,
         o.price,
         o.coupon_code ,
+        o.referral_code ,
         o.note,
         o.pickup_date,
         o.created_at 
@@ -143,6 +145,7 @@ const OrderQuery = {
         o.weight ,
         o.price,
         o.coupon_code ,
+        o.referral_code,
         o.note,
         o.pickup_date,
         o.created_at 
@@ -190,6 +193,7 @@ const OrderQuery = {
         o.weight ,
         o.price,
         o.coupon_code ,
+        o.referral_code ,
         o.note,
         o.pickup_date,
         o.created_at 
@@ -216,13 +220,14 @@ const OrderQuery = {
     price,
     coupon_code,
     note,
-    pickup_date
+    pickup_date,
+    referral_code
   ) {
     const [results] = await db.query(
       `
         INSERT INTO orders
-        (id, customer_id, laundry_partner_id, package_id, content, status, maps_pinpoint, weight, price, coupon_code, note, pickup_date)
-        VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )
+        (id, customer_id, laundry_partner_id, package_id, content, status, maps_pinpoint, weight, price, coupon_code, note, pickup_date, referral_code)
+        VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )
     `,
       [
         id,
@@ -237,6 +242,7 @@ const OrderQuery = {
         coupon_code,
         note,
         pickup_date,
+        referral_code,
       ]
     );
   },

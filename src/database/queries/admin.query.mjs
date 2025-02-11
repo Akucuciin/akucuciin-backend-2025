@@ -35,15 +35,24 @@ const AdminQuery = {
     const [results] = await db.query(
       `
       SELECT 
-        id,
-        email,
-        name,
-        address,
-        telephone,
-        isActive,
-        created_at,
-        updated_at
-      FROM customers
+        c.id,
+        c.email,
+        c.name,
+        c.address,
+        c.telephone,
+        c.referral_code,
+        c.created_at,
+        c.updated_at,
+        COALESCE(rc.referral_count, 0) AS referral_code_used
+        FROM customers c
+        LEFT JOIN (
+            SELECT 
+                cz.referral_code, 
+                COUNT(o.id) AS referral_count
+            FROM customers cz
+            LEFT JOIN orders o ON cz.referral_code = o.referral_code
+            GROUP BY cz.referral_code
+        ) rc ON c.referral_code = rc.referral_code
     `
     );
     return results;

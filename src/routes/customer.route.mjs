@@ -16,6 +16,13 @@ CustomerRouter.put(
   async (req, res, next) => CustomerController.updateProfile(req, res, next)
 );
 
+CustomerRouter.post(
+  "/api/customer/referral_code",
+  authorize("customer-jwt"),
+  async (req, res, next) =>
+    CustomerController.createReferralCode(req, res, next)
+);
+
 CustomerRouter.post("/api/customer", async (req, res, next) =>
   CustomerController.register(req, res, next)
 );

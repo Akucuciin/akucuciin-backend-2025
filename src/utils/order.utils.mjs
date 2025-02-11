@@ -8,6 +8,7 @@ const formatOrdersFromDb = function (orders) {
     weight: row.weight,
     price: row.price,
     coupon_code: row.coupon_code,
+    referral_code: row.referral_code,
     created_at: row.created_at,
     note: row.note,
     pickup_date: row.pickup_date,
