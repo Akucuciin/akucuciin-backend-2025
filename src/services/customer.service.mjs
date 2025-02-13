@@ -169,7 +169,7 @@ const CustomerService = {
     const isTokenExist = await AuthQuery.isResetPasswordTokenExist(
       reset_password_token
     );
-    if (!isTokenExist) throw new BadRequestError("Token not exist");
+    if (!isTokenExist) throw new BadRequestError("Token invalid");
 
     const { email: emailFromToken } = TokenService.verifyToken(
       reset_password_token,
