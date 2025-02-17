@@ -75,6 +75,7 @@ const AdminQuery = {
         created_at,
         updated_at
       FROM laundry_partners
+      WHERE is_active = 1
     `
     );
     return results;
