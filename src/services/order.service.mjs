@@ -1,4 +1,5 @@
 import CustomerQuery from "../database/queries/customer.query.mjs";
+import LaundryPartnerQuery from "../database/queries/laundryPartner.query.mjs";
 import OrderQuery from "../database/queries/order.query.mjs";
 import { BadRequestError } from "../errors/customErrors.mjs";
 import formatOrdersFromDb from "../utils/order.utils.mjs";
@@ -23,7 +24,7 @@ const OrderService = {
       );
       if (!referral_code)
         throw new BadRequestError("Kode referral tidak ditemukan");
-      
+
       const customer = await CustomerQuery.getCustomerProfileByEmail(
         req.user.email
       );
@@ -32,6 +33,16 @@ const OrderService = {
           "Gagal, gunakan kode referral selain punya anda"
         );
     }
+
+    const laundry = await LaundryPartnerQuery.getById(order.laundry_partner_id);
+    if (!laundry || !laundry.is_active)
+      throw new BadRequestError("Gagal, laundry tidak ditemukan");
+    const laundryPackages = await LaundryPartnerQuery.getPackageOfPartnerById(
+      order.laundry_partner_id,
+      order.package_id
+    );
+    if (!laundryPackages)
+      throw new BadRequestError("Gagal, paket laundry tidak ditemukan");
 
     await OrderQuery.create(
       order.id,

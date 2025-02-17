@@ -24,7 +24,8 @@ const LaundryPartnerQuery = {
       latitude, 
       longitude,
       created_at,
-      updated_at
+      updated_at,
+      is_active
     FROM laundry_partners
     WHERE id = ?
   `,
@@ -70,7 +71,7 @@ const LaundryPartnerQuery = {
       created_at,
       updated_at
     FROM laundry_partners
-    WHERE city = ?
+    WHERE city = ? AND is_active = 1
   `,
       [city]
     );
