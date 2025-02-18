@@ -11,6 +11,8 @@ const formatOrdersFromDb = function (orders) {
     referral_code: row.referral_code,
     created_at: row.created_at,
     note: row.note,
+    rating: row.rating,
+    review: row.review,
     pickup_date: row.pickup_date,
     customer: {
       id: row.c_id,

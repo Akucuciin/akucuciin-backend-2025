@@ -50,6 +50,10 @@ const OrderSchema = {
       )
       .required(),
   }),
+  giveRatingAndReview: Joi.object({
+    rating: Joi.number().min(0).max(5).required(),
+    review: Joi.string().min(1).max(255).required(),
+  }),
 };
 
 export default OrderSchema;

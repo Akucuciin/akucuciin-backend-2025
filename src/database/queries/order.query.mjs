@@ -54,6 +54,8 @@ const OrderQuery = {
         o.referral_code ,
         o.note,
         o.pickup_date,
+        o.rating,
+        o.review,
         o.created_at 
         FROM orders o 
         INNER JOIN customers c ON o.customer_id = c.id
@@ -100,6 +102,8 @@ const OrderQuery = {
         o.referral_code ,
         o.note,
         o.pickup_date,
+        o.rating,
+        o.review,
         o.created_at 
         FROM orders o 
         INNER JOIN customers c ON o.customer_id = c.id
@@ -148,6 +152,8 @@ const OrderQuery = {
         o.referral_code,
         o.note,
         o.pickup_date,
+        o.rating,
+        o.review,
         o.created_at 
         FROM orders o 
         INNER JOIN customers c ON o.customer_id = c.id
@@ -196,6 +202,8 @@ const OrderQuery = {
         o.referral_code ,
         o.note,
         o.pickup_date,
+        o.rating,
+        o.review,
         o.created_at 
         FROM orders o 
         INNER JOIN customers c ON o.customer_id = c.id
@@ -254,6 +262,17 @@ const OrderQuery = {
       WHERE id = ?
       `,
       [order_id]
+    );
+    return results;
+  },
+  giveRatingAndReview: async function (order_id, rating, review) {
+    const [results] = await db.query(
+      `
+      UPDATE orders
+      SET rating = ?, review = ?
+      WHERE id = ?
+      `,
+      [rating, review, order_id]
     );
     return results;
   },

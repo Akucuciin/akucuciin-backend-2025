@@ -40,6 +40,11 @@ CustomerRouter.get(
   authorize("customer-jwt"),
   async (req, res, next) => CustomerController.getOrders(req, res, next)
 );
+CustomerRouter.post(
+  "/api/customer/order/:order_id/review",
+  authorize("customer-jwt"),
+  async (req, res, next) => CustomerController.giveRatingAndReview(req, res, next)
+);
 CustomerRouter.delete(
   "/api/customer/order/:order_id",
   authorize("customer-jwt"),
