@@ -79,6 +79,17 @@ const CustomerController = {
       next(error);
     }
   },
+  giveRatingAndReview: async (req, res, next) => {
+    try {
+      const result = await CustomerService.giveRatingAndReview(req);
+      return res.status(201).json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
   cancelOrder: async (req, res, next) => {
     try {
       const result = await CustomerService.cancelOrder(req);

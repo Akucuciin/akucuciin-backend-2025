@@ -14,6 +14,7 @@ import {
 import formatOrdersFromDb from "../utils/order.utils.mjs";
 import { generateNanoidWithPrefix } from "../utils/utils.mjs";
 import CustomerSchema from "../validators/customer.schema.mjs";
+import OrderSchema from "../validators/order.schema.mjs";
 import validate from "../validators/validator.mjs";
 import MailService from "./mail.service.mjs";
 import TokenService from "./token.service.mjs";
@@ -111,6 +112,33 @@ const CustomerService = {
     const orders = await OrderQuery.getOrdersJoinedByCustomer(req.user.id);
     const ordersFormatted = formatOrdersFromDb(orders);
     return ordersFormatted;
+  },
+  giveRatingAndReview: async (req) => {
+    const { rating, review } = validate(
+      OrderSchema.giveRatingAndReview,
+      req.body
+    );
+    const { order_id } = req.params;
+    const order = await OrderQuery.getOrderById(order_id);
+    if (!order) throw new NotFoundError("Failed, order not found");
+    if (order.customer_id != req.user.id)
+      throw new AuthorizationError("Failed, order is not yours");
+    if (order.status === "kesalahan" || order.status === "batal")
+      throw new BadRequestError(
+        `Failed, order status is already [${order.status}]`
+      );
+    if (order.status !== "selesai") {
+      throw new BadRequestError(
+        "Failed, order not yet eligible to be reviewed"
+      );
+    }
+    if (order.rating !== 0 && order.review) {
+      throw new BadRequestError("Failed, order already reviewed");
+    }
+
+    await OrderQuery.giveRatingAndReview(order_id, rating, review);
+
+    return "Successfully give rating and review";
   },
   cancelOrder: async (req) => {
     const { order_id } = req.params;
