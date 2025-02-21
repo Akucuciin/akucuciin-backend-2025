@@ -1,3 +1,4 @@
+import CouponQuery from "../database/queries/coupon.query.mjs";
 import CustomerQuery from "../database/queries/customer.query.mjs";
 import LaundryPartnerQuery from "../database/queries/laundryPartner.query.mjs";
 import OrderQuery from "../database/queries/order.query.mjs";
@@ -15,8 +16,22 @@ const OrderService = {
     order.customer_id = req.user.id;
 
     if (order.coupon_code) {
-      const coupon = await OrderQuery.isCouponExist(order.coupon_code);
+      const coupon = await CouponQuery.get(order.coupon_code);
       if (!coupon) throw new BadRequestError("Kupon tidak ditemukan");
+      if (!coupon.is_active) {
+        throw new BadRequestError(
+          `Gagal, Kupon ${order.coupon_code} sudah tidak aktif`
+        );
+      }
+      if (coupon.is_used === 1) {
+        throw new BadRequestError(
+          `Gagal, Kupon ${order.coupon_code} (sekali pakai), sudah pernah digunakan pelanggan lain`
+        );
+      } else if (coupon.is_used === -1) {
+        // Coupon is infinitely used
+      } else if (coupon.is_used === 0) {
+        await CouponQuery.setUsed(order.coupon_code);
+      }
     }
     if (order.referral_code) {
       const referral_code = await CustomerQuery.isReferralCodeExist(
