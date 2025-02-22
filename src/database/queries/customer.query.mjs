@@ -53,6 +53,7 @@ const CustomerQuery = {
                 COUNT(o.id) AS referral_count
             FROM customers cz
             LEFT JOIN orders o ON cz.referral_code = o.referral_code
+            WHERE o.status != "batal"
             GROUP BY cz.referral_code
         ) rc ON c.referral_code = rc.referral_code
         WHERE c.email = ?
