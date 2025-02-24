@@ -247,7 +247,7 @@ const AdminService = {
 
     return "File succesfully deleted";
   },
-  exportOrderToExcel: async (res, req) => {
+  exportOrderToExcel: async (req) => {
     const orders = await OrderQuery.getOrdersForReport();
 
     const workbook = new ExcelJs.Workbook();

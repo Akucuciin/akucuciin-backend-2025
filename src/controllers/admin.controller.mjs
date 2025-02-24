@@ -159,7 +159,7 @@ const AdminController = {
   },
   exportOrderToExcel: async (req, res, next) => {
     try {
-      const workbook = await AdminService.exportOrderToExcel(res, req);
+      const workbook = await AdminService.exportOrderToExcel(req);
 
       const today = new Date();
       const formattedToday = today.toLocaleDateString("en-GB", {
