@@ -18,6 +18,41 @@ const OrderQuery = {
     ]);
     return results[0];
   },
+  getOrdersForReport: async function () {
+    const [results] = await db.query(
+      `
+        SELECT 
+        o.created_at, 
+        o.id,
+        c.name AS c_name,
+        c.email AS c_email,
+        c.address AS c_address,
+        c.telephone AS c_telephone,
+        lp.name AS partner_name,
+        lpp.name AS package_name,
+        lpp.price_text AS harga_paket,
+        d.name AS d_name,
+        o.content ,
+        o.status,
+        o.status_payment,
+        o.maps_pinpoint,
+        o.weight ,
+        o.price,
+        o.coupon_code ,
+        o.referral_code ,
+        o.note,
+        o.pickup_date,
+        o.rating,
+        o.review
+        FROM orders o 
+        INNER JOIN customers c ON o.customer_id = c.id
+        INNER JOIN laundry_partners lp ON o.laundry_partner_id  = lp.id 
+        INNER JOIN laundry_partners_packages lpp ON o.package_id = lpp.id
+        LEFT JOIN drivers d ON o.driver_id = d.id
+      `
+    );
+    return results;
+  },
   getOrdersJoined: async function () {
     const [results] = await db.query(
       `
