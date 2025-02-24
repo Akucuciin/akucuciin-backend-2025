@@ -1,6 +1,8 @@
 import bcrypt from "bcrypt";
+import ExcelJs from "exceljs";
 import fs from "fs";
 import AdminQuery from "../database/queries/admin.query.mjs";
+
 import DriverQuery from "../database/queries/driver.query.mjs";
 import LaundryPartnerQuery from "../database/queries/laundryPartner.query.mjs";
 import LaundryPartnerImageQuery from "../database/queries/laundryPartnerImage.query.mjs";
@@ -244,6 +246,22 @@ const AdminService = {
     await LaundryPartnerImageQuery.deleteImageById(image_id);
 
     return "File succesfully deleted";
+  },
+  exportOrderToExcel: async (res, req) => {
+    const orders = await OrderQuery.getOrdersForReport();
+
+    const workbook = new ExcelJs.Workbook();
+    const worksheet = workbook.addWorksheet("Orders");
+    
+    worksheet.columns = Object.keys(orders[0]).map((key) => ({
+      header: key.toUpperCase(),
+      key: key,
+      width: 25,
+    }));
+
+    worksheet.addRows(orders);
+
+    return workbook;
   },
   getOrdersJoined: async (req) => {
     const orders = await OrderQuery.getOrdersJoined();

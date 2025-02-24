@@ -95,6 +95,12 @@ AdminRouter.delete(
 
 // ORDER
 AdminRouter.get(
+  "/api/admin/orders/excel",
+  authorize("admin-jwt"),
+  async (req, res, next) => AdminController.exportOrderToExcel(req, res, next)
+);
+
+AdminRouter.get(
   "/api/admin/orders",
   authorize("admin-jwt"),
   async (req, res, next) => AdminController.getOrdersJoined(req, res, next)
