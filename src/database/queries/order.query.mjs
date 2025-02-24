@@ -49,6 +49,7 @@ const OrderQuery = {
         INNER JOIN laundry_partners lp ON o.laundry_partner_id  = lp.id 
         INNER JOIN laundry_partners_packages lpp ON o.package_id = lpp.id
         LEFT JOIN drivers d ON o.driver_id = d.id
+        ORDER BY o.created_at ASC
       `
     );
     return results;
