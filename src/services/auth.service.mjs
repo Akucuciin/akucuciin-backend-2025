@@ -4,6 +4,7 @@ import AdminQuery from "../database/queries/admin.query.mjs";
 import AuthQuery from "../database/queries/auth.query.mjs";
 import CustomerQuery from "../database/queries/customer.query.mjs";
 import DriverQuery from "../database/queries/driver.query.mjs";
+import LaundryPartnerQuery from "../database/queries/laundryPartner.query.mjs";
 import { AuthenticationError } from "../errors/customErrors.mjs";
 import AuthSchema from "../validators/auth.schema.mjs";
 import validate from "../validators/validator.mjs";
@@ -70,7 +71,7 @@ const AuthService = {
   },
   loginDriver: async (req) => {
     const credentials = validate(AuthSchema.login, req.body);
-    
+
     const driver = await DriverQuery.getByEmailForAuth(credentials.email);
     if (!driver)
       throw new AuthenticationError("Login gagal, akun tidak ditemukan");
@@ -95,6 +96,38 @@ const AuthService = {
     }
 
     return { accessToken, refreshToken };
+  },
+  LoginLaundryPartner: async (req) => {
+    {
+      const credentials = validate(AuthSchema.login, req.body);
+
+      const partner = await LaundryPartnerQuery.getPartnerForAuth(
+        credentials.email
+      );
+      if (!partner)
+        throw new AuthenticationError("Login gagal, akun tidak ditemukan");
+
+      const isPasswordMatch = await bcrypt.compare(
+        credentials.password,
+        partner.password
+      );
+      if (!isPasswordMatch)
+        throw new AuthenticationError("Login gagal, kredensial salah");
+
+      const { id, email } = partner;
+      const accessToken = TokenService.generateAccessToken(id, email);
+      const refreshToken = TokenService.generateRefreshToken(id, email);
+
+      try {
+        await AuthQuery.addRefreshToken(id, refreshToken);
+      } catch (e) {
+        try {
+          await AuthQuery.updateRefreshTokenLogin(id, refreshToken);
+        } catch (e) {}
+      }
+
+      return { accessToken, refreshToken };
+    }
   },
   logout: async (req) => {
     const { refresh_token: refreshToken } = validate(

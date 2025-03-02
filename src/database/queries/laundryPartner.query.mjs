@@ -53,6 +53,16 @@ const LaundryPartnerQuery = {
     );
     return results[0];
   },
+  getPartnerForAuth: async function (email) {
+    const [results] = await db.query(
+      `
+      SELECT email, password FROM laundry_partners
+      WHERE email = ?
+      `,
+      [email]
+    );
+    return results[0];
+  },
   getPartnersByCity: async function (city) {
     const [results] = await db.query(
       `
