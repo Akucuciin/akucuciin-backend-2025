@@ -4,6 +4,7 @@ import AppConfig from "../configs/app.config.mjs";
 import AdminQuery from "../database/queries/admin.query.mjs";
 import CustomerQuery from "../database/queries/customer.query.mjs";
 import DriverQuery from "../database/queries/driver.query.mjs";
+import LaundryPartnerQuery from "../database/queries/laundryPartner.query.mjs";
 
 var opts = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -52,6 +53,20 @@ passport.use(
     var user = jwtPayload;
     const isValidDriver = await DriverQuery.isValidDriver(user.id);
     if (isValidDriver) return done(null, user);
+    else return done(null, false);
+  })
+);
+
+passport.use(
+  "laundry-partner-jwt",
+  new JwtStrategy(opts, async function (jwtPayload, done) {
+    var expDate = new Date(jwtPayload.exp * 1000);
+    if (expDate < new Date()) {
+      return done(null, false);
+    }
+    var user = jwtPayload;
+    const isValidPartner = await LaundryPartnerQuery.isValidPartner(user.id);
+    if (isValidPartner) return done(null, user);
     else return done(null, false);
   })
 );

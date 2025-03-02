@@ -56,7 +56,7 @@ const LaundryPartnerQuery = {
   getPartnerForAuth: async function (email) {
     const [results] = await db.query(
       `
-      SELECT email, password FROM laundry_partners
+      SELECT id, email, password FROM laundry_partners
       WHERE email = ?
       `,
       [email]
@@ -98,6 +98,13 @@ const LaundryPartnerQuery = {
     const [results] = await db.query(
       `SELECT count(email) as isExist FROM laundry_partners WHERE email = ?`,
       [email]
+    );
+    return results[0].isExist;
+  },
+  isValidPartner: async function (id) {
+    const [results] = await db.query(
+      `SELECT count(id) as isExist FROM laundry_partners WHERE id = ?`,
+      [id]
     );
     return results[0].isExist;
   },
