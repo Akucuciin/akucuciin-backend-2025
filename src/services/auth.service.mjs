@@ -23,7 +23,7 @@ const AuthService = {
       admin.password
     );
     if (!isPasswordMatch)
-      throw new AuthenticationError("Login gagal, kredensial salah");
+      throw new AuthenticationError("Login gagal, email atau password salah");
 
     const { id, email } = admin;
     const accessToken = TokenService.generateAccessToken(id, email);
@@ -53,7 +53,7 @@ const AuthService = {
       customer.password
     );
     if (!isPasswordMatch)
-      throw new AuthenticationError("Login gagal, kredensial salah");
+      throw new AuthenticationError("Login gagal, email atau password salah");
 
     const { id, email } = customer;
     const accessToken = TokenService.generateAccessToken(id, email);
@@ -81,7 +81,7 @@ const AuthService = {
       driver.password
     );
     if (!isPasswordMatch)
-      throw new AuthenticationError("Login gagal, kredensial salah");
+      throw new AuthenticationError("Login gagal, email atau password salah");
 
     const { id, email } = driver;
     const accessToken = TokenService.generateAccessToken(id, email);
