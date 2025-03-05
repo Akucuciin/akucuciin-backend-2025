@@ -62,8 +62,11 @@ CustomerRouter.get(
 CustomerRouter.post("/request-reset-password", async (req, res, next) =>
   CustomerController.requestResetPassword(req, res, next)
 );
-CustomerRouter.post("/resend-verification-email", async (req, res, next) =>
-  CustomerController.resendVerificationEmail(req, res, next)
+CustomerRouter.post(
+  "/resend-verification-email",
+  useRateLimiter(1, 1, "Too many resend, please try again next time"),
+  async (req, res, next) =>
+    CustomerController.resendVerificationEmail(req, res, next)
 );
 CustomerRouter.put(
   "/request-reset-password/customer/:email/:reset_password_token",
