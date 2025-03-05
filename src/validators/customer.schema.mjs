@@ -12,6 +12,9 @@ const CustomerSchema = {
   requestResetPassword: Joi.object({
     email: Joi.string().email().required(),
   }),
+  resendVerificationEmail: Joi.object({
+    email: Joi.string().email().required(),
+  }),
   changePassword: Joi.object({
     password: Joi.string().min(8).required(),
     confirm_password: Joi.ref("password"),
