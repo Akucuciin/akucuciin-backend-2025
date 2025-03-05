@@ -43,7 +43,8 @@ CustomerRouter.get(
 CustomerRouter.post(
   "/api/customer/order/:order_id/review",
   authorize("customer-jwt"),
-  async (req, res, next) => CustomerController.giveRatingAndReview(req, res, next)
+  async (req, res, next) =>
+    CustomerController.giveRatingAndReview(req, res, next)
 );
 CustomerRouter.delete(
   "/api/customer/order/:order_id",
@@ -60,6 +61,9 @@ CustomerRouter.get(
 
 CustomerRouter.post("/request-reset-password", async (req, res, next) =>
   CustomerController.requestResetPassword(req, res, next)
+);
+CustomerRouter.post("/resend-verification-email", async (req, res, next) =>
+  CustomerController.resendVerificationEmail(req, res, next)
 );
 CustomerRouter.put(
   "/request-reset-password/customer/:email/:reset_password_token",

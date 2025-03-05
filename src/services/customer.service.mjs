@@ -186,6 +186,33 @@ const CustomerService = {
     MailService.sendRequestResetPassword(email, resetPasswordToken);
     return `Requested to ${email}`;
   },
+  resendVerificationEmail: async (req) => {
+    const { email } = validate(
+      CustomerSchema.resendVerificationEmail,
+      req.body
+    );
+
+    const customer = await CustomerQuery.getCustomerForAuth(email);
+    if (!customer)
+      throw new NotFoundError(
+        "Gagal mengirim verifikasi, email belum terdaftar"
+      );
+    delete customer.password;
+    if (customer.isActive)
+      throw new BadRequestError(
+        "Gagal mengirim verifikasi, email sudah aktif, silahkan login"
+      );
+
+    const registerToken = TokenService.generateRegisterToken(
+      customer.id,
+      customer.email
+    );
+
+    // TODO Mail Service kirim ulang verifikasi
+    MailService.resendVerifyEmail(email, registerToken);
+
+    return "Email terkirim, silahkan cek email ada, cek juga spam.";
+  },
   changePassword: async (req) => {
     let { password: newPassword } = validate(
       CustomerSchema.changePassword,

@@ -136,6 +136,17 @@ const CustomerController = {
       next(error);
     }
   },
+  resendVerificationEmail: async (req, res, next) => {
+    try {
+      const result = await CustomerService.resendVerificationEmail(req);
+      return res.status(200).json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
   changePassword: async (req, res, next) => {
     try {
       const result = await CustomerService.changePassword(req);
