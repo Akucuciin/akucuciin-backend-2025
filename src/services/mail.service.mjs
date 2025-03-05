@@ -46,6 +46,30 @@ const MailService = {
       }
     });
   },
+  resendVerifyEmail: async (email, registerToken) => {
+    const emailContent = await ejs.renderFile(
+      path.join(__dirname, "../views/emails/resendVerification.ejs"),
+      {
+        verifyLink: `${AppConfig.URL.verifyServer}${email}/${registerToken}`,
+        expirationTime: Number(AppConfig.JWT.verifyRegisterMaxAge) / 60,
+      }
+    );
+    var mailOptions;
+    mailOptions = {
+      from: sender,
+      to: email,
+      subject: "[Resend] Aktivasi akun AkuCuciin",
+      html: emailContent,
+    };
+
+    transporter.sendMail(mailOptions, (err, info) => {
+      if (err) {
+        console.error("Error sending email:", err);
+      } else {
+        console.log("Email sent:", info.response);
+      }
+    });
+  },
   sendRequestResetPassword: async (email, resetPasswordToken) => {
     const emailContent = await ejs.renderFile(
       path.join(__dirname, "../views/emails/resetPassword.ejs"),
