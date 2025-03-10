@@ -20,7 +20,9 @@ const AdminQuery = {
   },
   deleteLaundryPartnerPackage: async function (laundry_partner_id, package_id) {
     const [results] = await db.query(
-      `DELETE FROM laundry_partners_packages WHERE id = ? AND laundry_partner_id = ?`,
+      ` UPDATE laundry_partners_packages
+        SET deleted_at = NOW()
+        WHERE id = ? AND laundry_partner_id = ?`,
       [package_id, laundry_partner_id]
     );
     return results;
