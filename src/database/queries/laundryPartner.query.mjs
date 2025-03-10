@@ -37,7 +37,7 @@ const LaundryPartnerQuery = {
     const [results] = await db.query(
       `
       SELECT id, name, description, features, price_text FROM laundry_partners_packages
-      WHERE laundry_partner_id = ?
+      WHERE laundry_partner_id = ? AND deleted_at IS NULL
       `,
       [laundry_partner_id]
     );
@@ -47,7 +47,7 @@ const LaundryPartnerQuery = {
     const [results] = await db.query(
       `
       SELECT id, name, description, features, price_text FROM laundry_partners_packages
-      WHERE laundry_partner_id = ? AND id = ?
+      WHERE laundry_partner_id = ? AND id = ? AND deleted_at IS NULL
       `,
       [laundry_partner_id, id]
     );
