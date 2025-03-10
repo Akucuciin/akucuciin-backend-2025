@@ -3,7 +3,9 @@ import db from "../connection.mjs";
 const LaundryPartnerQuery = {
   delete: async function (id) {
     const [results] = await db.query(
-      `DELETE FROM laundry_partners WHERE id = ?`,
+      `UPDATE laundry_partners
+        SET is_active = 0 
+        WHERE id = ?`,
       [id]
     );
     return results;
@@ -28,6 +30,7 @@ const LaundryPartnerQuery = {
       is_active
     FROM laundry_partners
     WHERE id = ?
+    AND is_active = 1
   `,
       [id]
     );
@@ -90,6 +93,7 @@ const LaundryPartnerQuery = {
   getPartnersLocations: async function () {
     const [results] = await db.query(`
     SELECT city, area FROM laundry_partners
+    WHERE is_active = 1
     ORDER BY city, area
     `);
     return results;
