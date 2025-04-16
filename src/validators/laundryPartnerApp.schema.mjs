@@ -1,6 +1,6 @@
 import Joi from "joi";
 
-const MitraSchema = {
+const LaundryPartnerAppSchema = {
     updateProfile : Joi.object({
         name: Joi.string().min(1).max(100).allow("").optional(),
         description: Joi.string().min(1).max(500).allow("").optional(),
@@ -14,4 +14,4 @@ const MitraSchema = {
     }),
 }
 
-export default MitraSchema
+export default LaundryPartnerAppSchema
