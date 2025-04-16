@@ -1,6 +1,6 @@
 import { Router } from "express";
 import LaundryPartnerAppController from "../controllers/laundryPartnerApp.mjs";
-import { authorize } from "passport";
+import authorize from "../middlewares/auth.middleware.mjs";
 
 const LaundryPartnerAppRouter = Router();
 

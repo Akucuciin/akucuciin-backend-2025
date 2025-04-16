@@ -13,7 +13,7 @@ const LaundryPartnerAppService = {
   updateProfile: async (req) => {
     const id = req.user.id;
     const email = req.user.email;
-    const updatedProfile = validate(LaundryPartnerAppSchema, req.body);
+    const updatedProfile = validate(LaundryPartnerAppSchema.updateProfile, req.body);
 
     const currentProfile = await LaundryPartnerAppQuery.getProfile(email);
     if (!currentProfile) throw new NotFoundError("Failed, profile not found");
