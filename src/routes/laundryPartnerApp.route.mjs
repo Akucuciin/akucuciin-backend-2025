@@ -12,4 +12,11 @@ LaundryPartnerAppRouter.get(
     }
 )
 
+LaundryPartnerAppRouter.put(
+    "/api/laundry_partner/app/profile",
+    async (req, res, next) => {
+        LaundryPartnerAppController.getProfile(req ,res, next);
+    }
+)
+
 export default LaundryPartnerAppRouter;
