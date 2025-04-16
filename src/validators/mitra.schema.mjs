@@ -1,0 +1,17 @@
+import Joi from "joi";
+
+const MitraSchema = {
+    updateProfile : Joi.object({
+        name: Joi.string().min(1).max(100).allow("").optional(),
+        description: Joi.string().min(1).max(500).allow("").optional(),
+        telephone: Joi.string().pattern(new RegExp(/^\d+$/)).allow("").optional(),
+        address: Joi.string().min(1).max(255).allow("").optional(),
+        maps_pinpoint: Joi.string().allow("").optional(),
+        city: Joi.string().min(1).allow("").optional(),
+        area: Joi.string().min(1).allow("").optional(),
+        latitude: Joi.number().precision(8).allow("").optional(),
+        longitude: Joi.number().precision(8).allow("").optional(),
+    }),
+}
+
+export default MitraSchema

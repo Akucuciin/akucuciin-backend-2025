@@ -17,6 +17,7 @@ const MitraQuery = {
     );
     return results;
   },
+  
 };
 
 export default MitraQuery;
