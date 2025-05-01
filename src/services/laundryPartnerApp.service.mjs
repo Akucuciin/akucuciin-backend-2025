@@ -50,6 +50,13 @@ const LaundryPartnerAppService = {
     
     return values;
   },
+  getOrderById: async (req) => {
+    const {id: order_id} = req.params;
+    const orderById = await LaundryPartnerAppQuery.getOrderById(order_id);
+
+    const orderByIdFormated = formatOrdersFromDb(orderById);
+    return orderByIdFormated;
+  },
 };
 
 export default LaundryPartnerAppService;
