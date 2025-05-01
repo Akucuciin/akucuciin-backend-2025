@@ -1,6 +1,7 @@
 import db from "../connection.mjs";
 
 const LaundryPartnerAppQuery = {
+  //Profile Read and Edit
   getProfile: async function (email) {
     const [results] = await db.query(`SELECT id, name, email, description, telephone, address, maps_pinpoint, city, area, latitude, longitude, created_at, updated_at FROM laundry_partners WHERE email = ?`, [email]);
     return results[0];
@@ -13,6 +14,120 @@ const LaundryPartnerAppQuery = {
     );
     return results;
   },
+
+  //Read Order by Laundry Partner Id, Edit Status Order, Read Order by Order Id
+  getOrderById: async function (orderId) {
+    const [results] = await db.query(
+      `
+        SELECT 
+        o.id,
+        o.customer_id AS c_id,
+        c.name AS c_name,
+        c.email AS c_email,
+        c.address AS c_address,
+        c.telephone AS c_telephone,
+        o.laundry_partner_id AS lp_id,
+        lp.name AS lp_name,
+        lp.email AS lp_email,
+        lp.address AS lp_address,
+        lp.city AS lp_city,
+        lp.area AS lp_area,
+        lp.telephone AS lp_telephone,
+        lp.maps_pinpoint AS lp_maps_pinpoint,
+        o.package_id AS p_id,
+        lpp.name AS p_name,
+        lpp.price_text AS p_price_text,
+        lpp.description AS p_description ,
+        o.driver_id AS d_id,
+        d.name AS d_name,
+        d.email AS d_email,
+        d.telephone AS d_telephone,
+        o.content ,
+        o.status,
+        o.status_payment,
+        o.maps_pinpoint,
+        o.weight ,
+        o.price,
+        o.coupon_code ,
+        o.referral_code ,
+        o.note,
+        o.pickup_date,
+        o.rating,
+        o.review,
+        o.created_at 
+        FROM orders o 
+        INNER JOIN customers c ON o.customer_id = c.id
+        INNER JOIN laundry_partners lp ON o.laundry_partner_id  = lp.id 
+        INNER JOIN laundry_partners_packages lpp ON o.package_id = lpp.id
+        LEFT JOIN drivers d ON o.driver_id = d.id
+        WHERE o.id = ?
+      `,
+      [orderId]
+    );
+    return results;
+  },
+  getOrdersByLaundryPartnerId: async function (laundry_partner_id) {
+    const [results] = await db.query(
+      `
+        SELECT 
+        o.id,
+        o.customer_id AS c_id,
+        c.name AS c_name,
+        c.email AS c_email,
+        c.address AS c_address,
+        c.telephone AS c_telephone,
+        o.laundry_partner_id AS lp_id,
+        lp.name AS lp_name,
+        lp.email AS lp_email,
+        lp.address AS lp_address,
+        lp.city AS lp_city,
+        lp.area AS lp_area,
+        lp.telephone AS lp_telephone,
+        lp.maps_pinpoint AS lp_maps_pinpoint,
+        o.package_id AS p_id,
+        lpp.name AS p_name,
+        lpp.price_text AS p_price_text,
+        lpp.description AS p_description ,
+        o.driver_id AS d_id,
+        d.name AS d_name,
+        d.email AS d_email,
+        d.telephone AS d_telephone,
+        o.content ,
+        o.status,
+        o.status_payment,
+        o.maps_pinpoint,
+        o.weight ,
+        o.price,
+        o.coupon_code ,
+        o.referral_code ,
+        o.note,
+        o.pickup_date,
+        o.rating,
+        o.review,
+        o.created_at 
+        FROM orders o 
+        INNER JOIN customers c ON o.customer_id = c.id
+        INNER JOIN laundry_partners lp ON o.laundry_partner_id  = lp.id 
+        INNER JOIN laundry_partners_packages lpp ON o.package_id = lpp.id
+        LEFT JOIN drivers d ON o.driver_id = d.id
+        WHERE o.laundry_partner_id = ?
+      `,
+      [laundry_partner_id]
+    );
+    return results;
+  },
+  updateStatusOrder: async function (order_id, status, weight, price, status_payment) {
+    const [results] = await db.query(
+      `
+      UPDATE orders
+      SET status = ?, weight = ?, price = ?, status_payment = ?
+      WHERE id = ?
+      `,
+      [status, weight, price, status_payment, order_id]
+    );
+    return results;
+  },
+
 };
 
 export default LaundryPartnerAppQuery;
