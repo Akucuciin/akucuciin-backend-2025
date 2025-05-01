@@ -4,8 +4,10 @@ import validate from "../validators/validator.mjs";
 import { BadRequestError, NotFoundError, ServerError } from "../errors/customErrors.mjs";
 import { generateNanoidWithPrefix, lowerAndCapitalizeFirstLetter } from "../utils/utils.mjs";
 import formatOrdersFromDb from "../utils/order.utils.mjs";
+import OrderSchema from "../validators/order.schema.mjs";
 
 const LaundryPartnerAppService = {
+  //Profile Create and Edit
   getProfile: async (req) => {
     const email = req.user.email;
     const profileLaundryPartner = await LaundryPartnerAppQuery.getProfile(email);
@@ -50,6 +52,7 @@ const LaundryPartnerAppService = {
     
     return values;
   },
+  //Get and Edit Order
   getOrderById: async (req) => {
     const {id: order_id} = req.params;
     const orderById = await LaundryPartnerAppQuery.getOrderById(order_id);
@@ -62,6 +65,36 @@ const LaundryPartnerAppService = {
     const orders = await LaundryPartnerAppQuery.getOrdersByLaundryPartnerId(laundry_partner_id);
     const ordersFormatted = formatOrdersFromDb(orders);
     return ordersFormatted
+  },
+  updateStatusOrder: async (req) => {
+    const { id: order_id } = req.params;
+    const updated = validate(OrderSchema.updateStatus, req.body);
+
+    const order = await LaundryPartnerAppQuery.getOrderById(order_id);
+    if (order.status === "batal")
+      throw new BadRequestError(
+        `Failed, order status is already [${order.status}]`
+      );
+
+    const values = {
+      order_id,
+      status: updated.status || order.status,
+      weight: updated.weight || order.weight,
+      price: updated.price || order.price,
+      status_payment: updated.status_payment || order.status_payment,
+    };
+
+    const result = await LaundryPartnerAppQuery.updateStatusOrder(
+      values.order_id,
+      values.status,
+      values.weight,
+      values.price,
+      values.status_payment
+    );
+
+    if (!result.affectedRows) throw new BadRequestError("Failed to update");
+
+    return values;
   }
 };
 
