@@ -3,6 +3,7 @@ import LaundryPartnerAppSchema from "../validators/laundryPartnerApp.schema.mjs"
 import validate from "../validators/validator.mjs";
 import { BadRequestError, NotFoundError, ServerError } from "../errors/customErrors.mjs";
 import { generateNanoidWithPrefix, lowerAndCapitalizeFirstLetter } from "../utils/utils.mjs";
+import formatOrdersFromDb from "../utils/order.utils.mjs";
 
 const LaundryPartnerAppService = {
   getProfile: async (req) => {
