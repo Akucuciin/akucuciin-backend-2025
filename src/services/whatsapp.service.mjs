@@ -14,13 +14,7 @@ const generateXSignature = (payload) => {
 export const sendOrderCancellationConfirmationToCustomer = async (ord) => {
   const payload = {
     jid: `${ord.customer.telephone}@s.whatsapp.net`,
-    content: `*[Pembatalan Pesanan]*\n\nHalo ${
-      ord.customer.name
-    }, Terima kasih telah menggunakan layanan AkuCuciin.\n\nPesanan anda dengan ID: ${
-      ord.id
-    } berhasil dibatalkan.\n\n====================\n\n_Pesan ini dibuat otomatis oleh sistem AkuCuciin._\nID Pesanan: _${
-      ord.id
-    }`,
+    content: `*[Pembatalan Pesanan]*\n\nHalo ${ord.customer.name}, Terima kasih telah menggunakan layanan AkuCuciin.\n\nPesanan anda dengan ID: _${ord.id}_ berhasil dibatalkan.\n\n====================\n\n_Pesan ini dibuat otomatis oleh sistem AkuCuciin._\nID Pesanan: _${ord.id}_`,
   };
 
   const xSignature = generateXSignature(payload);
