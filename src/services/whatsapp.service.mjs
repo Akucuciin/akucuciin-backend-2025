@@ -31,7 +31,7 @@ export const sendOrderConfirmationToCustomer = async (ord) => {
     jid: `${ord.customer.telephone}@s.whatsapp.net`,
     content: `*[Pesanan Anda Telah Diterima]*\n\nHalo ${
       ord.customer.name
-    },\n\nTerima kasih telah menggunakan layanan AkuCuciin. Berikut adalah detail pg esanan Anda:\n\n== Detail Pesanan ==\n📦 Paket Laundry: ${
+    },\n\nTerima kasih telah menggunakan layanan AkuCuciin. Berikut adalah detail pesanan Anda:\n\n== Detail Pesanan ==\n📦 Paket Laundry: ${
       ord.package.name
     }\n📜 Jenis Laundry: ${ord.content}\n📝 Catatan: ${
       ord.note || "-"
@@ -76,7 +76,7 @@ export const sendOrderConfirmationToLaundry = async (ord) => {
     }, ${ord.laundry_partner.area}, ${
       ord.laundry_partner.city
     }\nNo HP laundry: https://wa.me/${
-      ord.customer.telephone
+      ord.laundry_partner.telephone
     }\n\nPaket Laundry: ${ord.package.name}\nContent: ${ord.content}\nNote: ${
       ord.note || "-"
     }\nPickup Date: ${ord.pickup_date || "-"}\n\nKupon: ${
@@ -90,6 +90,21 @@ export const sendOrderConfirmationToLaundry = async (ord) => {
   const xSignature = generateXSignature(payloadWaLaundry);
 
   await axios.post(`${AppConfig.Whatsapp.SEND_URL}/send`, payloadWaLaundry, {
+    headers: {
+      "X-Signature": xSignature,
+    },
+  });
+};
+
+export const sendOrderAssignedToDriver = async (ord) => {
+  const payload = {
+    jid: `${ord.driver.telephone}@s.whatsapp.net`,
+    content: `*[Assigned]*\n\nHalo ${ord.driver.name},\n\nAnda telah menerima penugasan pesanan baru. Berikut detailnya : \n\n==Customer==\nNama: ${ord.customer.name}\nEmail: ${ord.customer.email}\nAlamat: ${ord.customer.address}Kontak: https://wa.me/${ord.customer.telephone}\nPinpoint: ${ord.maps_pinpoint}\n\n==LAUNDRY==\n${ord.laundry_partner.name}, ${ord.laundry_partner.area}, ${ord.laundry_partner.city}\nKontak laundry: https://wa.me/${ord.customer.telephone}\n\nTerima kasih atas kerjasamanya!, jangan lupa untuk selalu mengecek dashboard driver anda :D\n\n====================\n\n_Pesan ini dikirim otomatis oleh sistem AkuCuciin._`,
+  };
+
+  const xSignature = generateXSignature(payload);
+
+  await axios.post(`${AppConfig.Whatsapp.SEND_URL}/send`, payload, {
     headers: {
       "X-Signature": xSignature,
     },
