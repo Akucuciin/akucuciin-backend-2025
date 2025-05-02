@@ -11,12 +11,33 @@ const generateXSignature = (payload) => {
   return xSignature;
 };
 
+export const sendOrderCancellationConfirmationToCustomer = async (ord) => {
+  const payload = {
+    jid: `${ord.customer.telephone}@s.whatsapp.net`,
+    content: `*[Pembatalan Pesanan]*\n\nHalo ${
+      ord.customer.name
+    }, Terima kasih telah menggunakan layanan AkuCuciin.\n\nPesanan anda dengan ID: ${
+      ord.id
+    } berhasil dibatalkan.\n\n====================\n\n_Pesan ini dibuat otomatis oleh sistem AkuCuciin._\nID Pesanan: _${
+      ord.id
+    }`,
+  };
+
+  const xSignature = generateXSignature(payload);
+
+  await axios.post(`${AppConfig.Whatsapp.SEND_URL}/send`, payload, {
+    headers: {
+      "X-Signature": xSignature,
+    },
+  });
+};
+
 export const sendOrderConfirmationToCustomer = async (ord) => {
   const payloadWaCustomer = {
     jid: `${ord.customer.telephone}@s.whatsapp.net`,
     content: `*[Pesanan Anda Telah Diterima]*\n\nHalo ${
       ord.customer.name
-    },\n\nTerima kasih telah menggunakan layanan AkuCuciin. Berikut adalah detail pesanan Anda:\n\n== Detail Pesanan ==\n📦 Paket Laundry: ${
+    },\n\nTerima kasih telah menggunakan layanan AkuCuciin. Berikut adalah detail pg esanan Anda:\n\n== Detail Pesanan ==\n📦 Paket Laundry: ${
       ord.package.name
     }\n📜 Jenis Laundry: ${ord.content}\n📝 Catatan: ${
       ord.note || "-"

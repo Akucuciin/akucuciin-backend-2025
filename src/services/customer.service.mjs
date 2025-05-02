@@ -18,6 +18,7 @@ import OrderSchema from "../validators/order.schema.mjs";
 import validate from "../validators/validator.mjs";
 import MailService from "./mail.service.mjs";
 import TokenService from "./token.service.mjs";
+import { sendOrderCancellationConfirmationToCustomer } from "./whatsapp.service.mjs";
 
 const CustomerService = {
   getProfile: async (req) => {
@@ -142,23 +143,27 @@ const CustomerService = {
   },
   cancelOrder: async (req) => {
     const { order_id } = req.params;
-    const order = await OrderQuery.getOrderById(order_id);
-    if (!order) throw new NotFoundError("Failed, order not found");
-    if (order.customer_id != req.user.id)
+    const order = await OrderQuery.getOrderJoinedById(order_id);
+
+    if (!order[0]) throw new NotFoundError("Failed, order not found");
+    if (order[0].c_id != req.user.id)
       throw new AuthorizationError("Failed, order is not yours");
     if (
-      order.status === "selesai" ||
-      order.status === "penjemputan" ||
-      order.status === "pencucian" ||
-      order.status === "batal"
+      order[0].status === "selesai" ||
+      order[0].status === "penjemputan" ||
+      order[0].status === "pencucian" ||
+      order[0].status === "batal"
     )
       throw new BadRequestError(
-        `Failed, order status is already [${order.status}]`
+        `Failed, order status is already [${order[0].status}]`
       );
 
     await OrderQuery.cancelOrder(order_id);
 
-    return `Order ${order_id} cancelled, confirm to whatsapp for more informations`;
+    const ord = formatOrdersFromDb(order)[0];
+    sendOrderCancellationConfirmationToCustomer(ord);
+
+    return `Order ${order_id} cancelled.`;
   },
   verify: async (req) => {
     const { register_token, email: emailParams } = req.params;
