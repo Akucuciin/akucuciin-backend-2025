@@ -7,6 +7,10 @@ import formatOrdersFromDb from "../utils/order.utils.mjs";
 import { generateNanoidWithPrefix } from "../utils/utils.mjs";
 import OrderSchema from "../validators/order.schema.mjs";
 import validate from "../validators/validator.mjs";
+import {
+  sendOrderConfirmationToCustomer,
+  sendOrderConfirmationToLaundry,
+} from "./whatsapp.service.mjs";
 
 const OrderService = {
   create: async (req) => {
@@ -83,47 +87,11 @@ const OrderService = {
       timeZone: "Asia/Bangkok",
     });
 
-    /* await sendMessage(
-      `${ord.customer.telephone}@s.whatsapp.net`,
-      `*Order anda telah diterima*\n\n==Customer==\nNama: ${
-        ord.customer.name
-      }\nEmail: ${ord.customer.email}\nAlamat: ${
-        ord.customer.address
-      }\nPinpoint: ${ord.maps_pinpoint}\n\n==LAUNDRY==\n${
-        ord.laundry_partner.name
-      }, ${ord.laundry_partner.area},${
-        ord.laundry_partner.city
-      }\nNo HP laundry: https://wa.me/${
-        ord.laundry_partner.telephone
-      }\n\nPaket Laundry: ${ord.package.name}\nContent: ${ord.content}\nNote: ${
-        ord.note
-      }\nPickup Date: ${ord.pickup_date}\n\nKupon : ${
-        ord.coupon_code || "-"
-      }\n====================\n\n_Pesan ini dibuat otomatis oleh sistem Akucuciin_\n_${
-        ord.id
-      }_\n\nTanggal: ${ord.created_at_tz}
-      `
-    );
+    // Send To Whatsapp - Customer
+    sendOrderConfirmationToCustomer(ord);
 
-    await sendMessage(
-      `${ord.laundry_partner.telephone}@s.whatsapp.net`,
-      `*Order masuk*\n\n==Customer==\nNama: ${ord.customer.name}\nEmail: ${
-        ord.customer.email
-      }\nAlamat: ${ord.customer.address}\nPinpoint: ${
-        ord.maps_pinpoint
-      }\nNo HP Cust: https://wa.me/${ord.customer.telephone}\n\n==LAUNDRY==\n${
-        ord.laundry_partner.name
-      }, ${ord.laundry_partner.area},${ord.laundry_partner.city}\nEmail:  ${
-        ord.laundry_partner.email
-      }\n\nPaket Laundry: ${ord.package.name}\nContent: ${ord.content}\nNote: ${
-        ord.note
-      }\nPickup Date: ${ord.pickup_date}\n\nKupon : ${
-        ord.coupon_code || "-"
-      }\n====================\n\n_Pesan ini dibuat otomatis oleh sistem Akucuciin_\n_${
-        ord.id
-      }_\n\nTanggal: ${ord.created_at_tz}
-      `
-    ); */
+    // Send To Whatsapp - Laundry
+    sendOrderConfirmationToLaundry(ord);
 
     return ord;
   },
