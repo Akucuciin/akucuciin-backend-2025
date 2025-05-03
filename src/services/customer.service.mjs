@@ -152,7 +152,8 @@ const CustomerService = {
       order[0].status === "selesai" ||
       order[0].status === "penjemputan" ||
       order[0].status === "pencucian" ||
-      order[0].status === "batal"
+      order[0].status === "batal" ||
+      order[0].status === "pengantaran"
     )
       throw new BadRequestError(
         `Failed, order status is already [${order[0].status}]`
