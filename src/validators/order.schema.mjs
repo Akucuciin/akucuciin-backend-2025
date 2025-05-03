@@ -12,7 +12,8 @@ const OrderSchema = {
         "pencucian",
         "selesai",
         "batal",
-        "kesalahan"
+        "kesalahan",
+        "pengantaran"
       )
       .required(),
     maps_pinpoint: Joi.string().required(),
@@ -31,7 +32,8 @@ const OrderSchema = {
         "pencucian",
         "selesai",
         "batal",
-        "kesalahan"
+        "kesalahan",
+        "pengantaran"
       )
       .required(),
     status_payment: Joi.string().valid("belum bayar", "sudah bayar").required(),
@@ -46,7 +48,8 @@ const OrderSchema = {
         "pencucian",
         "selesai",
         "batal",
-        "kesalahan"
+        "kesalahan",
+        "pengantaran"
       )
       .required(),
   }),
