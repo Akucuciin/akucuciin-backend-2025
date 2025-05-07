@@ -21,7 +21,7 @@ import DriverSchema from "../validators/driver.schema.mjs";
 import LaundryPartnerSchema from "../validators/laundryPartner.schema.mjs";
 import OrderSchema from "../validators/order.schema.mjs";
 import validate from "../validators/validator.mjs";
-import { sendOrderAssignedToDriver } from "./whatsapp.service.mjs";
+import { sendOrderAssignedPengantaranToDriver, sendOrderAssignedToDriver } from "./whatsapp.service.mjs";
 
 const AdminService = {
   getCustomers: async (req) => {
@@ -297,6 +297,16 @@ const AdminService = {
       values.status_payment
     );
 
+    if (updated.status && updated.status === "pengantaran") {
+      // status is updated, and the updated is 'pengantaran'
+      const _orders = await OrderQuery.getOrderJoinedById(order_id);
+      const _order = _orders[0];
+      const _ord = formatOrdersFromDb(_orders)[0];
+      if (_ord.driver.id) {
+        await sendOrderAssignedPengantaranToDriver(_ord);
+      }
+    }
+
     if (!result.affectedRows) throw new BadRequestError("Failed to update");
 
     return values;
@@ -325,7 +335,7 @@ const AdminService = {
     await OrderQuery.assignDriver(order_id, driver_id);
 
     const ord = formatOrdersFromDb(orders)[0];
-    sendOrderAssignedToDriver(ord);
+    await sendOrderAssignedToDriver(ord);
 
     return `Assigned ${order_id} to driver ${driver_id}`;
   },

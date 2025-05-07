@@ -162,7 +162,7 @@ const CustomerService = {
     await OrderQuery.cancelOrder(order_id);
 
     const ord = formatOrdersFromDb(order)[0];
-    sendOrderCancellationConfirmationToCustomer(ord);
+    await sendOrderCancellationConfirmationToCustomer(ord);
 
     return `Order ${order_id} cancelled.`;
   },

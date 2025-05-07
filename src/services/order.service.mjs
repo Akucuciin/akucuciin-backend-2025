@@ -88,10 +88,10 @@ const OrderService = {
     });
 
     // Send To Whatsapp - Customer
-    sendOrderConfirmationToCustomer(ord);
+    await sendOrderConfirmationToCustomer(ord);
 
     // Send To Whatsapp - Laundry
-    sendOrderConfirmationToLaundry(ord);
+    await sendOrderConfirmationToLaundry(ord);
 
     return ord;
   },
