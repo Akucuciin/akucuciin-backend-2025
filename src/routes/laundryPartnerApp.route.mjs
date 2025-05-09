@@ -43,7 +43,12 @@ LaundryPartnerAppRouter.put(
         LaundryPartnerAppController.updateStatusOrder(req, res, next);
     }
 )
-
-
+LaundryPartnerAppRouter.put(
+    "/api/laundry_partner/app/order/price/:id",
+    authorize("laundry-partner-jwt"),
+    async (req, res, next) => {
+        LaundryPartnerAppController.updatePriceOrder(req, res, next);
+    }
+)
 
 export default LaundryPartnerAppRouter;
