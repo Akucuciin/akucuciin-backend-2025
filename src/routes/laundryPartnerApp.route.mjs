@@ -29,7 +29,7 @@ LaundryPartnerAppRouter.get(
 )
 
 LaundryPartnerAppRouter.get(
-    "/api/laundry_partner/app/orders/:id",
+    "/api/laundry_partner/app/orders",
     authorize("laundry-partner-jwt"),
     async (req, res, next) => {
         LaundryPartnerAppController.getOrdersByLaundryPartnerId(req, res, next)
