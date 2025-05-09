@@ -116,18 +116,28 @@ const LaundryPartnerAppQuery = {
     );
     return results;
   },
-  updateStatusOrder: async function (order_id, status, weight, price, status_payment) {
+  updateStatusOrder: async function (order_id, status, weight) {
     const [results] = await db.query(
       `
       UPDATE orders
-      SET status = ?, weight = ?, price = ?, status_payment = ?
+      SET status = ?, weight = ?
       WHERE id = ?
       `,
-      [status, weight, price, status_payment, order_id]
+      [status, weight, order_id]
     );
     return results;
   },
-
+  updatePriceOrder: async function (order_id, price) {
+    const [results] = await db.query(
+      `
+      UPDATE orders
+      SET price = ?
+      WHERE id = ?
+      `,
+      [price, order_id]
+    );
+    return results;
+  },
 };
 
 export default LaundryPartnerAppQuery;
