@@ -3,7 +3,7 @@ import CustomerQuery from "../database/queries/customer.query.mjs";
 import LaundryPartnerQuery from "../database/queries/laundryPartner.query.mjs";
 import OrderQuery from "../database/queries/order.query.mjs";
 import { BadRequestError } from "../errors/customErrors.mjs";
-import formatOrdersFromDb from "../utils/order.utils.mjs";
+import { formatOrdersFromDb } from "../utils/order.utils.mjs";
 import { generateNanoidWithPrefix } from "../utils/utils.mjs";
 import OrderSchema from "../validators/order.schema.mjs";
 import validate from "../validators/validator.mjs";

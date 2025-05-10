@@ -1,6 +1,9 @@
 import LaundryPartnerAppQuery from "../database/queries/laundryPartnerApp.query.mjs";
 import { BadRequestError } from "../errors/customErrors.mjs";
-import formatOrdersFromDb from "../utils/order.utils.mjs";
+import {
+  formatOrderFromDb,
+  formatOrdersFromDb,
+} from "../utils/order.utils.mjs";
 import LaundryPartnerAppSchema from "../validators/laundryPartnerApp.schema.mjs";
 import validate from "../validators/validator.mjs";
 
@@ -18,11 +21,11 @@ const LaundryPartnerAppService = {
     const { id: order_id } = req.params;
     const orderById = await LaundryPartnerAppQuery.getOrderById(order_id);
 
-    if (orderById[0].lp_id !== req.user.id) {
+    if (orderById.lp_id !== req.user.id) {
       throw new BadRequestError("Access denied. This order is not yours.");
     }
 
-    const orderByIdFormated = formatOrdersFromDb(orderById);
+    const orderByIdFormated = formatOrderFromDb(orderById);
     return orderByIdFormated;
   },
   getOrdersByLaundryPartnerId: async (req) => {
@@ -40,7 +43,7 @@ const LaundryPartnerAppService = {
 
     const order = await LaundryPartnerAppQuery.getOrderById(order_id);
 
-    if (order[0].lp_id !== req.user.id) {
+    if (order.lp_id !== req.user.id) {
       throw new BadRequestError("Access denied. This order is not yours.");
     }
 
@@ -71,7 +74,7 @@ const LaundryPartnerAppService = {
 
     const order = await LaundryPartnerAppQuery.getOrderById(order_id);
 
-    if (order[0].lp_id !== req.user.id) {
+    if (order.lp_id !== req.user.id) {
       throw new BadRequestError("Access denied. This order is not yours.");
     }
 

@@ -55,7 +55,7 @@ const LaundryPartnerAppQuery = {
       `,
       [orderId]
     );
-    return results;
+    return results[0];
   },
   getOrdersByLaundryPartnerId: async function (laundry_partner_id) {
     const [results] = await db.query(

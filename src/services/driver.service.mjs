@@ -5,7 +5,7 @@ import {
   BadRequestError,
   NotFoundError,
 } from "../errors/customErrors.mjs";
-import formatOrdersFromDb from "../utils/order.utils.mjs";
+import { formatOrdersFromDb } from "../utils/order.utils.mjs";
 import OrderSchema from "../validators/order.schema.mjs";
 import validate from "../validators/validator.mjs";
 

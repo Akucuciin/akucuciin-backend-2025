@@ -11,14 +11,17 @@ import {
   NotFoundError,
   TokenInvalidError,
 } from "../errors/customErrors.mjs";
-import formatOrdersFromDb from "../utils/order.utils.mjs";
+import { formatOrdersFromDb } from "../utils/order.utils.mjs";
 import { generateNanoidWithPrefix } from "../utils/utils.mjs";
 import CustomerSchema from "../validators/customer.schema.mjs";
 import OrderSchema from "../validators/order.schema.mjs";
 import validate from "../validators/validator.mjs";
 import MailService from "./mail.service.mjs";
 import TokenService from "./token.service.mjs";
-import { sendOrderCancellationConfirmationToCustomer, sendOrderCancellationConfirmationToLaundry } from "./whatsapp.service.mjs";
+import {
+  sendOrderCancellationConfirmationToCustomer,
+  sendOrderCancellationConfirmationToLaundry,
+} from "./whatsapp.service.mjs";
 
 const CustomerService = {
   getProfile: async (req) => {
