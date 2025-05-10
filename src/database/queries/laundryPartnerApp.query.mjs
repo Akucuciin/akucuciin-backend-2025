@@ -1,20 +1,11 @@
 import db from "../connection.mjs";
 
 const LaundryPartnerAppQuery = {
-  //Profile Read and Edit
+  //Profile Read 
   getProfile: async function (email) {
     const [results] = await db.query(`SELECT id, name, email, description, telephone, address, maps_pinpoint, city, area, latitude, longitude, created_at, updated_at FROM laundry_partners WHERE email = ?`, [email]);
     return results[0];
   },
-  updateProfile: async function (id, name, description, telephone, address, maps_pinpoint, city, area, latitude, longitude) {
-    const [results] = await db.query(
-      `UPDATE laundry_partners SET name = ?, address = ?, description = ?, telephone = ?, city = ?, area = ?, latitude = ?, longitude = ?, maps_pinpoint = ?
-      WHERE id = ?`,
-      [name, address, description, telephone, city, area, latitude, longitude, maps_pinpoint, id]
-    );
-    return results;
-  },
-
   //Read Order by Laundry Partner Id, Edit Status Order, Read Order by Order Id
   getOrderById: async function (orderId) {
     const [results] = await db.query(
