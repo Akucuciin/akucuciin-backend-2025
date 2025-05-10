@@ -10,6 +10,7 @@ const OrderSchema = {
         "pending",
         "penjemputan",
         "pencucian",
+        "pengantaran",
         "selesai",
         "batal",
         "kesalahan",
