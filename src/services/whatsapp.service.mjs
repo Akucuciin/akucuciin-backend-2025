@@ -26,6 +26,21 @@ export const sendOrderCancellationConfirmationToCustomer = async (ord) => {
   });
 };
 
+export const sendOrderCancellationConfirmationToLaundry = async (ord) => {
+  const payload = {
+    jid: `${ord.laundry_partner.telephone}@s.whatsapp.net`,
+    content: `*[Pembatalan Pesanan]*\n\nHalo ${ord.laundry_partner.name},\n\nPesanan customer ${ord.customer.name} dengan ID: _${ord.id}_ dibatalkan oleh customer.\n\n====================\n\n_Pesan ini dibuat otomatis oleh sistem AkuCuciin._\nID Pesanan: _${ord.id}_`,
+  };
+
+  const xSignature = generateXSignature(payload);
+
+  await axios.post(`${AppConfig.Whatsapp.SEND_URL}/send`, payload, {
+    headers: {
+      "X-Signature": xSignature,
+    },
+  });
+};
+
 export const sendOrderConfirmationToCustomer = async (ord) => {
   const payloadWaCustomer = {
     jid: `${ord.customer.telephone}@s.whatsapp.net`,

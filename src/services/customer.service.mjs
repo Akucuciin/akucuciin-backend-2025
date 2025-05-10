@@ -18,7 +18,7 @@ import OrderSchema from "../validators/order.schema.mjs";
 import validate from "../validators/validator.mjs";
 import MailService from "./mail.service.mjs";
 import TokenService from "./token.service.mjs";
-import { sendOrderCancellationConfirmationToCustomer } from "./whatsapp.service.mjs";
+import { sendOrderCancellationConfirmationToCustomer, sendOrderCancellationConfirmationToLaundry } from "./whatsapp.service.mjs";
 
 const CustomerService = {
   getProfile: async (req) => {
@@ -163,6 +163,7 @@ const CustomerService = {
 
     const ord = formatOrdersFromDb(order)[0];
     await sendOrderCancellationConfirmationToCustomer(ord);
+    await sendOrderCancellationConfirmationToLaundry(ord);
 
     return `Order ${order_id} cancelled.`;
   },
