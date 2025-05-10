@@ -12,14 +12,6 @@ LaundryPartnerAppRouter.get(
     }
 )
 
-LaundryPartnerAppRouter.put(
-    "/api/laundry_partner/app/profile",
-    authorize("laundry-partner-jwt"),
-    async (req, res, next) => {
-        LaundryPartnerAppController.updateProfile(req, res, next);
-    }
-)
-
 LaundryPartnerAppRouter.get(
     "/api/laundry_partner/app/order/:id",
     authorize("laundry-partner-jwt"),
