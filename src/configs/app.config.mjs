@@ -49,6 +49,10 @@ const AppConfig = {
       ? process.env.RESET_PASSWORD_FORM_URL
       : process.env.PROD_RESET_PASSWORD_FORM_URL,
   },
+  Whatsapp: {
+    HMAC_SECRET: process.env.HMAC_SECRET,
+    SEND_URL: process.env.SEND_WA_URL,
+  },
 };
 
 export default AppConfig;
