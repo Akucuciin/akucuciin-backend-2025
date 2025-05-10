@@ -4,7 +4,6 @@ import validate from "../validators/validator.mjs";
 import { BadRequestError, NotFoundError } from "../errors/customErrors.mjs";
 import {lowerAndCapitalizeFirstLetter } from "../utils/utils.mjs";
 import formatOrdersFromDb from "../utils/order.utils.mjs";
-import OrderSchema from "../validators/order.schema.mjs";
 
 const LaundryPartnerAppService = {
   //Profile Create and Edit
@@ -73,11 +72,11 @@ const LaundryPartnerAppService = {
   },
   updateStatusOrder: async (req) => {
     const { id: order_id } = req.params;
-    const updated = validate(OrderSchema.updateStatus, req.body);
+    const updated = validate(LaundryPartnerAppSchema.updateStatus, req.body);
 
     const order = await LaundryPartnerAppQuery.getOrderById(order_id);
 
-    if (order.lp_id !== req.user.id) {
+    if (order[0].lp_id !== req.user.id) {
       throw new BadRequestError("Access denied. This order is not yours.");
     }
 
@@ -108,11 +107,11 @@ const LaundryPartnerAppService = {
   },
   updatePriceOrder: async (req) => {
     const { id: order_id } = req.params;
-    const updated = validate(OrderSchema.updateStatus, req.body);
+    const updated = validate(LaundryPartnerAppSchema.updatePrice, req.body);
 
     const order = await LaundryPartnerAppQuery.getOrderById(order_id);
 
-    if (order.lp_id !== req.user.id) {
+    if (order[0].lp_id !== req.user.id) {
       throw new BadRequestError("Access denied. This order is not yours.");
     }
 
