@@ -89,16 +89,12 @@ const LaundryPartnerAppService = {
       order_id,
       status: updated.status || order.status,
       weight: updated.weight || order.weight,
-      price: updated.price || order.price,
-      status_payment: updated.status_payment || order.status_payment,
     };
 
     const result = await LaundryPartnerAppQuery.updateStatusOrder(
       values.order_id,
       values.status,
       values.weight,
-      values.price,
-      values.status_payment
     );
 
     if (!result.affectedRows) throw new BadRequestError("Failed to update");
