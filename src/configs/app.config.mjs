@@ -30,12 +30,15 @@ const AppConfig = {
     password: process.env.MAILER_PASSWORD,
   },
   PAYMENT: {
-    DOKU : {
-      client_id : process.env.DOKU_CLIENT_ID,
-      secret_key : process.env.DOKU_SECRET_KEY,
-      url : process.env.DOKU_URL,
-      callback_url : process.env.DOKU_CALLBACK_URL
-    }
+    DOKU: {
+      clientId: process.env.DOKU_CLIENT_ID,
+      secretKey: process.env.DOKU_SECRET_KEY,
+      url: process.env.DOKU_URL,
+      callback_url: process.env.DOKU_CALLBACK_URL,
+      signature: {
+        requestTarget: process.env.DOKU_SIGNATURE_REQUEST_TARGET,
+      },
+    },
   },
   URL: {
     verifyEmailSuccess: isDevelopment
