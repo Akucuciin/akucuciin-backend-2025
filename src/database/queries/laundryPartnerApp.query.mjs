@@ -39,6 +39,7 @@ const LaundryPartnerAppQuery = {
         o.maps_pinpoint,
         o.weight ,
         o.price,
+        o.price_after,
         o.coupon_code ,
         o.referral_code ,
         o.note,
