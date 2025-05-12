@@ -78,6 +78,12 @@ const LaundryPartnerAppService = {
       throw new BadRequestError("Access denied. This order is not yours.");
     }
 
+    if (order.price_after != 0) {
+      throw new BadRequestError(
+        "Gagal, harga tidak dapat dirubah kembali"
+      );
+    }
+
     if (order.status === "batal" || order.status === "selesai")
       throw new BadRequestError(
         `Failed, order status is already [${order.status}]`
