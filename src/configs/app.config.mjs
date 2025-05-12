@@ -29,6 +29,14 @@ const AppConfig = {
     email: process.env.MAILER_EMAIL,
     password: process.env.MAILER_PASSWORD,
   },
+  PAYMENT: {
+    DOKU : {
+      client_id : process.env.DOKU_CLIENT_ID,
+      secret_key : process.env.DOKU_SECRET_KEY,
+      url : process.env.DOKU_URL,
+      callback_url : process.env.DOKU_CALLBACK_URL
+    }
+  },
   URL: {
     verifyEmailSuccess: isDevelopment
       ? process.env.VERIFY_URL_REDIRECT_SUCCESS
