@@ -9,11 +9,12 @@ import AuthRouter from "./routes/auth.route.mjs";
 import CustomerRouter from "./routes/customer.route.mjs";
 
 import "./auth/passport.auth.mjs";
+import OrderQuery from "./database/queries/order.query.mjs";
 import AdminRouter from "./routes/admin.route.mjs";
 import DriverRouter from "./routes/driver.route.mjs";
 import LaundryPartnerRouter from "./routes/laundryPartner.route.mjs";
-import OrderRouter from "./routes/order.route.mjs";
 import LaundryPartnerAppRouter from "./routes/laundryPartnerApp.route.mjs";
+import OrderRouter from "./routes/order.route.mjs";
 
 const app = express();
 app.set("view engine", "ejs");
@@ -36,6 +37,18 @@ app.use(AuthRouter);
 app.use(LaundryPartnerRouter);
 app.use(LaundryPartnerAppRouter);
 app.use(OrderRouter);
+
+app.post("/api/payment/webhook", async (req, res) => {
+  const notification = req.body;
+  const orderId = notification.order.invoice_number;
+  const status = notification.transaction.status;
+
+  if (status === "SUCCESS") {
+    await OrderQuery.updateStatusPayment(orderId, "sudah bayar");
+    console.log("Pembayaran sukses untuk order", orderId);
+  }
+  res.status(200).send("OK");
+});
 
 app.use(errorHandler);
 

@@ -340,6 +340,17 @@ const OrderQuery = {
     );
     return results;
   },
+  updateStatusPayment: async function (order_id, status_payment) {
+    const [results] = await db.query(
+      `
+      UPDATE orders
+      SET status_payment = ?
+      WHERE id = ?
+      `,
+      [status_payment, order_id]
+    );
+    return results;
+  },
   updateStatusByDriver: async function (order_id, status) {
     const [results] = await db.query(
       `

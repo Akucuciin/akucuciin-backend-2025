@@ -1,4 +1,8 @@
+import axios from "axios";
+import crypto from "crypto";
+import AppConfig from "../configs/app.config.mjs";
 import LaundryPartnerAppQuery from "../database/queries/laundryPartnerApp.query.mjs";
+import OrderQuery from "../database/queries/order.query.mjs";
 import { BadRequestError } from "../errors/customErrors.mjs";
 import {
   formatOrderFromDb,
@@ -6,6 +10,8 @@ import {
 } from "../utils/order.utils.mjs";
 import LaundryPartnerAppSchema from "../validators/laundryPartnerApp.schema.mjs";
 import validate from "../validators/validator.mjs";
+import PaymentService from "./payment.service.mjs";
+import { sendOrderPaymentToCustomer } from "./whatsapp.service.mjs";
 
 const LaundryPartnerAppService = {
   //Profile Create
@@ -78,10 +84,12 @@ const LaundryPartnerAppService = {
       throw new BadRequestError("Access denied. This order is not yours.");
     }
 
+    if (order.weight == 0) {
+      throw new BadRequestError("Gagal, update berat terlebih dahulu");
+    }
+
     if (order.price_after != 0) {
-      throw new BadRequestError(
-        "Gagal, harga tidak dapat dirubah kembali"
-      );
+      throw new BadRequestError("Gagal, harga tidak dapat dirubah kembali");
     }
 
     if (order.status === "batal" || order.status === "selesai")
@@ -101,7 +109,96 @@ const LaundryPartnerAppService = {
 
     if (!result.affectedRows) throw new BadRequestError("Failed to update");
 
-    return values;
+    // ====== DONE UPDATE PRICE, NOW PERFORM PAYMENT !!!! //
+    const ordersJoined = await OrderQuery.getOrderJoinedById(order.id);
+    const orderJoined = ordersJoined[0];
+    const _order = formatOrderFromDb(orderJoined);
+
+    // TODO CALCULATE HARGA
+    const calculatePriceAfter = (_order) => {
+      const price_after = _order.price * 1.25;
+
+      const hasDriver = _order.driver?.id;
+      let service_pay = 0;
+
+      if (hasDriver) {
+        service_pay = _order.price >= 20000 ? 3000 : 4000;
+      } else {
+        service_pay = 1;
+      }
+
+      return { price_after, service_pay };
+    };
+
+    const pricing = calculatePriceAfter(_order);
+    const pricingTotal = pricing.price_after + pricing.service_pay;
+
+    await LaundryPartnerAppQuery.updatePriceAfterOrder(order_id, pricingTotal);
+
+    const payload = {
+      customer: {
+        id: _order.customer.id,
+        name: _order.customer.name,
+        phone: _order.customer.telephone,
+        email: _order.customer.email,
+        address: _order.customer.address,
+        country: "ID",
+      },
+      order: {
+        invoice_number: order_id,
+        amount: parseInt(pricingTotal),
+        currency: "IDR",
+        callback_url: AppConfig.PAYMENT.DOKU.callback_url,
+        language: "ID",
+        line_items: [
+          {
+            name: `Laundry - ${_order.laundry_partner.name}`,
+            price: parseInt(pricing.price_after),
+            quantity: 1,
+          },
+          {
+            name: "Biaya Layanan",
+            price: parseInt(pricing.service_pay),
+            quantity: 1,
+          },
+        ],
+      },
+      payment: {
+        payment_due_date: 1440, // in minutes
+        type: "SALE",
+        payment_method_types: ["QRIS"],
+      },
+      additional_info: {
+        override_notification_url: AppConfig.PAYMENT.DOKU.callback_url,
+      },
+    };
+    const requestId = crypto.randomUUID();
+    const timestamp = new Date().toISOString();
+
+    const headers = {
+      "Content-Type": "application/json",
+      "Client-Id": AppConfig.PAYMENT.DOKU.clientId,
+      "Request-Id": requestId,
+      "Request-Timestamp": timestamp,
+      Signature: PaymentService.Doku.generateSignature(
+        payload,
+        requestId,
+        timestamp
+      ),
+    };
+
+    try {
+      const response = await axios.post(AppConfig.PAYMENT.DOKU.url, payload, {
+        headers,
+      });
+      const paymentLink = response.data.payment.url;
+      await sendOrderPaymentToCustomer(_order, paymentLink);
+      return { url: paymentLink };
+    } catch (err) {
+      console.log(err);
+      throw new BadRequestError(err.response.data.message);
+    }
+    // ====== END PAYMENT //
   },
 };
 

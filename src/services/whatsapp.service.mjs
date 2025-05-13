@@ -11,6 +11,36 @@ const generateXSignature = (payload) => {
   return xSignature;
 };
 
+export const sendOrderAssignedToDriver = async (ord) => {
+  const payload = {
+    jid: `${ord.driver.telephone}@s.whatsapp.net`,
+    content: `*[Assigned]*\n\nHalo ${ord.driver.name},\n\nAnda telah menerima penugasan pesanan baru. Berikut detailnya : \n\n==Customer==\nNama: ${ord.customer.name}\nEmail: ${ord.customer.email}\nAlamat: ${ord.customer.address}Kontak: https://wa.me/${ord.customer.telephone}\nPinpoint: ${ord.maps_pinpoint}\n\n==LAUNDRY==\n${ord.laundry_partner.name}, ${ord.laundry_partner.area}, ${ord.laundry_partner.city}\nKontak laundry: https://wa.me/${ord.customer.telephone}\n\nTerima kasih atas kerjasamanya!, jangan lupa untuk selalu mengecek dashboard driver anda :D\n\n====================\n\n_Pesan ini dikirim otomatis oleh sistem AkuCuciin._`,
+  };
+
+  const xSignature = generateXSignature(payload);
+
+  await axios.post(`${AppConfig.Whatsapp.SEND_URL}/send`, payload, {
+    headers: {
+      "X-Signature": xSignature,
+    },
+  });
+};
+
+export const sendOrderAssignedPengantaranToDriver = async (ord) => {
+  const payload = {
+    jid: `${ord.driver.telephone}@s.whatsapp.net`,
+    content: `*[Assigned : Pengantaran ke Customer]*\n\nHalo ${ord.driver.name},\n\nAnda telah menerima penugasan pesanan baru. Berikut detailnya : \n\n==Customer==\nNama: ${ord.customer.name}\nEmail: ${ord.customer.email}\nAlamat: ${ord.customer.address}Kontak: https://wa.me/${ord.customer.telephone}\nPinpoint: ${ord.maps_pinpoint}\n\n==LAUNDRY==\n${ord.laundry_partner.name}, ${ord.laundry_partner.area}, ${ord.laundry_partner.city}\nKontak laundry: https://wa.me/${ord.customer.telephone}\n\nTerima kasih atas kerjasamanya!, jangan lupa untuk selalu mengecek dashboard driver anda :D\n\n====================\n\n_Pesan ini dikirim otomatis oleh sistem AkuCuciin._`,
+  };
+
+  const xSignature = generateXSignature(payload);
+
+  await axios.post(`${AppConfig.Whatsapp.SEND_URL}/send`, payload, {
+    headers: {
+      "X-Signature": xSignature,
+    },
+  });
+};
+
 export const sendOrderCancellationConfirmationToCustomer = async (ord) => {
   const payload = {
     jid: `${ord.customer.telephone}@s.whatsapp.net`,
@@ -111,25 +141,10 @@ export const sendOrderConfirmationToLaundry = async (ord) => {
   });
 };
 
-export const sendOrderAssignedToDriver = async (ord) => {
+export const sendOrderPaymentToCustomer = async (ord, paymentLink) => {
   const payload = {
-    jid: `${ord.driver.telephone}@s.whatsapp.net`,
-    content: `*[Assigned]*\n\nHalo ${ord.driver.name},\n\nAnda telah menerima penugasan pesanan baru. Berikut detailnya : \n\n==Customer==\nNama: ${ord.customer.name}\nEmail: ${ord.customer.email}\nAlamat: ${ord.customer.address}Kontak: https://wa.me/${ord.customer.telephone}\nPinpoint: ${ord.maps_pinpoint}\n\n==LAUNDRY==\n${ord.laundry_partner.name}, ${ord.laundry_partner.area}, ${ord.laundry_partner.city}\nKontak laundry: https://wa.me/${ord.customer.telephone}\n\nTerima kasih atas kerjasamanya!, jangan lupa untuk selalu mengecek dashboard driver anda :D\n\n====================\n\n_Pesan ini dikirim otomatis oleh sistem AkuCuciin._`,
-  };
-
-  const xSignature = generateXSignature(payload);
-
-  await axios.post(`${AppConfig.Whatsapp.SEND_URL}/send`, payload, {
-    headers: {
-      "X-Signature": xSignature,
-    },
-  });
-};
-
-export const sendOrderAssignedPengantaranToDriver = async (ord) => {
-  const payload = {
-    jid: `${ord.driver.telephone}@s.whatsapp.net`,
-    content: `*[Assigned : Pengantaran ke Customer]*\n\nHalo ${ord.driver.name},\n\nAnda telah menerima penugasan pesanan baru. Berikut detailnya : \n\n==Customer==\nNama: ${ord.customer.name}\nEmail: ${ord.customer.email}\nAlamat: ${ord.customer.address}Kontak: https://wa.me/${ord.customer.telephone}\nPinpoint: ${ord.maps_pinpoint}\n\n==LAUNDRY==\n${ord.laundry_partner.name}, ${ord.laundry_partner.area}, ${ord.laundry_partner.city}\nKontak laundry: https://wa.me/${ord.customer.telephone}\n\nTerima kasih atas kerjasamanya!, jangan lupa untuk selalu mengecek dashboard driver anda :D\n\n====================\n\n_Pesan ini dikirim otomatis oleh sistem AkuCuciin._`,
+    jid: `${ord.customer.telephone}@s.whatsapp.net`,
+    content: `*[PEMBAYARAN]*\n\nHalo ${ord.customer.name}\n\nSilahkan lakukan pembayaran untuk pesanan anda dengan rincian:\nID: ${ord.id}\nLink Pembayaran: ${paymentLink}\n\n====================\n\n_Pesan ini dikirim otomatis oleh sistem AkuCuciin._`,
   };
 
   const xSignature = generateXSignature(payload);
