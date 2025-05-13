@@ -144,7 +144,7 @@ const LaundryPartnerAppService = {
         country: "ID",
       },
       order: {
-        invoice_number: order_id,
+        invoice_number: `${_order.laundry_partner.name}::${order_id}`, // name::orderId separator
         amount: parseInt(pricingTotal),
         currency: "IDR",
         callback_url: AppConfig.PAYMENT.DOKU.callback_url,
