@@ -148,6 +148,7 @@ const LaundryPartnerAppService = {
         amount: parseInt(pricingTotal),
         currency: "IDR",
         callback_url: AppConfig.PAYMENT.DOKU.callback_url,
+        callback_url_result: "https://akucuciin.com",
         language: "ID",
         line_items: [
           {
