@@ -114,7 +114,6 @@ const LaundryPartnerAppService = {
     const orderJoined = ordersJoined[0];
     const _order = formatOrderFromDb(orderJoined);
 
-    // TODO CALCULATE HARGA
     const calculatePriceAfter = (_order) => {
       const price_after = _order.price * 1.25;
 
