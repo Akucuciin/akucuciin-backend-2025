@@ -144,14 +144,17 @@ const LaundryPartnerAppService = {
         country: "ID",
       },
       order: {
-        invoice_number: `${_order.laundry_partner.name}::${order_id}`, // name::orderId separator
+        invoice_number: `${_order.laundry_partner.name.replace(
+          /[^a-zA-Z0-9]/g,
+          ""
+        )}::${order_id}`, // name::orderId separator
         amount: parseInt(pricingTotal),
         currency: "IDR",
         callback_url_result: "https://akucuciin.com",
         language: "ID",
         line_items: [
           {
-            name: `Laundry - ${_order.laundry_partner.name}`,
+            name: `Laundry ${_order.weight} kg - ${_order.laundry_partner.name}`,
             price: parseInt(pricing.price_after),
             quantity: 1,
           },
@@ -195,7 +198,9 @@ const LaundryPartnerAppService = {
       return { url: paymentLink };
     } catch (err) {
       console.log(err);
-      throw new BadRequestError(err.response.data.message || "Error Creating Payment");
+      throw new BadRequestError(
+        err.response.data.message || "Error Creating Payment"
+      );
     }
     // ====== END PAYMENT //
   },
