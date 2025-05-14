@@ -11,7 +11,6 @@ import {
   NotFoundError,
   TokenInvalidError,
 } from "../errors/customErrors.mjs";
-import { formatOrdersFromDb } from "../utils/order.utils.mjs";
 import { generateNanoidWithPrefix } from "../utils/utils.mjs";
 import CustomerSchema from "../validators/customer.schema.mjs";
 import OrderSchema from "../validators/order.schema.mjs";
@@ -116,6 +115,23 @@ const CustomerService = {
     const orders = await OrderQuery.getOrdersJoinedByCustomer(req.user.id);
     const ordersFormatted = formatOrdersFromDb(orders);
     return ordersFormatted;
+  },
+  payOrder: async (req) => {
+    const { order_id } = req.params;
+    let order = await OrderQuery.getOrderJoinedById(order_id);
+    order = order[0];
+
+    if (!order) throw new NotFoundError("Failed, order not found");
+    if (order.c_id != req.user.id)
+      throw new AuthorizationError("Failed, order is not yours");
+
+    if (order.price == 0 && order.price_after == 0)
+      throw new BadRequestError("Failed, order not ready to pay yet");
+
+    if (!order.payment_link)
+      throw new BadRequestError("Failed, order doesnt have a payment link yet");
+
+    return { url: order.payment_link };
   },
   giveRatingAndReview: async (req) => {
     const { rating, review } = validate(
