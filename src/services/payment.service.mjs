@@ -1,29 +1,62 @@
 import crypto from "crypto";
 import AppConfig from "../configs/app.config.mjs";
 
+function generateDigest(jsonBody) {
+  let jsonStringHash256 = crypto
+    .createHash("sha256")
+    .update(jsonBody, "utf-8")
+    .digest();
+
+  let bufferFromJsonStringHash256 = Buffer.from(jsonStringHash256);
+  return bufferFromJsonStringHash256.toString("base64");
+}
+
+function generateSignatureDoku(
+  clientId,
+  requestId,
+  requestTimestamp,
+  requestTarget,
+  digest,
+  secret
+) {
+  // Prepare Signature Component
+  let componentSignature = "Client-Id:" + clientId;
+  componentSignature += "\n";
+  componentSignature += "Request-Id:" + requestId;
+  componentSignature += "\n";
+  componentSignature += "Request-Timestamp:" + requestTimestamp;
+  componentSignature += "\n";
+  componentSignature += "Request-Target:" + requestTarget;
+  // If body not send when access API with HTTP method GET/DELETE
+  if (digest) {
+    componentSignature += "\n";
+    componentSignature += "Digest:" + digest;
+  }
+
+  // Calculate HMAC-SHA256 base64 from all the components above
+  let hmac256Value = crypto
+    .createHmac("sha256", secret)
+    .update(componentSignature.toString())
+    .digest();
+
+  let bufferFromHmac256Value = Buffer.from(hmac256Value);
+  let signature = bufferFromHmac256Value.toString("base64");
+  // Prepend encoded result with algorithm info HMACSHA256=
+  return "HMACSHA256=" + signature;
+}
+
 const PaymentService = {
   Doku: {
-    generateSignature: (body, requestId, timestamp) => {
-      const rawBody = JSON.stringify(body);
-      const digestHash = crypto
-        .createHash("sha256")
-        .update(rawBody)
-        .digest("base64");
-
-      const signatureString = [
-        `Client-Id:${AppConfig.PAYMENT.DOKU.clientId}`,
-        `Request-Id:${requestId}`,
-        `Request-Timestamp:${timestamp}`,
-        `Request-Target:${AppConfig.PAYMENT.DOKU.signature.requestTarget}`,
-        `Digest:${digestHash}`,
-      ].join("\n");
-
-      const hmacSignature = crypto
-        .createHmac("sha256", AppConfig.PAYMENT.DOKU.secretKey)
-        .update(signatureString)
-        .digest("base64");
-
-      return `HMACSHA256=${hmacSignature}`;
+    generateSignature: (rawBody, requestId, timestamp) => {
+      const digestHash = generateDigest(rawBody);
+      return generateSignatureDoku(
+        AppConfig.PAYMENT.DOKU.clientId,
+        requestId,
+        timestamp,
+        AppConfig.PAYMENT.DOKU.signature.requestTarget,
+        digestHash,
+        AppConfig.PAYMENT.DOKU.secretKey
+      );
     },
   },
 };
