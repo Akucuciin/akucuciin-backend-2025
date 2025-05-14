@@ -327,6 +327,17 @@ const OrderQuery = {
     ]);
     return results[0];
   },
+  updatePaymentLinkOrder: async function (order_id, payment_link) {
+    const [results] = await db.query(
+      `
+      UPDATE orders
+      SET payment_link = ?
+      WHERE id = ?
+      `,
+      [payment_link, order_id]
+    );
+    return results;
+  },
   updateStatus: async function (
     order_id,
     status,
