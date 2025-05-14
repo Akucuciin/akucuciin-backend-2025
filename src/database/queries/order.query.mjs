@@ -44,7 +44,8 @@ const OrderQuery = {
         o.note,
         o.pickup_date,
         o.rating,
-        o.review
+        o.review,
+        o.payment_link
         FROM orders o 
         INNER JOIN customers c ON o.customer_id = c.id
         INNER JOIN laundry_partners lp ON o.laundry_partner_id  = lp.id 
@@ -94,6 +95,7 @@ const OrderQuery = {
         o.pickup_date,
         o.rating,
         o.review,
+        o.payment_link,
         o.created_at 
         FROM orders o 
         INNER JOIN customers c ON o.customer_id = c.id
@@ -143,6 +145,7 @@ const OrderQuery = {
         o.pickup_date,
         o.rating,
         o.review,
+        o.payment_link,
         o.created_at 
         FROM orders o 
         INNER JOIN customers c ON o.customer_id = c.id
@@ -245,6 +248,7 @@ const OrderQuery = {
         o.pickup_date,
         o.rating,
         o.review,
+        o.payment_link,
         o.created_at 
         FROM orders o 
         INNER JOIN customers c ON o.customer_id = c.id

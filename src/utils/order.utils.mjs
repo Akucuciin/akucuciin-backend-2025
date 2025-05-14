@@ -15,6 +15,7 @@ export const formatOrdersFromDb = function (orders) {
     rating: row.rating,
     review: row.review,
     pickup_date: row.pickup_date,
+    payment_link: row.payment_link,
     customer: {
       id: row.c_id,
       name: row.c_name,
@@ -64,6 +65,7 @@ export const formatOrderFromDb = function (row) {
     rating: row.rating,
     review: row.review,
     pickup_date: row.pickup_date,
+    payment_link: row.payment_link,
     customer: {
       id: row.c_id,
       name: row.c_name,
