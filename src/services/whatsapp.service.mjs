@@ -144,7 +144,7 @@ export const sendOrderConfirmationToLaundry = async (ord) => {
 export const sendOrderPaymentToCustomer = async (ord, paymentLink) => {
   const payload = {
     jid: `${ord.customer.telephone}@s.whatsapp.net`,
-    content: `*[PEMBAYARAN]*\n\nHalo ${ord.customer.name}\n\nSilahkan lakukan pembayaran untuk pesanan anda dengan rincian:\nID: ${ord.id}\nLink Pembayaran: ${paymentLink}\n\n====================\n\n_Pesan ini dikirim otomatis oleh sistem AkuCuciin._`,
+    content: `*[PEMBAYARAN]*\n\nHalo ${ord.customer.name}\n\nSilahkan lakukan pembayaran untuk pesanan anda dengan rincian:\nID: ${ord.id}\nLink Pembayaran:\n${paymentLink}\n\nLink pembayaran juga dapat dilihat di dashboard anda di: https://akucuciin.com/order \n\n====================\n\n_Pesan ini dikirim otomatis oleh sistem AkuCuciin._`,
   };
 
   const xSignature = generateXSignature(payload);
