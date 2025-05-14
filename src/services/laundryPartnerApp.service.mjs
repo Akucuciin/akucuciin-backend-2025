@@ -123,7 +123,7 @@ const LaundryPartnerAppService = {
       if (hasDriver) {
         service_pay = _order.price >= 20000 ? 3000 : 4000;
       } else {
-        service_pay = 1;
+        service_pay = 1000;
       }
 
       return { price_after, service_pay };
@@ -147,7 +147,6 @@ const LaundryPartnerAppService = {
         invoice_number: `${_order.laundry_partner.name}::${order_id}`, // name::orderId separator
         amount: parseInt(pricingTotal),
         currency: "IDR",
-        callback_url: AppConfig.PAYMENT.DOKU.callback_url,
         callback_url_result: "https://akucuciin.com",
         language: "ID",
         line_items: [
@@ -173,15 +172,15 @@ const LaundryPartnerAppService = {
       },
     };
     const requestId = crypto.randomUUID();
-    const timestamp = new Date().toISOString();
+    const timestamp = new Date().toISOString().split(".")[0] + "Z";
 
+    const rawBody = JSON.stringify(payload);
     const headers = {
-      "Content-Type": "application/json",
       "Client-Id": AppConfig.PAYMENT.DOKU.clientId,
       "Request-Id": requestId,
       "Request-Timestamp": timestamp,
       Signature: PaymentService.Doku.generateSignature(
-        payload,
+        rawBody,
         requestId,
         timestamp
       ),
@@ -191,12 +190,12 @@ const LaundryPartnerAppService = {
       const response = await axios.post(AppConfig.PAYMENT.DOKU.url, payload, {
         headers,
       });
-      const paymentLink = response.data.payment.url;
+      const paymentLink = response.data.response.payment.url;
       await sendOrderPaymentToCustomer(_order, paymentLink);
       return { url: paymentLink };
     } catch (err) {
       console.log(err);
-      throw new BadRequestError(err.response.data.message);
+      throw new BadRequestError(err.response.data.message || "Error Creating Payment");
     }
     // ====== END PAYMENT //
   },
