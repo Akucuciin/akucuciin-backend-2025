@@ -194,6 +194,7 @@ const LaundryPartnerAppService = {
         headers,
       });
       const paymentLink = response.data.response.payment.url;
+      await OrderQuery.updatePaymentLinkOrder(_order.id, paymentLink);
       await sendOrderPaymentToCustomer(_order, paymentLink);
       return { url: paymentLink };
     } catch (err) {
