@@ -34,9 +34,12 @@ const AppConfig = {
       clientId: process.env.DOKU_CLIENT_ID,
       secretKey: process.env.DOKU_SECRET_KEY,
       url: process.env.DOKU_URL,
+      checkStatusUrl: process.env.DOKU_CHECK_STATUS_URL,
       callback_url: process.env.DOKU_CALLBACK_URL,
       signature: {
         requestTarget: process.env.DOKU_SIGNATURE_REQUEST_TARGET,
+        checkStatusRequestTarget:
+          process.env.DOKU_SIGNATURE_CHECK_STATUS_REQUEST_TARGET,
       },
     },
   },
