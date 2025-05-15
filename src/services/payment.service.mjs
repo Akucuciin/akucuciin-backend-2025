@@ -1,6 +1,6 @@
 import crypto from "crypto";
 import AppConfig from "../configs/app.config.mjs";
-import { generateOrderIdForPayment } from "../utils/order.utils.mjs";
+import { generateInvoiceNumberForPayment } from "../utils/order.utils.mjs";
 
 function generateDigest(jsonBody) {
   let jsonStringHash256 = crypto
@@ -62,7 +62,7 @@ const PaymentService = {
     generateSignatureWithoutDigest: (requestId, timestamp, _order) => {
       const requestTarget = `${
         AppConfig.PAYMENT.DOKU.signature.checkStatusRequestTarget
-      }/${generateOrderIdForPayment(_order.laundry_partner.name, _order.id)}`;
+      }/${generateInvoiceNumberForPayment(_order.laundry_partner.name, _order.id)}`;
 
       return generateSignatureDoku(
         AppConfig.PAYMENT.DOKU.clientId,
