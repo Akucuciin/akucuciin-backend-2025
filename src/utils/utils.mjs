@@ -1,7 +1,12 @@
-import { nanoid } from "nanoid";
+import { customAlphabet } from "nanoid";
+
+const nanoid = customAlphabet(
+  "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
+  21
+);
 
 function generateNanoidWithPrefix(prefix = "") {
-  return prefix + "-" + nanoid(21);
+  return prefix + "-" + nanoid();
 }
 
 function lowerAndCapitalizeFirstLetter(val) {
