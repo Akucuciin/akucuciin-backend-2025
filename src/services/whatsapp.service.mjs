@@ -144,13 +144,13 @@ export const sendOrderConfirmationToLaundry = async (ord) => {
 export const sendNewOrderPaymentToCustomer = async (ord, paymentLink) => {
   const payload = {
     jid: `${ord.customer.telephone}@s.whatsapp.net`,
-    content: `*[PEMBAYARAN - UPDATED]*\n\nHalo ${
+    content: `*🧾 [UPDATED - INFORMASI PEMBAYARAN]*\n\nHalo ${
       ord.customer.name
-    }\nLink pembayaran diperbaharui, silahkan lakukan pembayaran di link tertera\nLink hanya berlaku selama ${parseFloat(
+    },\nLink pembayaran diperbaharui, silakan selesaikan pembayaran untuk pesanan kamu melalui link berikut:\n\n🔗 Link Pembayaran (aktif selama ${parseFloat(
       (AppConfig.PAYMENT.DOKU.expiredTime / 60).toFixed(2)
-    )} jam\n\nID:\n${
+    )} jam)\n${paymentLink}\n\n🆔 ID Pesanan:\n${
       ord.id
-    }\n\nLink Pembayaran:\n${paymentLink}\n\nLink pembayaran juga dapat dilihat di dashboard anda di: https://akucuciin.com/order\n\nJika link kadaluwarsa, silahkan kunjungi dashboard order anda dan klik "Pay" / "Bayar" untuk mendapatkan link baru\n\n====================\n\n_Pesan ini dikirim otomatis oleh sistem AkuCuciin._`,
+    }\n\nKamu juga bisa melihat status dan melakukan pembayaran ulang (jika link kadaluarsa) melalui dashboard:\n🌐 https://akucuciin.com/order\n\n📌 Jika link sudah tidak aktif, silakan buka dashboard dan klik tombol "Pay" / "Bayar" untuk mendapatkan link baru.\n\n====================\n\n_Pesan ini dikirim otomatis oleh sistem AkuCuciin._`,
   };
 
   const xSignature = generateXSignature(payload);
@@ -165,13 +165,13 @@ export const sendNewOrderPaymentToCustomer = async (ord, paymentLink) => {
 export const sendOrderPaymentToCustomer = async (ord, paymentLink) => {
   const payload = {
     jid: `${ord.customer.telephone}@s.whatsapp.net`,
-    content: `*[PEMBAYARAN]*\n\nHalo ${
+    content: `*🧾 [INFORMASI PEMBAYARAN]*\n\nHalo ${
       ord.customer.name
-    }\nSilahkan lakukan pembayaran di link tertera\nLink hanya berlaku selama ${parseFloat(
+    },\nSilakan selesaikan pembayaran untuk pesanan kamu melalui link berikut:\n\n🔗 Link Pembayaran (aktif selama ${parseFloat(
       (AppConfig.PAYMENT.DOKU.expiredTime / 60).toFixed(2)
-    )} jam\n\nID:\n${
+    )} jam)\n${paymentLink}\n\n🆔 ID Pesanan:\n${
       ord.id
-    }\n\nLink Pembayaran:\n${paymentLink}\n\nLink pembayaran juga dapat dilihat di dashboard anda di: https://akucuciin.com/order\n\nJika link kadaluwarsa, silahkan kunjungi dashboard order anda dan klik "Pay" / "Bayar" untuk mendapatkan link baru\n\n====================\n\n_Pesan ini dikirim otomatis oleh sistem AkuCuciin._`,
+    }\n\nKamu juga bisa melihat status dan melakukan pembayaran ulang (jika link kadaluarsa) melalui dashboard:\n🌐 https://akucuciin.com/order\n\n📌 Jika link sudah tidak aktif, silakan buka dashboard dan klik tombol "Pay" / "Bayar" untuk mendapatkan link baru.\n\n====================\n_Pesan ini dikirim otomatis oleh sistem AkuCuciin._`,
   };
 
   const xSignature = generateXSignature(payload);
@@ -186,7 +186,7 @@ export const sendOrderPaymentToCustomer = async (ord, paymentLink) => {
 export const sendOrderPaymentCompletedToCustomer = async (ord) => {
   const payload = {
     jid: `${ord.customer.telephone}@s.whatsapp.net`,
-    content: `*[PEMBAYARAN SUKSES]*\n\nHalo ${ord.customer.name}\nPembayaran untuk ${ord.id} berhasil\nTerimakasih telah menggunakan layanan Akucuciin\n\n====================\n\n_Pesan ini dikirim otomatis oleh sistem AkuCuciin._`,
+    content: `*✅ [PEMBAYARAN SUKSES]*\n\nHalo ${ord.customer.name}!\nPembayaran untuk pesanan kamu dengan ID ${ord.id} telah berhasil diproses. 🧾✅\nTerimakasih telah menggunakan layanan Akucuciin!\nKami akan segera memproses pesanan kamu dan mengabari jika ada pembaruan status.\n🧺 Stay clean, stay fresh!\n\n====================\n\n_Pesan ini dikirim otomatis oleh sistem AkuCuciin._`,
   };
 
   const xSignature = generateXSignature(payload);

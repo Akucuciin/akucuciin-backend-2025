@@ -11,14 +11,13 @@ WebhookRouter.post("/api/payment/webhook", async (req, res) => {
   const [name, orderId, unique] = rawInvoice.split("::"); // name::orderId::unique
   const status = notification.transaction.status;
 
-  const ordersJoined = await OrderQuery.getOrderJoinedById(orderId);
-  const orderJoined = ordersJoined[0];
-  const _order = formatOrderFromDb(orderJoined);
-
-  await sendOrderPaymentCompletedToCustomer(_order);
-
   if (status === "SUCCESS") {
     await OrderQuery.updateStatusPayment(orderId, "sudah bayar");
+    const ordersJoined = await OrderQuery.getOrderJoinedById(orderId);
+    const orderJoined = ordersJoined[0];
+    const _order = formatOrderFromDb(orderJoined);
+
+    await sendOrderPaymentCompletedToCustomer(_order);
     console.log("Pembayaran sukses untuk order", orderId);
   }
 
