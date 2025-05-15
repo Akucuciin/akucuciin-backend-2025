@@ -157,13 +157,14 @@ const CustomerService = {
     const checkStatusUrl = `${
       AppConfig.PAYMENT.DOKU.checkStatusUrl
     }/${generateInvoiceNumberForPayment(_order.laundry_partner.name, _order.id)}`;
-
     try {
       const response = await axios.get(checkStatusUrl, {
         headers,
       });
       const transactionStatus = response.data.transaction.status;
+      console.log(response.data);
     } catch (err) {
+      console.log(err.response.data);
       throw new BadRequestError(
         err.response.data.message || "Error Getting Order Payment Status"
       );
