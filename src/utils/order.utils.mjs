@@ -1,3 +1,5 @@
+import { customAlphabet } from "nanoid";
+
 export const formatOrdersFromDb = function (orders) {
   return orders.map((row) => ({
     id: row.id,
@@ -15,6 +17,7 @@ export const formatOrdersFromDb = function (orders) {
     rating: row.rating,
     review: row.review,
     pickup_date: row.pickup_date,
+    payment_link: row.payment_link,
     customer: {
       id: row.c_id,
       name: row.c_name,
@@ -64,6 +67,7 @@ export const formatOrderFromDb = function (row) {
     rating: row.rating,
     review: row.review,
     pickup_date: row.pickup_date,
+    payment_link: row.payment_link,
     customer: {
       id: row.c_id,
       name: row.c_name,
@@ -94,4 +98,13 @@ export const formatOrderFromDb = function (row) {
       telephone: row.d_telephone,
     },
   };
+};
+
+// this will be invoice_number for doku payment
+export const generateInvoiceNumberForPayment = (partnerName, id) => {
+  const nanoid = customAlphabet(
+    "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
+    6
+  );
+  return `${partnerName.replace(/[^a-zA-Z0-9]/g, "")}::${id}::${nanoid()}`;
 };

@@ -141,10 +141,52 @@ export const sendOrderConfirmationToLaundry = async (ord) => {
   });
 };
 
+export const sendNewOrderPaymentToCustomer = async (ord, paymentLink) => {
+  const payload = {
+    jid: `${ord.customer.telephone}@s.whatsapp.net`,
+    content: `*[PEMBAYARAN - UPDATED]*\n\nHalo ${
+      ord.customer.name
+    }\nLink pembayaran diperbaharui, silahkan lakukan pembayaran di link tertera\nLink hanya berlaku selama ${parseFloat(
+      (AppConfig.PAYMENT.DOKU.expiredTime / 60).toFixed(2)
+    )} jam\n\nID:\n${
+      ord.id
+    }\n\nLink Pembayaran:\n${paymentLink}\n\nLink pembayaran juga dapat dilihat di dashboard anda di: https://akucuciin.com/order\n\nJika link kadaluwarsa, silahkan kunjungi dashboard order anda dan klik "Pay" / "Bayar" untuk mendapatkan link baru\n\n====================\n\n_Pesan ini dikirim otomatis oleh sistem AkuCuciin._`,
+  };
+
+  const xSignature = generateXSignature(payload);
+
+  await axios.post(`${AppConfig.Whatsapp.SEND_URL}/send`, payload, {
+    headers: {
+      "X-Signature": xSignature,
+    },
+  });
+};
+
 export const sendOrderPaymentToCustomer = async (ord, paymentLink) => {
   const payload = {
     jid: `${ord.customer.telephone}@s.whatsapp.net`,
-    content: `*[PEMBAYARAN]*\n\nHalo ${ord.customer.name}\n\nSilahkan lakukan pembayaran untuk pesanan anda dengan rincian:\nID: ${ord.id}\nLink Pembayaran:\n${paymentLink}\n\nLink pembayaran juga dapat dilihat di dashboard anda di: https://akucuciin.com/order \n\n====================\n\n_Pesan ini dikirim otomatis oleh sistem AkuCuciin._`,
+    content: `*[PEMBAYARAN]*\n\nHalo ${
+      ord.customer.name
+    }\nSilahkan lakukan pembayaran di link tertera\nLink hanya berlaku selama ${parseFloat(
+      (AppConfig.PAYMENT.DOKU.expiredTime / 60).toFixed(2)
+    )} jam\n\nID:\n${
+      ord.id
+    }\n\nLink Pembayaran:\n${paymentLink}\n\nLink pembayaran juga dapat dilihat di dashboard anda di: https://akucuciin.com/order\n\nJika link kadaluwarsa, silahkan kunjungi dashboard order anda dan klik "Pay" / "Bayar" untuk mendapatkan link baru\n\n====================\n\n_Pesan ini dikirim otomatis oleh sistem AkuCuciin._`,
+  };
+
+  const xSignature = generateXSignature(payload);
+
+  await axios.post(`${AppConfig.Whatsapp.SEND_URL}/send`, payload, {
+    headers: {
+      "X-Signature": xSignature,
+    },
+  });
+};
+
+export const sendOrderPaymentCompletedToCustomer = async (ord) => {
+  const payload = {
+    jid: `${ord.customer.telephone}@s.whatsapp.net`,
+    content: `*[PEMBAYARAN SUKSES]*\n\nHalo ${ord.customer.name}\nPembayaran untuk ${ord.id} berhasil\nTerimakasih telah menggunakan layanan Akucuciin\n\n====================\n\n_Pesan ini dikirim otomatis oleh sistem AkuCuciin._`,
   };
 
   const xSignature = generateXSignature(payload);

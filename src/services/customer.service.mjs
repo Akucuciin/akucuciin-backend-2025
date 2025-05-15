@@ -11,14 +11,16 @@ import {
   NotFoundError,
   TokenInvalidError,
 } from "../errors/customErrors.mjs";
-import { formatOrdersFromDb } from "../utils/order.utils.mjs";
+import { formatOrderFromDb } from "../utils/order.utils.mjs";
 import { generateNanoidWithPrefix } from "../utils/utils.mjs";
 import CustomerSchema from "../validators/customer.schema.mjs";
 import OrderSchema from "../validators/order.schema.mjs";
 import validate from "../validators/validator.mjs";
 import MailService from "./mail.service.mjs";
+import PaymentService from "./payment.service.mjs";
 import TokenService from "./token.service.mjs";
 import {
+  sendNewOrderPaymentToCustomer,
   sendOrderCancellationConfirmationToCustomer,
   sendOrderCancellationConfirmationToLaundry,
 } from "./whatsapp.service.mjs";
@@ -116,6 +118,55 @@ const CustomerService = {
     const orders = await OrderQuery.getOrdersJoinedByCustomer(req.user.id);
     const ordersFormatted = formatOrdersFromDb(orders);
     return ordersFormatted;
+  },
+  payOrder: async (req) => {
+    const { order_id } = req.params;
+    let order = await OrderQuery.getOrderJoinedById(order_id);
+    order = order[0];
+
+    if (!order) throw new NotFoundError("Failed, order not found");
+    if (order.c_id != req.user.id)
+      throw new AuthorizationError("Failed, order is not yours");
+
+    if (order.price == 0 && order.price_after == 0)
+      throw new BadRequestError("Failed, order not ready to pay yet");
+
+    if (!order.payment_link)
+      throw new BadRequestError("Failed, order doesnt have a payment link yet");
+
+    if (order.status_payment == "sudah bayar") {
+      throw new BadRequestError("Order already paid");
+    }
+
+    // CHECK TRANSACTION STATUS - IF EXPIRED GENERATE AGAIN
+    const isPaymentLinkValid =
+      order.payment_link_expired_at &&
+      new Date(order.payment_link_expired_at) > new Date();
+
+    if (isPaymentLinkValid) {
+      return {
+        url: order.payment_link,
+        status: "Valid Payment Link",
+      };
+    }
+
+    const _order = formatOrderFromDb(order);
+    const newPaymentLink = await PaymentService.Doku.generateOrderPaymentLink(
+      order_id,
+      _order
+    );
+    const expiredAt = new Date(
+      Date.now() + AppConfig.PAYMENT.DOKU.expiredTime * 60 * 1000
+    );
+    await OrderQuery.updatePaymentLinkOrder(
+      order_id,
+      newPaymentLink,
+      expiredAt
+    );
+
+    await sendNewOrderPaymentToCustomer(_order, newPaymentLink);
+    return { url: order.payment_link, status: "Valid, New Payment Link" };
+    // END CHECK TRANSACTION STATUS - IF EXPIRED GENERATE AGAIN
   },
   giveRatingAndReview: async (req) => {
     const { rating, review } = validate(
