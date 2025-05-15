@@ -1,3 +1,4 @@
+import AppConfig from "../configs/app.config.mjs";
 import LaundryPartnerAppQuery from "../database/queries/laundryPartnerApp.query.mjs";
 import OrderQuery from "../database/queries/order.query.mjs";
 import { BadRequestError } from "../errors/customErrors.mjs";
@@ -115,7 +116,11 @@ const LaundryPartnerAppService = {
       order_id,
       _order
     );
-    await OrderQuery.updatePaymentLinkOrder(order_id, paymentLink);
+
+    const expiredAt = new Date(
+      Date.now() + AppConfig.PAYMENT.DOKU.expiredTime * 60 * 1000
+    );
+    await OrderQuery.updatePaymentLinkOrder(order_id, paymentLink, expiredAt);
     await sendOrderPaymentToCustomer(_order, paymentLink);
 
     return { url: paymentLink };
