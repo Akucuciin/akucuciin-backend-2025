@@ -45,7 +45,8 @@ const OrderQuery = {
         o.pickup_date,
         o.rating,
         o.review,
-        o.payment_link
+        o.payment_link,
+        o.payment_link_expired_at
         FROM orders o 
         INNER JOIN customers c ON o.customer_id = c.id
         INNER JOIN laundry_partners lp ON o.laundry_partner_id  = lp.id 
@@ -96,6 +97,7 @@ const OrderQuery = {
         o.rating,
         o.review,
         o.payment_link,
+        o.payment_link_expired_at,
         o.created_at 
         FROM orders o 
         INNER JOIN customers c ON o.customer_id = c.id
@@ -146,6 +148,7 @@ const OrderQuery = {
         o.rating,
         o.review,
         o.payment_link,
+        o.payment_link_expired_at,
         o.created_at 
         FROM orders o 
         INNER JOIN customers c ON o.customer_id = c.id
@@ -249,6 +252,7 @@ const OrderQuery = {
         o.rating,
         o.review,
         o.payment_link,
+        o.payment_link_expired_at,
         o.created_at 
         FROM orders o 
         INNER JOIN customers c ON o.customer_id = c.id
