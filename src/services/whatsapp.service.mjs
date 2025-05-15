@@ -182,3 +182,18 @@ export const sendOrderPaymentToCustomer = async (ord, paymentLink) => {
     },
   });
 };
+
+export const sendOrderPaymentCompletedToCustomer = async (ord) => {
+  const payload = {
+    jid: `${ord.customer.telephone}@s.whatsapp.net`,
+    content: `*[PEMBAYARAN SUKSES]*\n\nHalo ${ord.customer.name}\nPembayaran untuk ${ord.id} berhasil\nTerimakasih telah menggunakan layanan Akucuciin\n\n====================\n\n_Pesan ini dikirim otomatis oleh sistem AkuCuciin._`,
+  };
+
+  const xSignature = generateXSignature(payload);
+
+  await axios.post(`${AppConfig.Whatsapp.SEND_URL}/send`, payload, {
+    headers: {
+      "X-Signature": xSignature,
+    },
+  });
+};
