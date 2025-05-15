@@ -97,3 +97,7 @@ export const formatOrderFromDb = function (row) {
     },
   };
 };
+
+export const generateOrderIdForPayment = (partnerName, id) => {
+  return `${partnerName.replace(/[^a-zA-Z0-9]/g, "")}::${id}`;
+};
