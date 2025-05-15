@@ -92,7 +92,7 @@ const PaymentService = {
       );
     },
     generateOrderPaymentLink: async (orderId, _order) => {
-      // === Step 2: Pricing logic
+      // === Step 1: Pricing logic
       const calculatePriceAfter = (_order) => {
         const price_after = Math.round(_order.price * 1.25);
         const hasDriver = _order.driver?.id;
@@ -109,7 +109,7 @@ const PaymentService = {
 
       await LaundryPartnerAppQuery.updatePriceAfterOrder(orderId, totalPrice);
 
-      // === Step 3: Build payment payload
+      // === Step 2: Build payment payload
       const payload = {
         customer: {
           id: _order.customer.id,
@@ -151,7 +151,7 @@ const PaymentService = {
         },
       };
 
-      // === Step 4: Prepare headers
+      // === Step 3: Prepare headers
       const requestId = crypto.randomUUID();
       const timestamp = new Date().toISOString().split(".")[0] + "Z";
       const rawBody = JSON.stringify(payload);
@@ -161,7 +161,8 @@ const PaymentService = {
         "Request-Timestamp": timestamp,
         Signature: localGenerateSignature(rawBody, requestId, timestamp),
       };
-      // === Step 5: Send to DOKU & update DB
+      
+      // === Step 4: Send to DOKU
       try {
         const response = await axios.post(AppConfig.PAYMENT.DOKU.url, payload, {
           headers,
