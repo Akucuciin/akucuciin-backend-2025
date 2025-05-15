@@ -1,5 +1,6 @@
 import bcrypt from "bcrypt";
 
+import axios from "axios";
 import AppConfig from "../configs/app.config.mjs";
 import AuthQuery from "../database/queries/auth.query.mjs";
 import CustomerQuery from "../database/queries/customer.query.mjs";
@@ -11,11 +12,16 @@ import {
   NotFoundError,
   TokenInvalidError,
 } from "../errors/customErrors.mjs";
+import {
+  formatOrderFromDb,
+  generateOrderIdForPayment,
+} from "../utils/order.utils.mjs";
 import { generateNanoidWithPrefix } from "../utils/utils.mjs";
 import CustomerSchema from "../validators/customer.schema.mjs";
 import OrderSchema from "../validators/order.schema.mjs";
 import validate from "../validators/validator.mjs";
 import MailService from "./mail.service.mjs";
+import PaymentService from "./payment.service.mjs";
 import TokenService from "./token.service.mjs";
 import {
   sendOrderCancellationConfirmationToCustomer,
@@ -130,6 +136,40 @@ const CustomerService = {
 
     if (!order.payment_link)
       throw new BadRequestError("Failed, order doesnt have a payment link yet");
+
+    // CHECK TRANSACTION STATUS - IF EXPIRED GENERATE AGAIN
+
+    const requestId = crypto.randomUUID();
+    const timestamp = new Date().toISOString().split(".")[0] + "Z";
+
+    const _order = formatOrderFromDb(order);
+    const headers = {
+      "Client-Id": AppConfig.PAYMENT.DOKU.clientId,
+      "Request-Id": requestId,
+      "Request-Timestamp": timestamp,
+      Signature: PaymentService.Doku.generateSignatureWithoutDigest(
+        requestId,
+        timestamp,
+        _order
+      ),
+    };
+
+    const checkStatusUrl = `${
+      AppConfig.PAYMENT.DOKU.checkStatusUrl
+    }/${generateOrderIdForPayment(_order.laundry_partner.name, _order.id)}`;
+
+    try {
+      const response = await axios.get(checkStatusUrl, {
+        headers,
+      });
+      const transactionStatus = response.data.transaction.status;
+    } catch (err) {
+      throw new BadRequestError(
+        err.response.data.message || "Error Getting Order Payment Status"
+      );
+    }
+
+    // END CHECK TRANSACTION STATUS - IF EXPIRED GENERATE AGAIN
 
     return { url: order.payment_link };
   },

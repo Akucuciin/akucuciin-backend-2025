@@ -7,6 +7,7 @@ import { BadRequestError } from "../errors/customErrors.mjs";
 import {
   formatOrderFromDb,
   formatOrdersFromDb,
+  generateOrderIdForPayment,
 } from "../utils/order.utils.mjs";
 import LaundryPartnerAppSchema from "../validators/laundryPartnerApp.schema.mjs";
 import validate from "../validators/validator.mjs";
@@ -144,10 +145,10 @@ const LaundryPartnerAppService = {
         country: "ID",
       },
       order: {
-        invoice_number: `${_order.laundry_partner.name.replace(
-          /[^a-zA-Z0-9]/g,
-          ""
-        )}::${order_id}`, // name::orderId separator
+        invoice_number: generateOrderIdForPayment(
+          _order.laundry_partner.name,
+          _order.id
+        ), // name::orderId separator
         amount: parseInt(pricingTotal),
         currency: "IDR",
         callback_url_result: "https://akucuciin.com",
