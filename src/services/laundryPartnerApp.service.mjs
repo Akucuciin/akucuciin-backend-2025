@@ -7,7 +7,7 @@ import { BadRequestError } from "../errors/customErrors.mjs";
 import {
   formatOrderFromDb,
   formatOrdersFromDb,
-  generateOrderIdForPayment,
+  generateInvoiceNumberForPayment,
 } from "../utils/order.utils.mjs";
 import LaundryPartnerAppSchema from "../validators/laundryPartnerApp.schema.mjs";
 import validate from "../validators/validator.mjs";
@@ -145,7 +145,7 @@ const LaundryPartnerAppService = {
         country: "ID",
       },
       order: {
-        invoice_number: generateOrderIdForPayment(
+        invoice_number: generateInvoiceNumberForPayment(
           _order.laundry_partner.name,
           _order.id
         ), // name::orderId separator

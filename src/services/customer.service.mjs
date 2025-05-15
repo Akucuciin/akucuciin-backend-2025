@@ -14,7 +14,7 @@ import {
 } from "../errors/customErrors.mjs";
 import {
   formatOrderFromDb,
-  generateOrderIdForPayment,
+  generateInvoiceNumberForPayment,
 } from "../utils/order.utils.mjs";
 import { generateNanoidWithPrefix } from "../utils/utils.mjs";
 import CustomerSchema from "../validators/customer.schema.mjs";
@@ -156,7 +156,7 @@ const CustomerService = {
 
     const checkStatusUrl = `${
       AppConfig.PAYMENT.DOKU.checkStatusUrl
-    }/${generateOrderIdForPayment(_order.laundry_partner.name, _order.id)}`;
+    }/${generateInvoiceNumberForPayment(_order.laundry_partner.name, _order.id)}`;
 
     try {
       const response = await axios.get(checkStatusUrl, {
