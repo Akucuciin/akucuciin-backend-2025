@@ -133,7 +133,7 @@ const CustomerService = {
 
     if (!order.payment_link)
       throw new BadRequestError("Failed, order doesnt have a payment link yet");
-    
+
     if (order.status_payment == "sudah bayar") {
       throw new BadRequestError("Order already paid");
     }
