@@ -98,6 +98,7 @@ export const formatOrderFromDb = function (row) {
   };
 };
 
+// this will be invoice_number for doku payment
 export const generateOrderIdForPayment = (partnerName, id) => {
   return `${partnerName.replace(/[^a-zA-Z0-9]/g, "")}::${id}`;
 };
