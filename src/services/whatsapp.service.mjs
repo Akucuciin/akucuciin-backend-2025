@@ -150,7 +150,7 @@ export const sendNewOrderPaymentToCustomer = async (ord, paymentLink) => {
       (AppConfig.PAYMENT.DOKU.expiredTime / 60).toFixed(2)
     )} jam\n\nID:\n${
       ord.id
-    }\n\nLink Pembayaran:\n${paymentLink}\n\nLink pembayaran juga dapat dilihat di dashboard anda di: https://akucuciin.com/order\n\nJika link kadaluwarsa, silahkan kunjungi dashboard order anda dan klik "Pay" / "Bayar"\n\n====================\n\n_Pesan ini dikirim otomatis oleh sistem AkuCuciin._`,
+    }\n\nLink Pembayaran:\n${paymentLink}\n\nLink pembayaran juga dapat dilihat di dashboard anda di: https://akucuciin.com/order\n\nJika link kadaluwarsa, silahkan kunjungi dashboard order anda dan klik "Pay" / "Bayar" untuk mendapatkan link baru\n\n====================\n\n_Pesan ini dikirim otomatis oleh sistem AkuCuciin._`,
   };
 
   const xSignature = generateXSignature(payload);
@@ -171,7 +171,7 @@ export const sendOrderPaymentToCustomer = async (ord, paymentLink) => {
       (AppConfig.PAYMENT.DOKU.expiredTime / 60).toFixed(2)
     )} jam\n\nID:\n${
       ord.id
-    }\n\nLink Pembayaran:\n${paymentLink}\n\nLink pembayaran juga dapat dilihat di dashboard anda di: https://akucuciin.com/order\n\nJika link kadaluwarsa, silahkan kunjungi dashboard order anda dan klik "Pay" / "Bayar"\n\n====================\n\n_Pesan ini dikirim otomatis oleh sistem AkuCuciin._`,
+    }\n\nLink Pembayaran:\n${paymentLink}\n\nLink pembayaran juga dapat dilihat di dashboard anda di: https://akucuciin.com/order\n\nJika link kadaluwarsa, silahkan kunjungi dashboard order anda dan klik "Pay" / "Bayar" untuk mendapatkan link baru\n\n====================\n\n_Pesan ini dikirim otomatis oleh sistem AkuCuciin._`,
   };
 
   const xSignature = generateXSignature(payload);

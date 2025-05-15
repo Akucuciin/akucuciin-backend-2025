@@ -6,7 +6,7 @@ const WebhookRouter = Router();
 WebhookRouter.post("/api/payment/webhook", async (req, res) => {
   const notification = req.body;
   const rawInvoice = notification.order.invoice_number;
-  const [name, orderId] = rawInvoice.split("::"); // name::orderId
+  const [name, orderId, unique] = rawInvoice.split("::"); // name::orderId
   const status = notification.transaction.status;
 
   if (status === "SUCCESS") {
