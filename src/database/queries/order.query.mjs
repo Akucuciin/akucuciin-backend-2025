@@ -331,14 +331,14 @@ const OrderQuery = {
     ]);
     return results[0];
   },
-  updatePaymentLinkOrder: async function (order_id, payment_link) {
+  updatePaymentLinkOrder: async function (order_id, payment_link, payment_link_expired_at) {
     const [results] = await db.query(
       `
       UPDATE orders
-      SET payment_link = ?
+      SET payment_link = ?, payment_link_expired_at = ?
       WHERE id = ?
       `,
-      [payment_link, order_id]
+      [payment_link, payment_link_expired_at , order_id]
     );
     return results;
   },

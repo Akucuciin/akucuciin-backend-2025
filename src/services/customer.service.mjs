@@ -1,6 +1,5 @@
 import bcrypt from "bcrypt";
 
-import axios from "axios";
 import AppConfig from "../configs/app.config.mjs";
 import AuthQuery from "../database/queries/auth.query.mjs";
 import CustomerQuery from "../database/queries/customer.query.mjs";
@@ -12,10 +11,7 @@ import {
   NotFoundError,
   TokenInvalidError,
 } from "../errors/customErrors.mjs";
-import {
-  formatOrderFromDb,
-  generateInvoiceNumberForPayment,
-} from "../utils/order.utils.mjs";
+import { formatOrderFromDb } from "../utils/order.utils.mjs";
 import { generateNanoidWithPrefix } from "../utils/utils.mjs";
 import CustomerSchema from "../validators/customer.schema.mjs";
 import OrderSchema from "../validators/order.schema.mjs";
@@ -24,6 +20,7 @@ import MailService from "./mail.service.mjs";
 import PaymentService from "./payment.service.mjs";
 import TokenService from "./token.service.mjs";
 import {
+  sendNewOrderPaymentToCustomer,
   sendOrderCancellationConfirmationToCustomer,
   sendOrderCancellationConfirmationToLaundry,
 } from "./whatsapp.service.mjs";
@@ -138,41 +135,34 @@ const CustomerService = {
       throw new BadRequestError("Failed, order doesnt have a payment link yet");
 
     // CHECK TRANSACTION STATUS - IF EXPIRED GENERATE AGAIN
+    const isPaymentLinkValid =
+      order.payment_link_expired_at &&
+      new Date(order.payment_link_expired_at) > new Date();
 
-    const requestId = crypto.randomUUID();
-    const timestamp = new Date().toISOString().split(".")[0] + "Z";
-
-    const _order = formatOrderFromDb(order);
-    const headers = {
-      "Client-Id": AppConfig.PAYMENT.DOKU.clientId,
-      "Request-Id": requestId,
-      "Request-Timestamp": timestamp,
-      Signature: PaymentService.Doku.generateSignatureWithoutDigest(
-        requestId,
-        timestamp,
-        _order
-      ),
-    };
-
-    const checkStatusUrl = `${
-      AppConfig.PAYMENT.DOKU.checkStatusUrl
-    }/${generateInvoiceNumberForPayment(_order.laundry_partner.name, _order.id)}`;
-    try {
-      const response = await axios.get(checkStatusUrl, {
-        headers,
-      });
-      const transactionStatus = response.data.transaction.status;
-      console.log(response.data);
-    } catch (err) {
-      console.log(err.response.data);
-      throw new BadRequestError(
-        err.response.data.message || "Error Getting Order Payment Status"
-      );
+    if (isPaymentLinkValid) {
+      return {
+        url: order.payment_link,
+        status: "Valid Payment Link",
+      };
     }
 
-    // END CHECK TRANSACTION STATUS - IF EXPIRED GENERATE AGAIN
+    const _order = formatOrderFromDb(order);
+    const newPaymentLink = await PaymentService.Doku.generateOrderPaymentLink(
+      order_id,
+      _order
+    );
+    const expiredAt = new Date(
+      Date.now() + AppConfig.PAYMENT.DOKU.expiredTime * 60 * 1000
+    );
+    await OrderQuery.updatePaymentLinkOrder(
+      order_id,
+      newPaymentLink,
+      expiredAt
+    );
 
-    return { url: order.payment_link };
+    await sendNewOrderPaymentToCustomer(_order, newPaymentLink);
+    return { url: order.payment_link, status: "Valid, New Payment Link" };
+    // END CHECK TRANSACTION STATUS - IF EXPIRED GENERATE AGAIN
   },
   giveRatingAndReview: async (req) => {
     const { rating, review } = validate(
