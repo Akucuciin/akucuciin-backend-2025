@@ -18,6 +18,17 @@ const CouponQuery = {
     );
     return results;
   },
+  setNotUsed: async function (coupon_code_name) {
+    const [results] = await db.query(
+      `
+        UPDATE coupons
+        SET is_used = 0
+        WHERE name = ?
+        `,
+      [coupon_code_name]
+    );
+    return results;
+  },
 };
 
 export default CouponQuery;

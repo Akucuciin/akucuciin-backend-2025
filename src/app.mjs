@@ -12,8 +12,9 @@ import "./auth/passport.auth.mjs";
 import AdminRouter from "./routes/admin.route.mjs";
 import DriverRouter from "./routes/driver.route.mjs";
 import LaundryPartnerRouter from "./routes/laundryPartner.route.mjs";
-import OrderRouter from "./routes/order.route.mjs";
 import LaundryPartnerAppRouter from "./routes/laundryPartnerApp.route.mjs";
+import OrderRouter from "./routes/order.route.mjs";
+import WebhookRouter from "./routes/webhook.route.mjs";
 
 const app = express();
 app.set("view engine", "ejs");
@@ -36,6 +37,7 @@ app.use(AuthRouter);
 app.use(LaundryPartnerRouter);
 app.use(LaundryPartnerAppRouter);
 app.use(OrderRouter);
+app.use(WebhookRouter);
 
 app.use(errorHandler);
 

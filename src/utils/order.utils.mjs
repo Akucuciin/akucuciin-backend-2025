@@ -1,3 +1,5 @@
+import { customAlphabet } from "nanoid";
+
 export const formatOrdersFromDb = function (orders) {
   return orders.map((row) => ({
     id: row.id,
@@ -7,6 +9,7 @@ export const formatOrdersFromDb = function (orders) {
     maps_pinpoint: row.maps_pinpoint,
     weight: row.weight,
     price: row.price,
+    price_after: row.price_after,
     coupon_code: row.coupon_code,
     referral_code: row.referral_code,
     created_at: row.created_at,
@@ -14,6 +17,7 @@ export const formatOrdersFromDb = function (orders) {
     rating: row.rating,
     review: row.review,
     pickup_date: row.pickup_date,
+    payment_link: row.payment_link,
     customer: {
       id: row.c_id,
       name: row.c_name,
@@ -55,6 +59,7 @@ export const formatOrderFromDb = function (row) {
     maps_pinpoint: row.maps_pinpoint,
     weight: row.weight,
     price: row.price,
+    price_after: row.price_after,
     coupon_code: row.coupon_code,
     referral_code: row.referral_code,
     created_at: row.created_at,
@@ -62,6 +67,7 @@ export const formatOrderFromDb = function (row) {
     rating: row.rating,
     review: row.review,
     pickup_date: row.pickup_date,
+    payment_link: row.payment_link,
     customer: {
       id: row.c_id,
       name: row.c_name,
@@ -92,4 +98,13 @@ export const formatOrderFromDb = function (row) {
       telephone: row.d_telephone,
     },
   };
+};
+
+// this will be invoice_number for doku payment
+export const generateInvoiceNumberForPayment = (partnerName, id) => {
+  const nanoid = customAlphabet(
+    "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
+    6
+  );
+  return `${partnerName.replace(/[^a-zA-Z0-9]/g, "")}::${id}::${nanoid()}`;
 };

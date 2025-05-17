@@ -35,10 +35,16 @@ CustomerRouter.post("/api/customer/logout", async (req, res, next) =>
   CustomerController.logout(req, res, next)
 );
 
+// === ORDER
 CustomerRouter.get(
   "/api/customer/orders",
   authorize("customer-jwt"),
   async (req, res, next) => CustomerController.getOrders(req, res, next)
+);
+CustomerRouter.get(
+  "/api/customer/order/:order_id/pay",
+  authorize("customer-jwt"),
+  async (req, res, next) => CustomerController.payOrder(req, res, next)
 );
 CustomerRouter.post(
   "/api/customer/order/:order_id/review",
@@ -51,6 +57,7 @@ CustomerRouter.delete(
   authorize("customer-jwt"),
   async (req, res, next) => CustomerController.cancelOrder(req, res, next)
 );
+// === END ORDER
 
 CustomerRouter.get(
   "/verify/customer/:email/:register_token",

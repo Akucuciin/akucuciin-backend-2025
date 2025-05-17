@@ -38,12 +38,15 @@ const OrderQuery = {
         o.maps_pinpoint,
         o.weight ,
         o.price,
+        o.price_after,
         o.coupon_code ,
         o.referral_code ,
         o.note,
         o.pickup_date,
         o.rating,
-        o.review
+        o.review,
+        o.payment_link,
+        o.payment_link_expired_at
         FROM orders o 
         INNER JOIN customers c ON o.customer_id = c.id
         INNER JOIN laundry_partners lp ON o.laundry_partner_id  = lp.id 
@@ -86,12 +89,15 @@ const OrderQuery = {
         o.maps_pinpoint,
         o.weight ,
         o.price,
+        o.price_after,
         o.coupon_code ,
         o.referral_code ,
         o.note,
         o.pickup_date,
         o.rating,
         o.review,
+        o.payment_link,
+        o.payment_link_expired_at,
         o.created_at 
         FROM orders o 
         INNER JOIN customers c ON o.customer_id = c.id
@@ -134,12 +140,15 @@ const OrderQuery = {
         o.maps_pinpoint,
         o.weight ,
         o.price,
+        o.price_after,
         o.coupon_code ,
         o.referral_code ,
         o.note,
         o.pickup_date,
         o.rating,
         o.review,
+        o.payment_link,
+        o.payment_link_expired_at,
         o.created_at 
         FROM orders o 
         INNER JOIN customers c ON o.customer_id = c.id
@@ -184,6 +193,7 @@ const OrderQuery = {
         o.maps_pinpoint,
         o.weight ,
         o.price,
+        o.price_after,
         o.coupon_code ,
         o.referral_code,
         o.note,
@@ -234,12 +244,15 @@ const OrderQuery = {
         o.maps_pinpoint,
         o.weight ,
         o.price,
+        o.price_after,
         o.coupon_code ,
         o.referral_code ,
         o.note,
         o.pickup_date,
         o.rating,
         o.review,
+        o.payment_link,
+        o.payment_link_expired_at,
         o.created_at 
         FROM orders o 
         INNER JOIN customers c ON o.customer_id = c.id
@@ -294,7 +307,7 @@ const OrderQuery = {
     const [results] = await db.query(
       `
       UPDATE orders
-      SET status = "batal"
+      SET status = "batal", coupon_code = ""
       WHERE id = ?
       `,
       [order_id]
@@ -318,6 +331,17 @@ const OrderQuery = {
     ]);
     return results[0];
   },
+  updatePaymentLinkOrder: async function (order_id, payment_link, payment_link_expired_at) {
+    const [results] = await db.query(
+      `
+      UPDATE orders
+      SET payment_link = ?, payment_link_expired_at = ?
+      WHERE id = ?
+      `,
+      [payment_link, payment_link_expired_at , order_id]
+    );
+    return results;
+  },
   updateStatus: async function (
     order_id,
     status,
@@ -332,6 +356,17 @@ const OrderQuery = {
       WHERE id = ?
       `,
       [status, weight, price, status_payment, order_id]
+    );
+    return results;
+  },
+  updateStatusPayment: async function (order_id, status_payment) {
+    const [results] = await db.query(
+      `
+      UPDATE orders
+      SET status_payment = ?
+      WHERE id = ?
+      `,
+      [status_payment, order_id]
     );
     return results;
   },

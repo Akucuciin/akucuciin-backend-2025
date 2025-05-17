@@ -1,9 +1,12 @@
 import db from "../connection.mjs";
 
 const LaundryPartnerAppQuery = {
-  //Profile Read 
+  //Profile Read
   getProfile: async function (email) {
-    const [results] = await db.query(`SELECT id, name, email, description, telephone, address, maps_pinpoint, city, area, latitude, longitude, created_at, updated_at FROM laundry_partners WHERE email = ?`, [email]);
+    const [results] = await db.query(
+      `SELECT id, name, email, description, telephone, address, maps_pinpoint, city, area, latitude, longitude, created_at, updated_at FROM laundry_partners WHERE email = ?`,
+      [email]
+    );
     return results[0];
   },
   //Read Order by Laundry Partner Id, Edit Status Order, Read Order by Order Id
@@ -39,6 +42,7 @@ const LaundryPartnerAppQuery = {
         o.maps_pinpoint,
         o.weight ,
         o.price,
+        o.price_after,
         o.coupon_code ,
         o.referral_code ,
         o.note,
@@ -126,6 +130,17 @@ const LaundryPartnerAppQuery = {
       WHERE id = ?
       `,
       [price, order_id]
+    );
+    return results;
+  },
+  updatePriceAfterOrder: async function (order_id, price_after) {
+    const [results] = await db.query(
+      `
+      UPDATE orders
+      SET price_after = ?
+      WHERE id = ?
+      `,
+      [price_after, order_id]
     );
     return results;
   },

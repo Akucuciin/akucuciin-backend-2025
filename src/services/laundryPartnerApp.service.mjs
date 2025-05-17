@@ -1,4 +1,6 @@
+import AppConfig from "../configs/app.config.mjs";
 import LaundryPartnerAppQuery from "../database/queries/laundryPartnerApp.query.mjs";
+import OrderQuery from "../database/queries/order.query.mjs";
 import { BadRequestError } from "../errors/customErrors.mjs";
 import {
   formatOrderFromDb,
@@ -6,6 +8,8 @@ import {
 } from "../utils/order.utils.mjs";
 import LaundryPartnerAppSchema from "../validators/laundryPartnerApp.schema.mjs";
 import validate from "../validators/validator.mjs";
+import PaymentService from "./payment.service.mjs";
+import { sendOrderPaymentToCustomer } from "./whatsapp.service.mjs";
 
 const LaundryPartnerAppService = {
   //Profile Create
@@ -78,6 +82,14 @@ const LaundryPartnerAppService = {
       throw new BadRequestError("Access denied. This order is not yours.");
     }
 
+    if (order.weight == 0) {
+      throw new BadRequestError("Gagal, update berat terlebih dahulu");
+    }
+
+    if (order.price_after != 0) {
+      throw new BadRequestError("Gagal, harga tidak dapat dirubah kembali");
+    }
+
     if (order.status === "batal" || order.status === "selesai")
       throw new BadRequestError(
         `Failed, order status is already [${order.status}]`
@@ -95,7 +107,26 @@ const LaundryPartnerAppService = {
 
     if (!result.affectedRows) throw new BadRequestError("Failed to update");
 
-    return values;
+    const ordersJoined = await OrderQuery.getOrderJoinedById(order_id);
+    const orderJoined = ordersJoined[0];
+    const _order = formatOrderFromDb(orderJoined);
+
+    // ====== DONE UPDATE PRICE, NOW PERFORM PAYMENT !!!! //
+    const expiredAt = new Date(
+      Date.now() + AppConfig.PAYMENT.DOKU.expiredTime * 60 * 1000
+    );
+
+    const paymentLink = await PaymentService.Doku.generateOrderPaymentLink(
+      order_id,
+      _order
+    );
+
+    await OrderQuery.updatePaymentLinkOrder(order_id, paymentLink, expiredAt);
+    await sendOrderPaymentToCustomer(_order, paymentLink);
+
+    return { url: paymentLink };
+
+    // ====== END PAYMENT //
   },
 };
 

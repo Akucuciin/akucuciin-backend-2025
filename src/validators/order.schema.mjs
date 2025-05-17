@@ -5,21 +5,10 @@ const OrderSchema = {
     laundry_partner_id: Joi.string().required(),
     package_id: Joi.string().required(),
     content: Joi.string().required(),
-    status: Joi.string()
-      .valid(
-        "pending",
-        "penjemputan",
-        "pencucian",
-        "pengantaran",
-        "selesai",
-        "batal",
-        "kesalahan",
-        "pengantaran"
-      )
-      .required(),
+    status: Joi.string().valid("pending").required(),
     maps_pinpoint: Joi.string().required(),
-    weight: Joi.number().min(0).required(),
-    price: Joi.number().min(0).required(),
+    weight: Joi.number().max(0).required(),
+    price: Joi.number().max(0).required(),
     coupon_code: Joi.string().max(25).allow("").optional(),
     note: Joi.string().max(255).allow("").required(),
     pickup_date: Joi.string().max(255).required(),
