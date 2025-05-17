@@ -1,6 +1,7 @@
 import axios from "axios";
 import crypto from "crypto";
 import AppConfig from "../configs/app.config.mjs";
+import CouponQuery from "../database/queries/coupon.query.mjs";
 import LaundryPartnerAppQuery from "../database/queries/laundryPartnerApp.query.mjs";
 import { BadRequestError } from "../errors/customErrors.mjs";
 import { generateInvoiceNumberForPayment } from "../utils/order.utils.mjs";
@@ -93,6 +94,16 @@ const PaymentService = {
     },
     generateOrderPaymentLink: async (orderId, _order) => {
       // === Step 1: Pricing logic
+      let discountMultiplier = 0;
+      let isCoupon = false;
+      let coupon = null;
+      // === Step 1.1: Coupon logic
+      if (_order.coupon_code) {
+        coupon = await CouponQuery.get(_order.coupon_code);
+        discountMultiplier = coupon.multiplier / 100; // eg: multipler = 20, the 0.2
+        isCoupon = true;
+      }
+
       const calculatePriceAfter = (_order) => {
         const price_after = Math.round(_order.price * 1.25);
         const hasDriver = _order.driver?.id;
@@ -101,12 +112,19 @@ const PaymentService = {
             ? 3000
             : 4000
           : 1000;
-        return { price_after, service_pay };
+        let discount_cut = 0;
+
+        if (isCoupon) {
+          discount_cut = price_after * discountMultiplier;
+        }
+        return { price_after, service_pay, discount_cut };
       };
 
       const pricing = calculatePriceAfter(_order);
-      const totalPrice = pricing.price_after + pricing.service_pay;
-
+      pricing.discount_cut = parseInt(`-${pricing.discount_cut}`, 10);
+      const totalPrice =
+        pricing.price_after + pricing.service_pay + pricing.discount_cut;
+      console.log(pricing);
       await LaundryPartnerAppQuery.updatePriceAfterOrder(orderId, totalPrice);
 
       // === Step 2: Build payment payload
@@ -139,7 +157,14 @@ const PaymentService = {
               price: parseInt(pricing.service_pay, 10),
               quantity: 1,
             },
-          ],
+            pricing.discount_cut != 0
+              ? {
+                  name: `Kupon ${coupon.name} - ${coupon.multiplier}%`,
+                  price: pricing.discount_cut,
+                  quantity: 1,
+                }
+              : null,
+          ].filter(Boolean),
         },
         payment: {
           payment_due_date: AppConfig.PAYMENT.DOKU.expiredTime,
@@ -150,7 +175,7 @@ const PaymentService = {
           override_notification_url: AppConfig.PAYMENT.DOKU.callback_url,
         },
       };
-
+      console.log(payload.order.line_items);
       // === Step 3: Prepare headers
       const requestId = crypto.randomUUID();
       const timestamp = new Date().toISOString().split(".")[0] + "Z";
@@ -161,7 +186,7 @@ const PaymentService = {
         "Request-Timestamp": timestamp,
         Signature: localGenerateSignature(rawBody, requestId, timestamp),
       };
-      
+
       // === Step 4: Send to DOKU
       try {
         const response = await axios.post(AppConfig.PAYMENT.DOKU.url, payload, {
@@ -174,7 +199,7 @@ const PaymentService = {
 
         return paymentLink;
       } catch (err) {
-        console.error(err);
+        //console.error(err);
         throw new BadRequestError(
           err?.response?.data?.message || "Error Creating Payment"
         );
