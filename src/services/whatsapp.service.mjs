@@ -82,11 +82,9 @@ export const sendOrderConfirmationToCustomer = async (ord) => {
       ord.content
     }\n📝 Catatan: ${ord.note || "-"}\n📅 Tanggal Penjemputan: ${
       ord.pickup_date || "-"
-    }\n⚖️ Berat Cucian: ${ord.weight} kg\n💰 Total Harga: Rp ${parseInt(
-      ord.price
-    ).toLocaleString("id-ID")}\n🗺️ Pin Lokasi Anda: ${
-      ord.maps_pinpoint
-    }\n🎟️ Kupon: ${ord.coupon_code || "-"}\n🎟️ Referral Code: ${
+    }\n🗺️ Pin Lokasi Anda: ${ord.maps_pinpoint}\n🎟️ Kupon: ${
+      ord.coupon_code || "-"
+    }\n🎟️ Referral Code: ${
       ord.referral_code || "-"
     }\n\n== Informasi Laundry ==\n🏠 Nama Laundry: ${
       ord.laundry_partner.name
