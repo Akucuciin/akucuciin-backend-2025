@@ -171,7 +171,7 @@ const CustomerService = {
     );
 
     await sendNewOrderPaymentToCustomer(_order, newPaymentLink);
-    return { url: order.payment_link, status: "Valid, New Payment Link" };
+    return { url: newPaymentLink, status: "Valid, New Payment Link" };
     // END CHECK TRANSACTION STATUS - IF EXPIRED GENERATE AGAIN
   },
   giveRatingAndReview: async (req) => {
