@@ -11,7 +11,7 @@ import {
   NotFoundError,
   TokenInvalidError,
 } from "../errors/customErrors.mjs";
-import { formatOrderFromDb } from "../utils/order.utils.mjs";
+import { formatOrderFromDb, formatOrdersFromDb } from "../utils/order.utils.mjs";
 import { generateNanoidWithPrefix } from "../utils/utils.mjs";
 import CustomerSchema from "../validators/customer.schema.mjs";
 import OrderSchema from "../validators/order.schema.mjs";
