@@ -175,7 +175,7 @@ const PaymentService = {
           override_notification_url: AppConfig.PAYMENT.DOKU.callback_url,
         },
       };
-      console.log(payload.order.line_items);
+
       // === Step 3: Prepare headers
       const requestId = crypto.randomUUID();
       const timestamp = new Date().toISOString().split(".")[0] + "Z";
