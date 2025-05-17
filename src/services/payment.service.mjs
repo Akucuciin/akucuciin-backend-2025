@@ -131,7 +131,7 @@ const PaymentService = {
       const payload = {
         customer: {
           id: _order.customer.id,
-          name: _order.customer.name,
+          name: _order.customer.name.replace(/[^a-zA-Z ]/g, ''),
           phone: _order.customer.telephone,
           email: _order.customer.email,
           address: _order.customer.address,
@@ -159,7 +159,7 @@ const PaymentService = {
             },
             pricing.discount_cut != 0
               ? {
-                  name: `Kupon ${coupon.name} - ${coupon.multiplier} PERSEN`,
+                  name: `Kupon ${coupon.name} - ${coupon.multiplier}%`,
                   price: pricing.discount_cut,
                   quantity: 1,
                 }
