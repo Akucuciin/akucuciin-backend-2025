@@ -76,17 +76,17 @@ export const sendOrderConfirmationToCustomer = async (ord) => {
     jid: `${ord.customer.telephone}@s.whatsapp.net`,
     content: `*[Pesanan Anda Telah Diterima]*\n\nHalo ${
       ord.customer.name
-    },\n\nTerima kasih telah menggunakan layanan AkuCuciin. Berikut adalah detail pesanan Anda:\n\n== Detail Pesanan ==\n📦 Paket Laundry: ${
-      ord.package.name
-    }\n📜 Jenis Laundry: ${ord.content}\n📝 Catatan: ${
-      ord.note || "-"
-    }\n📅 Tanggal Penjemputan: ${ord.pickup_date || "-"}\n⚖️ Berat Cucian: ${
-      ord.weight
-    } kg\n💰 Total Harga: Rp ${parseInt(ord.price).toLocaleString(
-      "id-ID"
-    )}\n🗺️ Pin Lokasi Anda: ${ord.maps_pinpoint}\n🎟️ Kupon: ${
-      ord.coupon_code || "-"
-    }\n🎟️ Referral Code: ${
+    },\n\nTerima kasih telah menggunakan layanan AkuCuciin. Berikut adalah detail pesanan Anda:\n\n== Detail Pesanan ==\nID: ${
+      ord.id
+    }\n📦 Paket Laundry: ${ord.package.name}\n📜 Jenis Laundry: ${
+      ord.content
+    }\n📝 Catatan: ${ord.note || "-"}\n📅 Tanggal Penjemputan: ${
+      ord.pickup_date || "-"
+    }\n⚖️ Berat Cucian: ${ord.weight} kg\n💰 Total Harga: Rp ${parseInt(
+      ord.price
+    ).toLocaleString("id-ID")}\n🗺️ Pin Lokasi Anda: ${
+      ord.maps_pinpoint
+    }\n🎟️ Kupon: ${ord.coupon_code || "-"}\n🎟️ Referral Code: ${
       ord.referral_code || "-"
     }\n\n== Informasi Laundry ==\n🏠 Nama Laundry: ${
       ord.laundry_partner.name
@@ -94,9 +94,9 @@ export const sendOrderConfirmationToCustomer = async (ord) => {
       ord.laundry_partner.city
     }\n📞 Kontak Laundry: https://wa.me/${
       ord.laundry_partner.telephone
-    }\n\n====================\n\n_Pesan ini dibuat otomatis oleh sistem AkuCuciin._\nID Pesanan: _${
-      ord.id
-    }_\n📅 Tanggal Pemesanan: ${ord.created_at}`,
+    }\n\n====================\n\n_Pesan ini dibuat otomatis oleh sistem AkuCuciin._\nTanggal Pemesanan: ${
+      ord.created_at
+    }`,
   };
   const xSignature = generateXSignature(payloadWaCustomer);
 
@@ -112,15 +112,15 @@ export const sendOrderConfirmationToLaundry = async (ord) => {
     jid: `${ord.laundry_partner.telephone}@s.whatsapp.net`,
     content: `*[Order baru telah diterima]*\n\nHalo ${
       ord.laundry_partner.name
-    }! Order baru telah masuk, Berikut adalah detail pesanan: \n\n==Customer==\nNama: ${
-      ord.customer.name
-    }\nEmail: ${ord.customer.email}\nAlamat: ${
-      ord.customer.address
-    }\nPinpoint: ${ord.maps_pinpoint}\n\n==LAUNDRY==\n${
-      ord.laundry_partner.name
-    }, ${ord.laundry_partner.area}, ${
-      ord.laundry_partner.city
-    }\nNo HP laundry: https://wa.me/${
+    }! Order baru telah masuk, Berikut adalah detail pesanan:\n\nID: ${
+      ord.id
+    }\n\n==Customer==\nNama: ${ord.customer.name}\nEmail: ${
+      ord.customer.email
+    }\nAlamat: ${ord.customer.address}\nPinpoint: ${
+      ord.maps_pinpoint
+    }\n\n==LAUNDRY==\n${ord.laundry_partner.name}, ${
+      ord.laundry_partner.area
+    }, ${ord.laundry_partner.city}\nNo HP laundry: https://wa.me/${
       ord.laundry_partner.telephone
     }\n\nPaket Laundry: ${ord.package.name}\nContent: ${ord.content}\nNote: ${
       ord.note || "-"
@@ -128,9 +128,9 @@ export const sendOrderConfirmationToLaundry = async (ord) => {
       ord.coupon_code || "-"
     }\nReferral Code: ${
       ord.referral_code || "-"
-    }\n====================\n\n_Pesan ini dibuat otomatis oleh sistem Akucuciin_\n_${
-      ord.id
-    }_\n\nTanggal: ${ord.created_at}`,
+    }\n====================\n\n_Pesan ini dibuat otomatis oleh sistem Akucuciin_\nTanggal: ${
+      ord.created_at
+    }`,
   };
   const xSignature = generateXSignature(payloadWaLaundry);
 
