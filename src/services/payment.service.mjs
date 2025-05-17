@@ -159,7 +159,7 @@ const PaymentService = {
             },
             pricing.discount_cut != 0
               ? {
-                  name: `Kupon ${coupon.name} - ${coupon.multiplier}%`,
+                  name: `Kupon ${coupon.name} - ${coupon.multiplier} PERSEN`,
                   price: pricing.discount_cut,
                   quantity: 1,
                 }
