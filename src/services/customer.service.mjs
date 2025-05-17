@@ -2,6 +2,7 @@ import bcrypt from "bcrypt";
 
 import AppConfig from "../configs/app.config.mjs";
 import AuthQuery from "../database/queries/auth.query.mjs";
+import CouponQuery from "../database/queries/coupon.query.mjs";
 import CustomerQuery from "../database/queries/customer.query.mjs";
 import OrderQuery from "../database/queries/order.query.mjs";
 import {
@@ -157,7 +158,7 @@ const CustomerService = {
     const expiredAt = new Date(
       Date.now() + AppConfig.PAYMENT.DOKU.expiredTime * 60 * 1000
     );
-    
+
     const newPaymentLink = await PaymentService.Doku.generateOrderPaymentLink(
       order_id,
       _order
@@ -219,6 +220,14 @@ const CustomerService = {
       );
 
     await OrderQuery.cancelOrder(order_id);
+    if (order[0].coupon_code) {
+      const coupon = await CouponQuery.get(order[0].coupon_code);
+      if (coupon.is_used === -1) {
+        // coupon is infinitely used
+      } else {
+        await CouponQuery.setNotUsed(order[0].coupon_code);
+      }
+    }
 
     const ord = formatOrdersFromDb(order)[0];
     await sendOrderCancellationConfirmationToCustomer(ord);
