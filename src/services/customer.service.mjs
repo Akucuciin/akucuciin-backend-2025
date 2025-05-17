@@ -11,7 +11,10 @@ import {
   NotFoundError,
   TokenInvalidError,
 } from "../errors/customErrors.mjs";
-import { formatOrderFromDb, formatOrdersFromDb } from "../utils/order.utils.mjs";
+import {
+  formatOrderFromDb,
+  formatOrdersFromDb,
+} from "../utils/order.utils.mjs";
 import { generateNanoidWithPrefix } from "../utils/utils.mjs";
 import CustomerSchema from "../validators/customer.schema.mjs";
 import OrderSchema from "../validators/order.schema.mjs";
@@ -151,13 +154,15 @@ const CustomerService = {
     }
 
     const _order = formatOrderFromDb(order);
+    const expiredAt = new Date(
+      Date.now() + AppConfig.PAYMENT.DOKU.expiredTime * 60 * 1000
+    );
+    
     const newPaymentLink = await PaymentService.Doku.generateOrderPaymentLink(
       order_id,
       _order
     );
-    const expiredAt = new Date(
-      Date.now() + AppConfig.PAYMENT.DOKU.expiredTime * 60 * 1000
-    );
+
     await OrderQuery.updatePaymentLinkOrder(
       order_id,
       newPaymentLink,

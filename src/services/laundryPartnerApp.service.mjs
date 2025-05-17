@@ -112,14 +112,15 @@ const LaundryPartnerAppService = {
     const _order = formatOrderFromDb(orderJoined);
 
     // ====== DONE UPDATE PRICE, NOW PERFORM PAYMENT !!!! //
+    const expiredAt = new Date(
+      Date.now() + AppConfig.PAYMENT.DOKU.expiredTime * 60 * 1000
+    );
+
     const paymentLink = await PaymentService.Doku.generateOrderPaymentLink(
       order_id,
       _order
     );
 
-    const expiredAt = new Date(
-      Date.now() + AppConfig.PAYMENT.DOKU.expiredTime * 60 * 1000
-    );
     await OrderQuery.updatePaymentLinkOrder(order_id, paymentLink, expiredAt);
     await sendOrderPaymentToCustomer(_order, paymentLink);
 
