@@ -105,33 +105,62 @@ const PaymentService = {
       }
 
       const calculatePriceAfter = (_order) => {
-        const price_after = Math.round(_order.price * 1.25);
+        const aggregator = _order.price / _order.weight;
+        let price_after_multiplier;
+
+        if (aggregator >= 20000) {
+          price_after_multiplier = 1.12;
+        } else if (aggregator >= 10000) {
+          price_after_multiplier = 1.15;
+        } else if (aggregator >= 3000) {
+          price_after_multiplier = 1.2;
+        } else {
+          price_after_multiplier = 1.35;
+        }
+
+        const price_after = Math.round(_order.price * price_after_multiplier);
+        const discountApplied = isCoupon;
         const hasDriver = _order.driver?.id;
-        const service_pay = hasDriver
-          ? _order.price >= 20000
-            ? 3000
-            : 4000
-          : 1000;
+        const admin_pay = 1000;
+        let driver_pay = 0;
         let discount_cut = 0;
 
-        if (isCoupon) {
+        if (discountApplied) {
           discount_cut = price_after * discountMultiplier;
         }
-        return { price_after, service_pay, discount_cut };
+
+        if (hasDriver) {
+          driver_pay = 3000;
+        }
+
+        return {
+          price_after,
+          admin_pay,
+          discount_cut,
+          driver_pay,
+          discountApplied: discountApplied,
+          hasDriver: hasDriver,
+        };
       };
 
       const pricing = calculatePriceAfter(_order);
       pricing.discount_cut = parseInt(`-${pricing.discount_cut}`, 10);
+
       const totalPrice =
-        pricing.price_after + pricing.service_pay + pricing.discount_cut;
-      console.log(pricing);
+        pricing.price_after +
+        pricing.admin_pay +
+        pricing.discount_cut +
+        pricing.driver_pay;
+
+      console.error(pricing);
+
       await LaundryPartnerAppQuery.updatePriceAfterOrder(orderId, totalPrice);
 
       // === Step 2: Build payment payload
       const payload = {
         customer: {
           id: _order.customer.id,
-          name: _order.customer.name.replace(/[^a-zA-Z ]/g, ''),
+          name: _order.customer.name.replace(/[^a-zA-Z ]/g, ""),
           phone: _order.customer.telephone,
           email: _order.customer.email,
           address: _order.customer.address,
@@ -153,11 +182,16 @@ const PaymentService = {
               quantity: 1,
             },
             {
-              name: "Biaya Layanan",
-              price: parseInt(pricing.service_pay, 10),
+              name: "Biaya Admin",
+              price: parseInt(pricing.admin_pay, 10),
               quantity: 1,
             },
-            pricing.discount_cut != 0
+            {
+              name: `Biaya Ongkir`,
+              price: parseInt(pricing.driver_pay, 10),
+              quantity: 1,
+            },
+            pricing.discountApplied
               ? {
                   name: `Kupon ${coupon.name} - ${coupon.multiplier}%`,
                   price: pricing.discount_cut,
