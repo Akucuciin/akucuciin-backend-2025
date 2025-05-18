@@ -116,6 +116,8 @@ export const sendOrderConfirmationToLaundry = async (ord) => {
       ord.customer.email
     }\nAlamat: ${ord.customer.address}\nPinpoint: ${
       ord.maps_pinpoint
+    }\nNo HP Customer: https://wa.me/${
+      ord.customer.telephone
     }\n\n==LAUNDRY==\n${ord.laundry_partner.name}, ${
       ord.laundry_partner.area
     }, ${ord.laundry_partner.city}\nNo HP laundry: https://wa.me/${
