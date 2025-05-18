@@ -112,7 +112,7 @@ const PaymentService = {
           price_after_multiplier = 1.12;
         } else if (aggregator >= 10000) {
           price_after_multiplier = 1.15;
-        } else if (aggregator >= 3000) {
+        } else if (aggregator > 3000) {
           price_after_multiplier = 1.2;
         } else {
           price_after_multiplier = 1.35;
