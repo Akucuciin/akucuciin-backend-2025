@@ -47,6 +47,11 @@ const AuthService = {
       throw new AuthenticationError("Login gagal, akun tidak ditemukan");
     if (customer.isActive === 0)
       throw new AuthenticationError("Login gagal, akun belum diaktivasi");
+    if (!customer.password) {
+      throw new AuthenticationError(
+        "Akun ini terdaftar menggunakan Google. Silakan login dengan Google."
+      );
+    }
 
     const isPasswordMatch = await bcrypt.compare(
       credentials.password,
