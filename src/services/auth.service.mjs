@@ -45,13 +45,13 @@ const AuthService = {
     const customer = await CustomerQuery.getCustomerForAuth(credentials.email);
     if (!customer)
       throw new AuthenticationError("Login gagal, akun tidak ditemukan");
-    if (customer.isActive === 0)
-      throw new AuthenticationError("Login gagal, akun belum diaktivasi");
     if (!customer.password) {
       throw new AuthenticationError(
-        "Akun ini terdaftar menggunakan Google. Silakan login dengan Google."
+        "Akun ini terdaftar menggunakan GoogleOAuth. Silakan login dengan Google."
       );
     }
+    if (customer.isActive === 0)
+      throw new AuthenticationError("Login gagal, akun belum diaktivasi");
 
     const isPasswordMatch = await bcrypt.compare(
       credentials.password,
