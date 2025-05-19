@@ -5,6 +5,7 @@ const AppConfig = {
     dev: Number(process.env.DEV),
     port: process.env.PORT,
     corsBase: process.env.CORS_BASE,
+    frontendBaseUrl: process.env.FRONTEND_BASE_URL,
   },
   DB: {
     host: process.env.DB_HOST,
