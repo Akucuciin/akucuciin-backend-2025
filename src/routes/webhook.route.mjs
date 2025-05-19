@@ -50,7 +50,7 @@ WebhookRouter.get(
     }
 
     return res.redirect(
-      `${AppConfig.Server.frontendBaseUrl}/googleoauthsuccess?accessToken=${accessToken}?refreshToken=${refreshToken}`
+      `${AppConfig.Server.frontendBaseUrl}/googleoauthsuccess?accessToken=${accessToken}&refreshToken=${refreshToken}`
     );
   }
 );
