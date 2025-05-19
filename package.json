@@ -4,7 +4,7 @@
   "main": "src/server.mjs",
   "type": "module",
   "scripts": {
-    "dev": "nodemon --ignore auth/ ./src/server.mjs",
+    "dev": "nodemon ./src/server.mjs",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "aghnat hasya sayyidina@akucuciin",
@@ -28,6 +28,7 @@
     "nodemailer": "^6.9.16",
     "nodemon": "^3.1.9",
     "passport": "^0.7.0",
+    "passport-google-oauth20": "^2.0.0",
     "passport-jwt": "^4.0.1",
     "path": "^0.12.7",
     "qrcode-terminal": "^0.12.0",

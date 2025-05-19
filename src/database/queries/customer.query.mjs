@@ -45,6 +45,7 @@ const CustomerQuery = {
         c.referral_code,
         c.created_at,
         c.updated_at,
+        c.isActive,
         COALESCE(rc.referral_count, 0) AS referral_code_used
         FROM customers c
         LEFT JOIN (

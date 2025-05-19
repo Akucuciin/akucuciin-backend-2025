@@ -5,6 +5,7 @@ const AppConfig = {
     dev: Number(process.env.DEV),
     port: process.env.PORT,
     corsBase: process.env.CORS_BASE,
+    frontendBaseUrl: process.env.FRONTEND_BASE_URL,
   },
   DB: {
     host: process.env.DB_HOST,
@@ -12,6 +13,11 @@ const AppConfig = {
     port: process.env.DB_PORT,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_DATABASE,
+  },
+  GOOGLE: {
+    clientId: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackUrl: process.env.GOOGLE_CALLBACK_URL,
   },
   JWT: {
     accessTokenSecret: process.env.JWT_ACCESS_TOKEN_SECRET,

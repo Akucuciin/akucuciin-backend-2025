@@ -2,7 +2,10 @@ import CouponQuery from "../database/queries/coupon.query.mjs";
 import CustomerQuery from "../database/queries/customer.query.mjs";
 import LaundryPartnerQuery from "../database/queries/laundryPartner.query.mjs";
 import OrderQuery from "../database/queries/order.query.mjs";
-import { BadRequestError } from "../errors/customErrors.mjs";
+import {
+  AuthorizationError,
+  BadRequestError,
+} from "../errors/customErrors.mjs";
 import { formatOrdersFromDb } from "../utils/order.utils.mjs";
 import { generateNanoidWithPrefix } from "../utils/utils.mjs";
 import OrderSchema from "../validators/order.schema.mjs";
@@ -14,6 +17,22 @@ import {
 
 const OrderService = {
   create: async (req) => {
+    const customer = await CustomerQuery.getCustomerProfileByEmail(
+      req.user.email
+    );
+    if (!customer.address?.trim()) {
+      console.log(customer.address);
+      throw new AuthorizationError(
+        "Gagal, silahkan isi data alamat terlebih dahulu pada profile anda"
+      );
+    }
+
+    if (!customer.telephone?.trim()) {
+      throw new AuthorizationError(
+        "Gagal, silahkan isi data nomor telephone (wa) terlebih dahulu pada profile anda"
+      );
+    }
+
     const order = validate(OrderSchema.create, req.body);
 
     order.id = generateNanoidWithPrefix("ORDER");

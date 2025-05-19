@@ -1,4 +1,5 @@
 import { Router } from "express";
+import passport from "../auth/passport.auth.mjs";
 import useRateLimiter from "../configs/rateLimiter.config.mjs";
 import CustomerController from "../controllers/customer.controller.mjs";
 import authorize from "../middlewares/auth.middleware.mjs";
@@ -23,6 +24,7 @@ CustomerRouter.post(
     CustomerController.createReferralCode(req, res, next)
 );
 
+// === Register, Auth
 CustomerRouter.post("/api/customer", async (req, res, next) =>
   CustomerController.register(req, res, next)
 );
@@ -34,6 +36,12 @@ CustomerRouter.post(
 CustomerRouter.post("/api/customer/logout", async (req, res, next) =>
   CustomerController.logout(req, res, next)
 );
+
+CustomerRouter.get(
+  "/api/customer/login/google-auth",
+  passport.authenticate("customer-google-auth", { scope: ["profile", "email"] })
+);
+// === END Register, Auth
 
 // === ORDER
 CustomerRouter.get(

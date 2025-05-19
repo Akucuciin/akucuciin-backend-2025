@@ -45,6 +45,11 @@ const AuthService = {
     const customer = await CustomerQuery.getCustomerForAuth(credentials.email);
     if (!customer)
       throw new AuthenticationError("Login gagal, akun tidak ditemukan");
+    if (!customer.password) {
+      throw new AuthenticationError(
+        "Akun ini terdaftar menggunakan GoogleOAuth. Silakan login dengan Google."
+      );
+    }
     if (customer.isActive === 0)
       throw new AuthenticationError("Login gagal, akun belum diaktivasi");
 
