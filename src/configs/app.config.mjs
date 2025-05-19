@@ -13,6 +13,11 @@ const AppConfig = {
     password: process.env.DB_PASSWORD,
     database: process.env.DB_DATABASE,
   },
+  GOOGLE: {
+    clientId: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackUrl: process.env.GOOGLE_CALLBACK_URL,
+  },
   JWT: {
     accessTokenSecret: process.env.JWT_ACCESS_TOKEN_SECRET,
     accessTokenMaxAge: Number(process.env.JWT_MAX_AGE),
