@@ -37,6 +37,11 @@ passport.use(
         const customer = await CustomerQuery.getCustomerProfileByEmail(
           emailFromOAuth
         );
+
+        if (!customer.isActive) {
+          await CustomerQuery.activateCustomer(emailFromOAuth);
+        }
+
         return done(null, {
           id: customer.id,
           email: customer.email,
@@ -54,7 +59,7 @@ passport.use(
           null
         );
         await CustomerQuery.activateCustomer(emailFromOAuth);
-        
+
         return done(null, {
           id: newCustomerId,
           email: emailFromOAuth,
