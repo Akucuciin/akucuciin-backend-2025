@@ -76,10 +76,8 @@ export const sendOrderConfirmationToCustomer = async (ord) => {
     jid: `${ord.customer.telephone}@s.whatsapp.net`,
     content: `*[Pesanan Anda Telah Diterima]*\n\nHalo ${
       ord.customer.name
-    },\n\nTerima kasih telah menggunakan layanan AkuCuciin. Berikut adalah detail pesanan Anda:\n\n== Detail Pesanan ==\nID: ${
-      ord.id
-    }\n📦 Paket Laundry: ${ord.package.name}\n📜 Jenis Laundry: ${
-      ord.content
+    },\n\nTerima kasih telah menggunakan layanan AkuCuciin. Berikut adalah detail pesanan Anda:\n\n== Detail Pesanan ==\n📦 Paket Laundry: ${
+      ord.package.name
     }\n📝 Catatan: ${ord.note || "-"}\n📅 Tanggal Penjemputan: ${
       ord.pickup_date || "-"
     }\n🗺️ Pin Lokasi Anda: ${ord.maps_pinpoint}\n🎟️ Kupon: ${
@@ -92,7 +90,9 @@ export const sendOrderConfirmationToCustomer = async (ord) => {
       ord.laundry_partner.city
     }\n📞 Kontak Laundry: https://wa.me/${
       ord.laundry_partner.telephone
-    }\n\n====================\n\n_Pesan ini dibuat otomatis oleh sistem AkuCuciin._\nTanggal Pemesanan: ${
+    }\n\n====================\nID: ${
+      ord.id
+    }\n_Pesan ini dibuat otomatis oleh sistem AkuCuciin._\nTanggal Pemesanan: ${
       ord.created_at
     }`,
   };
