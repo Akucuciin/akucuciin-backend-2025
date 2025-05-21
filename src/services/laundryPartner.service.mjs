@@ -24,6 +24,16 @@ const LaundryPartnerService = {
 
     return laundryPartner;
   },
+  getPartnerPackagesTopPicks: async (req) => {
+    const { id } = req.params;
+
+    const laundryPartner = await LaundryPartnerQuery.getById(id);
+    if (!laundryPartner) throw new NotFoundError("Failed, laundry not found");
+
+    const packagesTopPicks = await LaundryPartnerQuery.getPackagesTopPicks(id);
+
+    return packagesTopPicks;
+  },
   getPartnerImages: async (req) => {
     const { id: laundry_partner_id } = req.params;
 
