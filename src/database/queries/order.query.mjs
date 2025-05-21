@@ -18,20 +18,31 @@ const OrderQuery = {
     ]);
     return results[0];
   },
-  getOrdersForReport: async function () {
-    const [results] = await db.query(
-      `
+  getOrdersForReport: async function (startDate, endDate) {
+    let query = `
         SELECT 
-        o.created_at, 
         o.id,
+        o.customer_id AS c_id,
         c.name AS c_name,
         c.email AS c_email,
         c.address AS c_address,
         c.telephone AS c_telephone,
-        lp.name AS partner_name,
-        lpp.name AS package_name,
-        lpp.price_text AS harga_paket,
+        o.laundry_partner_id AS lp_id,
+        lp.name AS lp_name,
+        lp.email AS lp_email,
+        lp.address AS lp_address,
+        lp.city AS lp_city,
+        lp.area AS lp_area,
+        lp.telephone AS lp_telephone,
+        lp.maps_pinpoint AS lp_maps_pinpoint,
+        o.package_id AS p_id,
+        lpp.name AS p_name,
+        lpp.price_text AS p_price_text,
+        lpp.description AS p_description ,
+        o.driver_id AS d_id,
         d.name AS d_name,
+        d.email AS d_email,
+        d.telephone AS d_telephone,
         o.content ,
         o.status,
         o.status_payment,
@@ -46,15 +57,23 @@ const OrderQuery = {
         o.rating,
         o.review,
         o.payment_link,
-        o.payment_link_expired_at
+        o.payment_link_expired_at,
+        o.created_at 
         FROM orders o 
         INNER JOIN customers c ON o.customer_id = c.id
         INNER JOIN laundry_partners lp ON o.laundry_partner_id  = lp.id 
         INNER JOIN laundry_partners_packages lpp ON o.package_id = lpp.id
         LEFT JOIN drivers d ON o.driver_id = d.id
-        ORDER BY o.created_at ASC
-      `
-    );
+      `;
+
+    const params = [];
+    if (startDate && endDate) {
+      query += `WHERE o.created_at >= ? AND o.created_at < ? `;
+      params.push(startDate, endDate);
+    }
+
+    query += `ORDER BY o.created_at DESC`;
+    const [results] = await db.query(query, params);
     return results;
   },
   getOrdersJoined: async function (startDate, endDate) {

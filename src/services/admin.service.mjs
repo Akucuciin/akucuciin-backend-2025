@@ -252,7 +252,19 @@ const AdminService = {
     return "File succesfully deleted";
   },
   exportOrderToExcel: async (req) => {
-    const orders = await OrderQuery.getOrdersForReport();
+    let { startDate, endDate } = req.query;
+    if (startDate && endDate) {
+      const isValidDate = (dateStr) => /^\d{4}-\d{2}-\d{2}$/.test(dateStr);
+      if (!isValidDate(startDate) || !isValidDate(endDate)) {
+        throw new BadRequestError("Invalid Query Parameter");
+      }
+      const parsedEnd = new Date(endDate);
+      const endPlusOne = new Date(parsedEnd);
+      endPlusOne.setDate(endPlusOne.getDate() + 1);
+      endDate = endPlusOne.toISOString().slice(0, 10);
+    }
+
+    const orders = await OrderQuery.getOrdersForReport(startDate, endDate);
 
     const workbook = new ExcelJs.Workbook();
     const worksheet = workbook.addWorksheet("Orders");

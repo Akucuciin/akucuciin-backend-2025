@@ -167,7 +167,7 @@ const AdminController = {
         month: "long",
         year: "numeric",
       });
-      const reportFilename = `Order Report_${formattedToday}_${nanoid(10)}.xlsx`;
+      const reportFilename = `Order Report_${formattedToday}_${nanoid(4)}.xlsx`;
       
       res.setHeader(
         "Content-Disposition",
