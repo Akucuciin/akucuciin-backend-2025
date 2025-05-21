@@ -57,9 +57,8 @@ const OrderQuery = {
     );
     return results;
   },
-  getOrdersJoined: async function () {
-    const [results] = await db.query(
-      `
+  getOrdersJoined: async function (startDate, endDate) {
+    let query = `
         SELECT 
         o.id,
         o.customer_id AS c_id,
@@ -104,8 +103,16 @@ const OrderQuery = {
         INNER JOIN laundry_partners lp ON o.laundry_partner_id  = lp.id 
         INNER JOIN laundry_partners_packages lpp ON o.package_id = lpp.id
         LEFT JOIN drivers d ON o.driver_id = d.id
-      `
-    );
+      `;
+
+    const params = [];
+    if (startDate && endDate) {
+      query += `WHERE o.created_at >= ? AND o.created_at < ? `;
+      params.push(startDate, endDate);
+    }
+
+    query += `ORDER BY o.created_at DESC`;
+    const [results] = await db.query(query, params);
     return results;
   },
   getOrdersJoinedByCustomer: async function (customer_id) {
@@ -331,14 +338,18 @@ const OrderQuery = {
     ]);
     return results[0];
   },
-  updatePaymentLinkOrder: async function (order_id, payment_link, payment_link_expired_at) {
+  updatePaymentLinkOrder: async function (
+    order_id,
+    payment_link,
+    payment_link_expired_at
+  ) {
     const [results] = await db.query(
       `
       UPDATE orders
       SET payment_link = ?, payment_link_expired_at = ?
       WHERE id = ?
       `,
-      [payment_link, payment_link_expired_at , order_id]
+      [payment_link, payment_link_expired_at, order_id]
     );
     return results;
   },
