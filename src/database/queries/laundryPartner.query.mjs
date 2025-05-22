@@ -153,6 +153,28 @@ const LaundryPartnerQuery = {
     );
     return results[0];
   },
+  getPartnerReviews: async function (laundry_partner_id) {
+    const [results] = await db.query(
+      `
+      SELECT 
+          o.rating,
+          o.review,
+          c.name AS customer_name,
+          p.name AS package_name
+      FROM 
+          orders o
+      JOIN customers c ON o.customer_id = c.id
+      JOIN laundry_partners_packages p ON o.package_id = p.id
+      WHERE 
+          o.laundry_partner_id = ?
+          AND o.rating > 0
+      ORDER BY 
+          o.created_at DESC;
+      `,
+      [laundry_partner_id]
+    );
+    return results;
+  },
   isEmailExists: async function (email) {
     const [results] = await db.query(
       `SELECT count(email) as isExist FROM laundry_partners WHERE email = ?`,

@@ -65,6 +65,19 @@ const LaundryPartnerService = {
 
     return response;
   },
+  getPartnerReviews: async (req) => {
+    const { id: laundry_partner_id } = req.params;
+
+    const isExist = await LaundryPartnerQuery.getById(laundry_partner_id);
+
+    if (!isExist) throw new NotFoundError("Laundry partner not found");
+
+    const result = await LaundryPartnerQuery.getPartnerReviews(
+      laundry_partner_id
+    );
+
+    return result;
+  },
   getPartnersLocations: async (req) => {
     const locations = await LaundryPartnerQuery.getPartnersLocations();
     const groupedLocations = {};
