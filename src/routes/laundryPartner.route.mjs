@@ -33,6 +33,18 @@ LaundryPartnerRouter.get(
 );
 
 LaundryPartnerRouter.get(
+  "/api/laundry_partner/:id/rating",
+  async (req, res, next) =>
+    LaundryPartnerController.getPartnerAverageRating(req, res, next)
+);
+
+LaundryPartnerRouter.get(
+  "/api/laundry_partner/:id/reviews",
+  async (req, res, next) =>
+    LaundryPartnerController.getPartnerReviews(req, res, next)
+);
+
+LaundryPartnerRouter.get(
   "/api/laundry_partners/locations",
   async (req, res, next) => {
     LaundryPartnerController.getPartnersLocations(req, res, next);

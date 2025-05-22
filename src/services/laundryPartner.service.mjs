@@ -43,6 +43,41 @@ const LaundryPartnerService = {
 
     return images;
   },
+  getPartnerAverageRating: async (req) => {
+    const { id: laundry_partner_id } = req.params;
+
+    const isExist = await LaundryPartnerQuery.getById(laundry_partner_id);
+
+    if (!isExist) throw new NotFoundError("Laundry partner not found");
+
+    const result = await LaundryPartnerQuery.getPartnerAverageRating(
+      laundry_partner_id
+    );
+
+    let { avg_rating, total_reviews } = result ?? {};
+    avg_rating = parseFloat(avg_rating);
+    const response = {
+      avg_rating: avg_rating ?? 0,
+      total_reviews: total_reviews ?? 0,
+      label:
+        total_reviews > 0 ? `${avg_rating.toFixed(1)} / 5` : "Belum ada review",
+    };
+
+    return response;
+  },
+  getPartnerReviews: async (req) => {
+    const { id: laundry_partner_id } = req.params;
+
+    const isExist = await LaundryPartnerQuery.getById(laundry_partner_id);
+
+    if (!isExist) throw new NotFoundError("Laundry partner not found");
+
+    const result = await LaundryPartnerQuery.getPartnerReviews(
+      laundry_partner_id
+    );
+
+    return result;
+  },
   getPartnersLocations: async (req) => {
     const locations = await LaundryPartnerQuery.getPartnersLocations();
     const groupedLocations = {};

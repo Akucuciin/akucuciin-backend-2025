@@ -61,6 +61,28 @@ const LaundryPartnerController = {
       next(error);
     }
   },
+  getPartnerAverageRating: async (req, res, next) => {
+    try {
+      const result = await LaundryPartnerService.getPartnerAverageRating(req);
+      return res.status(200).json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+  getPartnerReviews: async (req, res, next) => {
+    try {
+      const result = await LaundryPartnerService.getPartnerReviews(req);
+      return res.status(200).json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
   getPartnersLocations: async (req, res, next) => {
     try {
       const result = await LaundryPartnerService.getPartnersLocations(req);

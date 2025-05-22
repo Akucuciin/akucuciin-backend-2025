@@ -134,6 +134,47 @@ const LaundryPartnerQuery = {
     `);
     return results;
   },
+  getPartnerAverageRating: async function (laundry_partner_id) {
+    const [results] = await db.query(
+      `
+        SELECT 
+            laundry_partner_id,
+            ROUND(AVG(CASE WHEN rating > 0 THEN rating ELSE NULL END), 2) AS avg_rating,
+            COUNT(CASE WHEN rating > 0 THEN 1 ELSE NULL END) AS total_reviews
+        FROM 
+            orders
+        WHERE 
+            laundry_partner_id = ?
+            AND status != 'batal'
+        GROUP BY 
+            laundry_partner_id;
+      `,
+      [laundry_partner_id]
+    );
+    return results[0];
+  },
+  getPartnerReviews: async function (laundry_partner_id) {
+    const [results] = await db.query(
+      `
+      SELECT 
+          o.rating,
+          o.review,
+          c.name AS customer_name,
+          p.name AS package_name
+      FROM 
+          orders o
+      JOIN customers c ON o.customer_id = c.id
+      JOIN laundry_partners_packages p ON o.package_id = p.id
+      WHERE 
+          o.laundry_partner_id = ?
+          AND o.rating > 0
+      ORDER BY 
+          o.created_at DESC;
+      `,
+      [laundry_partner_id]
+    );
+    return results;
+  },
   isEmailExists: async function (email) {
     const [results] = await db.query(
       `SELECT count(email) as isExist FROM laundry_partners WHERE email = ?`,
