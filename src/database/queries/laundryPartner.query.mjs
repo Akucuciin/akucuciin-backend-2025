@@ -157,6 +157,7 @@ const LaundryPartnerQuery = {
     const [results] = await db.query(
       `
       SELECT 
+          o.id,
           o.rating,
           o.review,
           c.name AS customer_name,
