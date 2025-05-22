@@ -55,20 +55,22 @@ const LaundryPartnerQuery = {
           lpp.description,
           lpp.features,
           lpp.price_text,
-          top_packages.total_orders
+          top_packages.total_orders,
+          top_packages.avg_rating
       FROM 
           laundry_partners_packages lpp
       JOIN (
           SELECT 
-              package_id,
-              COUNT(*) AS total_orders
+              o.package_id,
+              COUNT(*) AS total_orders,
+              ROUND(AVG(CASE WHEN o.rating > 0 THEN o.rating ELSE NULL END), 2) AS avg_rating
           FROM 
-              orders
+              orders o
           WHERE 
-              laundry_partner_id = ?
-              AND status != 'batal'
+              o.laundry_partner_id = ?
+              AND o.status != 'batal'
           GROUP BY 
-              package_id
+              o.package_id
           ORDER BY 
               total_orders DESC
           LIMIT 3
