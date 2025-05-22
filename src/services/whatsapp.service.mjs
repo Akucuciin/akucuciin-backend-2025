@@ -122,11 +122,11 @@ export const sendOrderConfirmationToLaundry = async (ord) => {
       ord.laundry_partner.area
     }, ${ord.laundry_partner.city}\nNo HP laundry: https://wa.me/${
       ord.laundry_partner.telephone
-    }\n\nPaket Laundry: ${ord.package.name}\nContent: ${ord.content}\nNote: ${
-      ord.note || "-"
-    }\nPickup Date: ${ord.pickup_date || "-"}\n\nKupon: ${
-      ord.coupon_code || "-"
-    }\nReferral Code: ${
+    }\n\nPaket Laundry: ${ord.package.name}\nDeskripsi:${
+      ord.package.description
+    }\nNote: ${ord.note || "-"}\nPickup Date: ${
+      ord.pickup_date || "-"
+    }\n\nKupon: ${ord.coupon_code || "-"}\nReferral Code: ${
       ord.referral_code || "-"
     }\n====================\n\n_Pesan ini dibuat otomatis oleh sistem Akucuciin_\nTanggal: ${
       ord.created_at
