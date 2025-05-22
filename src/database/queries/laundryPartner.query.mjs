@@ -46,6 +46,42 @@ const LaundryPartnerQuery = {
     );
     return results;
   },
+  getPackagesTopPicks: async function (laundry_partner_id) {
+    const [results] = await db.query(
+      `
+      SELECT 
+          lpp.id,
+          lpp.name,
+          lpp.description,
+          lpp.features,
+          lpp.price_text,
+          top_packages.total_orders,
+          top_packages.avg_rating
+      FROM 
+          laundry_partners_packages lpp
+      JOIN (
+          SELECT 
+              o.package_id,
+              COUNT(*) AS total_orders,
+              ROUND(AVG(CASE WHEN o.rating > 0 THEN o.rating ELSE NULL END), 2) AS avg_rating
+          FROM 
+              orders o
+          WHERE 
+              o.laundry_partner_id = ?
+              AND o.status != 'batal'
+          GROUP BY 
+              o.package_id
+          ORDER BY 
+              total_orders DESC
+          LIMIT 3
+      ) top_packages ON lpp.id = top_packages.package_id
+      WHERE
+          lpp.deleted_at IS NULL;
+      `,
+      [laundry_partner_id]
+    );
+    return results;
+  },
   getPackageOfPartnerById: async function (laundry_partner_id, id) {
     const [results] = await db.query(
       `

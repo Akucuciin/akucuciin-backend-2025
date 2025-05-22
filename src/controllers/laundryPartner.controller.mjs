@@ -37,6 +37,19 @@ const LaundryPartnerController = {
       next(error);
     }
   },
+  getPartnerPackagesTopPicks: async (req, res, next) => {
+    try {
+      const result = await LaundryPartnerService.getPartnerPackagesTopPicks(
+        req
+      );
+      return res.status(200).json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
   getPartnerImages: async (req, res, next) => {
     try {
       const result = await LaundryPartnerService.getPartnerImages(req);
