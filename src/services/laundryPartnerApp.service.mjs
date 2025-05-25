@@ -9,7 +9,7 @@ import {
 import LaundryPartnerAppSchema from "../validators/laundryPartnerApp.schema.mjs";
 import validate from "../validators/validator.mjs";
 import PaymentService from "./payment.service.mjs";
-import { sendOrderPaymentToCustomer } from "./whatsapp.service.mjs";
+import { sendOrderCompletedConfirmationToCustomer, sendOrderPaymentToCustomer } from "./whatsapp.service.mjs";
 
 const LaundryPartnerAppService = {
   //Profile Create
@@ -55,6 +55,22 @@ const LaundryPartnerAppService = {
       throw new BadRequestError(
         `Failed, order status is already [${order.status}]`
       );
+
+    if (updated.status && updated.status === "selesai") {
+      if (order.weight == 0)
+        throw new BadRequestError("Gagal, update berat terlebih dahulu");
+      if (order.price_after == 0)
+        throw new BadRequestError("Gagal, update harga terlebih dahulu");
+      if (order.status_payment === "belum bayar")
+        throw new BadRequestError("Gagal, customer belum membayar pesanan ini");
+
+      await sendOrderCompletedConfirmationToCustomer(
+        order.c_telephone,
+        order.c_name,
+        order_id
+      );
+
+    }
 
     const values = {
       order_id,

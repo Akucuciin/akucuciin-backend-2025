@@ -38,9 +38,6 @@ const OrderSchema = {
         "penjemputan",
         "pencucian",
         "pengantaran",
-        "selesai",
-        "batal",
-        "kesalahan",
         "pengantaran"
       )
       .required(),
