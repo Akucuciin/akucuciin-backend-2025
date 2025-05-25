@@ -24,6 +24,7 @@ import validate from "../validators/validator.mjs";
 import {
   sendOrderAssignedPengantaranToDriver,
   sendOrderAssignedToDriver,
+  sendOrderCompletedConfirmationToCustomer,
 } from "./whatsapp.service.mjs";
 
 const AdminService = {
@@ -315,6 +316,19 @@ const AdminService = {
       price: updated.price || order.price,
       status_payment: updated.status_payment || order.status_payment,
     };
+
+    if (updated.status && updated.status === "selesai") {
+      if (order.weight == 0)
+        throw new BadRequestError("Gagal, update berat terlebih dahulu");
+      if (order.price_after == 0)
+        throw new BadRequestError("Gagal, mitra belum mengupdate harga");
+      if (order.status_payment === "belum bayar")
+        throw new BadRequestError("Gagal, customer belum membayar pesanan ini");
+
+      const ordersJoined = await OrderQuery.getOrderJoinedById(order_id);
+      const orderJoined = ordersJoined[0];
+      await sendOrderCompletedConfirmationToCustomer(orderJoined.c_telephone, orderJoined.c_name, order_id);
+    }
 
     const result = await OrderQuery.updateStatus(
       values.order_id,

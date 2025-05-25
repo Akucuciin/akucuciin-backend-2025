@@ -141,6 +141,21 @@ export const sendOrderConfirmationToLaundry = async (ord) => {
   });
 };
 
+export const sendOrderCompletedConfirmationToCustomer = async (telephone, custName, orderId) => {
+  const payload = {
+    jid: `${telephone}@s.whatsapp.net`,
+    content: `*✨ Yay, pesananmu sudah selesai! ✨*\n\nHalo, ${custName}\nTerima kasih sudah mempercayakan laundry kamu ke kami 🧺💙\n\nKami ingin denger pendapatmu, lho!\nYuk isi review-nya lewat menu Lihat Order di website. Feedback dari kamu bantu kami jadi lebih baik lagi 🙌\n\nAda kendala atau pertanyaan?\nLangsung aja hubungi kami—tim kami siap bantu kapan pun kamu butuh 🤝\n\nSampai jumpa lagi!\n\n====================\n\n_Pesan ini dikirim otomatis oleh sistem AkuCuciin._\n_${orderId}_`,
+  };
+
+  const xSignature = generateXSignature(payload);
+
+  await axios.post(`${AppConfig.Whatsapp.SEND_URL}/send`, payload, {
+    headers: {
+      "X-Signature": xSignature,
+    },
+  });
+};
+
 export const sendNewOrderPaymentToCustomer = async (ord, paymentLink) => {
   const payload = {
     jid: `${ord.customer.telephone}@s.whatsapp.net`,
