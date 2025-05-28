@@ -104,7 +104,7 @@ const PaymentService = {
         isCoupon = true;
       }
 
-      const calculatePriceAfter = (_order) => {
+      const calculatePriceAfter = async (_order) => {
         const aggregator = _order.price / _order.weight;
         let price_after_multiplier;
 
@@ -119,14 +119,31 @@ const PaymentService = {
         }
 
         const price_after = Math.round(_order.price * price_after_multiplier);
-        const discountApplied = isCoupon;
+        let discountApplied = isCoupon;
+        let haveMaxDiscount = false;
         const hasDriver = _order.driver?.id;
         const admin_pay = 1000;
         let driver_pay = 0;
         let discount_cut = 0;
 
         if (discountApplied) {
-          discount_cut = price_after * discountMultiplier;
+          if (coupon.min_weight && _order.weight < coupon.min_weight) {
+            // not meet minimum kg,  set coupon to be used again
+            console.error("not meet minimum kg");
+            if (coupon.is_used == -1) {
+            }
+            if (coupon.is_used == 1) await CouponQuery.setNotUsed(coupon.name);
+            discountApplied = false;
+          } else {
+            // meet minimum kg
+            discount_cut = price_after * discountMultiplier;
+
+            if (coupon.max_discount && discount_cut > coupon.max_discount) {
+              discount_cut = coupon.max_discount;
+            }
+
+            if (coupon.max_discount) haveMaxDiscount = true;
+          }
         }
 
         if (hasDriver) {
@@ -139,11 +156,12 @@ const PaymentService = {
           discount_cut,
           driver_pay,
           discountApplied: discountApplied,
+          haveMaxDiscount: haveMaxDiscount,
           hasDriver: hasDriver,
         };
       };
 
-      const pricing = calculatePriceAfter(_order);
+      const pricing = await calculatePriceAfter(_order);
       pricing.discount_cut = parseInt(`-${pricing.discount_cut}`, 10);
 
       const totalPrice =
@@ -193,7 +211,11 @@ const PaymentService = {
             },
             pricing.discountApplied
               ? {
-                  name: `Kupon ${coupon.name} - ${coupon.multiplier}%`,
+                  name: `Kupon ${coupon.name} - ${coupon.multiplier}% ${
+                    pricing.haveMaxDiscount
+                      ? `: Max Rp${coupon.max_discount}`
+                      : ""
+                  }`,
                   price: pricing.discount_cut,
                   quantity: 1,
                 }
