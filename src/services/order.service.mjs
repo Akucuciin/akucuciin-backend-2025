@@ -46,6 +46,17 @@ const OrderService = {
           `Gagal, Kupon ${order.coupon_code} sudah tidak aktif`
         );
       }
+
+      if (coupon.expired_at) {
+        const isCouponNotExpired = new Date(coupon.expired_at) > new Date();
+
+        if (!isCouponNotExpired) {
+          throw new BadRequestError(
+            `Gagal, Kupon ${order.coupon_code} sudah kadaluarsa dan tidak bisa digunakan`
+          );
+        }
+      }
+
       if (coupon.is_used === 1) {
         throw new BadRequestError(
           `Gagal, Kupon ${order.coupon_code} (sekali pakai), sudah pernah digunakan pelanggan lain`
@@ -56,6 +67,7 @@ const OrderService = {
         await CouponQuery.setUsed(order.coupon_code);
       }
     }
+
     if (order.referral_code) {
       const referral_code = await CustomerQuery.isReferralCodeExist(
         order.referral_code
