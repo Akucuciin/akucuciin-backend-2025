@@ -11,7 +11,7 @@ export default function requestLogger(req, res, next) {
       `| ${req.method} ${req.originalUrl}`,
       `| Status: ${res.statusCode}`,
       `| Duration: ${durationMs}ms`,
-      `| User ID: ${req.user.id || "NO USER"}`,
+      `| User ID: ${req.user?.id || "NO USER"}`,
       `| Host: ${req.headers.host}`,
       `| Referer: ${req.headers.referer}`,
       `| User-Agent: ${req.headers["user-agent"]}`,
