@@ -2,6 +2,7 @@ import AppConfig from "../configs/app.config.mjs";
 import LaundryPartnerAppQuery from "../database/queries/laundryPartnerApp.query.mjs";
 import OrderQuery from "../database/queries/order.query.mjs";
 import { BadRequestError } from "../errors/customErrors.mjs";
+import { withTransaction } from "../utils/db.utils.mjs";
 import {
   formatOrderFromDb,
   formatOrdersFromDb,
@@ -9,7 +10,10 @@ import {
 import LaundryPartnerAppSchema from "../validators/laundryPartnerApp.schema.mjs";
 import validate from "../validators/validator.mjs";
 import PaymentService from "./payment.service.mjs";
-import { sendOrderCompletedConfirmationToCustomer, sendOrderPaymentToCustomer } from "./whatsapp.service.mjs";
+import {
+  sendOrderCompletedConfirmationToCustomer,
+  sendOrderPaymentToCustomer,
+} from "./whatsapp.service.mjs";
 
 const LaundryPartnerAppService = {
   //Profile Create
@@ -69,7 +73,6 @@ const LaundryPartnerAppService = {
         order.c_name,
         order_id
       );
-
     }
 
     const values = {
@@ -90,59 +93,69 @@ const LaundryPartnerAppService = {
   },
   updatePriceOrder: async (req) => {
     const { id: order_id } = req.params;
-    const updated = validate(LaundryPartnerAppSchema.updatePrice, req.body);
 
-    const order = await LaundryPartnerAppQuery.getOrderById(order_id);
+    return await withTransaction(async (trx) => {
+      const updated = validate(LaundryPartnerAppSchema.updatePrice, req.body);
 
-    if (order.lp_id !== req.user.id) {
-      throw new BadRequestError("Access denied. This order is not yours.");
-    }
+      const order = await LaundryPartnerAppQuery.getOrderById(order_id, trx);
 
-    if (order.weight == 0) {
-      throw new BadRequestError("Gagal, update berat terlebih dahulu");
-    }
+      if (order.lp_id !== req.user.id) {
+        throw new BadRequestError("Access denied. This order is not yours.");
+      }
 
-    if (order.price_after != 0) {
-      throw new BadRequestError("Gagal, harga tidak dapat dirubah kembali");
-    }
+      if (order.weight == 0) {
+        throw new BadRequestError("Gagal, update berat terlebih dahulu");
+      }
 
-    if (order.status === "batal" || order.status === "selesai")
-      throw new BadRequestError(
-        `Failed, order status is already [${order.status}]`
+      if (order.price_after != 0) {
+        throw new BadRequestError("Gagal, harga tidak dapat dirubah kembali");
+      }
+
+      if (order.status === "batal" || order.status === "selesai")
+        throw new BadRequestError(
+          `Failed, order status is already [${order.status}]`
+        );
+
+      const values = {
+        order_id,
+        price: updated.price || order.price,
+      };
+
+      const result = await LaundryPartnerAppQuery.updatePriceOrder(
+        values.order_id,
+        values.price,
+        trx
       );
 
-    const values = {
-      order_id,
-      price: updated.price || order.price,
-    };
+      if (!result.affectedRows) throw new BadRequestError("Failed to update");
 
-    const result = await LaundryPartnerAppQuery.updatePriceOrder(
-      values.order_id,
-      values.price
-    );
+      const ordersJoined = await OrderQuery.getOrderJoinedById(order_id, trx);
+      const orderJoined = ordersJoined[0];
+      const _order = formatOrderFromDb(orderJoined);
 
-    if (!result.affectedRows) throw new BadRequestError("Failed to update");
+      // ====== DONE UPDATE PRICE, NOW PERFORM PAYMENT !!!! //
+      const expiredAt = new Date(
+        Date.now() + AppConfig.PAYMENT.DOKU.expiredTime * 60 * 1000
+      );
 
-    const ordersJoined = await OrderQuery.getOrderJoinedById(order_id);
-    const orderJoined = ordersJoined[0];
-    const _order = formatOrderFromDb(orderJoined);
+      const paymentLink = await PaymentService.Doku.generateOrderPaymentLink(
+        order_id,
+        _order,
+        trx
+      );
 
-    // ====== DONE UPDATE PRICE, NOW PERFORM PAYMENT !!!! //
-    const expiredAt = new Date(
-      Date.now() + AppConfig.PAYMENT.DOKU.expiredTime * 60 * 1000
-    );
+      await OrderQuery.updatePaymentLinkOrder(
+        order_id,
+        paymentLink,
+        expiredAt,
+        trx
+      );
+      await sendOrderPaymentToCustomer(_order, paymentLink);
 
-    const paymentLink = await PaymentService.Doku.generateOrderPaymentLink(
-      order_id,
-      _order
-    );
+      return { url: paymentLink };
 
-    await OrderQuery.updatePaymentLinkOrder(order_id, paymentLink, expiredAt);
-    await sendOrderPaymentToCustomer(_order, paymentLink);
-
-    return { url: paymentLink };
-
-    // ====== END PAYMENT //
+      // ====== END PAYMENT //
+    });
   },
 };
 

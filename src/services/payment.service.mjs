@@ -92,14 +92,14 @@ const PaymentService = {
         AppConfig.PAYMENT.DOKU.secretKey
       );
     },
-    generateOrderPaymentLink: async (orderId, _order) => {
+    generateOrderPaymentLink: async (orderId, _order, trx) => {
       // === Step 1: Pricing logic
       let discountMultiplier = 0;
       let isCoupon = false;
       let coupon = null;
       // === Step 1.1: Coupon logic
       if (_order.coupon_code) {
-        coupon = await CouponQuery.get(_order.coupon_code);
+        coupon = await CouponQuery.get(_order.coupon_code, trx);
         discountMultiplier = coupon.multiplier / 100; // eg: multipler = 20, the 0.2
         isCoupon = true;
       }
@@ -132,7 +132,7 @@ const PaymentService = {
             console.error("not meet minimum kg");
             if (coupon.is_used == -1) {
             }
-            if (coupon.is_used == 1) await CouponQuery.setNotUsed(coupon.name);
+            if (coupon.is_used == 1) await CouponQuery.setNotUsed(coupon.name, trx);
             discountApplied = false;
           } else {
             // meet minimum kg
@@ -172,7 +172,11 @@ const PaymentService = {
 
       console.error(pricing);
 
-      await LaundryPartnerAppQuery.updatePriceAfterOrder(orderId, totalPrice);
+      await LaundryPartnerAppQuery.updatePriceAfterOrder(
+        orderId,
+        totalPrice,
+        trx
+      );
 
       // === Step 2: Build payment payload
       const payload = {
@@ -195,7 +199,9 @@ const PaymentService = {
           language: "ID",
           line_items: [
             {
-              name: `Laundry ${_order.weight} kg - ${_order.laundry_partner.name}`,
+              name: `${_order.package.name.replace(/[^a-zA-Z ]/g, " ")} ${
+                _order.weight
+              } kg - ${_order.laundry_partner.name}`,
               price: parseInt(pricing.price_after, 10),
               quantity: 1,
             },

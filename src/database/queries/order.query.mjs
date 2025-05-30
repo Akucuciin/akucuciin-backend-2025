@@ -238,8 +238,8 @@ const OrderQuery = {
     );
     return results;
   },
-  getOrderJoinedById: async function (orderId) {
-    const [results] = await db.query(
+  getOrderJoinedById: async function (orderId, conn = db) {
+    const [results] = await conn.query(
       `
         SELECT 
         o.id,
@@ -360,9 +360,10 @@ const OrderQuery = {
   updatePaymentLinkOrder: async function (
     order_id,
     payment_link,
-    payment_link_expired_at
+    payment_link_expired_at,
+    conn = db
   ) {
-    const [results] = await db.query(
+    const [results] = await conn.query(
       `
       UPDATE orders
       SET payment_link = ?, payment_link_expired_at = ?
