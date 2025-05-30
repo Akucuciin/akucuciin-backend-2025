@@ -108,7 +108,7 @@ const CustomerService = {
       newCustomer.id,
       newCustomer.email
     );
-    MailService.sendVerifyEmail(newCustomer.email, registerToken);
+    await MailService.sendVerifyEmail(newCustomer.email, registerToken);
 
     return {
       id: newCustomer.id,
@@ -258,7 +258,7 @@ const CustomerService = {
       TokenService.generateRequestResetPasswordToken(email);
 
     await AuthQuery.addResetPasswordToken(resetPasswordToken);
-    MailService.sendRequestResetPassword(email, resetPasswordToken);
+    await MailService.sendRequestResetPassword(email, resetPasswordToken);
     return `Requested to ${email}`;
   },
   resendVerificationEmail: async (req) => {
@@ -284,7 +284,7 @@ const CustomerService = {
     );
 
     // TODO Mail Service kirim ulang verifikasi
-    MailService.resendVerifyEmail(email, registerToken);
+    await MailService.resendVerifyEmail(email, registerToken);
 
     return "Email terkirim, silahkan cek email ada, cek juga spam.";
   },
