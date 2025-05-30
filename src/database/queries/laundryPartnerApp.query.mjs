@@ -10,8 +10,8 @@ const LaundryPartnerAppQuery = {
     return results[0];
   },
   //Read Order by Laundry Partner Id, Edit Status Order, Read Order by Order Id
-  getOrderById: async function (orderId) {
-    const [results] = await db.query(
+  getOrderById: async function (orderId, conn = db) {
+    const [results] = await conn.query(
       `
         SELECT 
         o.id,
@@ -122,8 +122,8 @@ const LaundryPartnerAppQuery = {
     );
     return results;
   },
-  updatePriceOrder: async function (order_id, price) {
-    const [results] = await db.query(
+  updatePriceOrder: async function (order_id, price, conn = db) {
+    const [results] = await conn.query(
       `
       UPDATE orders
       SET price = ?
@@ -133,8 +133,8 @@ const LaundryPartnerAppQuery = {
     );
     return results;
   },
-  updatePriceAfterOrder: async function (order_id, price_after) {
-    const [results] = await db.query(
+  updatePriceAfterOrder: async function (order_id, price_after, conn = db) {
+    const [results] = await conn.query(
       `
       UPDATE orders
       SET price_after = ?

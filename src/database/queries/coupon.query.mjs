@@ -1,8 +1,8 @@
 import db from "../connection.mjs";
 
 const CouponQuery = {
-  get: async function (coupon_code_name) {
-    const [results] = await db.query(`SELECT * FROM coupons WHERE name = ?`, [
+  get: async function (coupon_code_name, conn = db) {
+    const [results] = await conn.query(`SELECT * FROM coupons WHERE name = ?`, [
       coupon_code_name,
     ]);
     return results[0];
@@ -18,8 +18,8 @@ const CouponQuery = {
     );
     return results;
   },
-  setNotUsed: async function (coupon_code_name) {
-    const [results] = await db.query(
+  setNotUsed: async function (coupon_code_name, conn = db) {
+    const [results] = await conn.query(
       `
         UPDATE coupons
         SET is_used = 0
