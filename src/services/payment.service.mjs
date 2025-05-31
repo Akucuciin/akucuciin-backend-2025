@@ -132,7 +132,8 @@ const PaymentService = {
             console.error("not meet minimum kg");
             if (coupon.is_used == -1) {
             }
-            if (coupon.is_used == 1) await CouponQuery.setNotUsed(coupon.name, trx);
+            if (coupon.is_used == 1)
+              await CouponQuery.setNotUsed(coupon.name, trx);
             discountApplied = false;
           } else {
             // meet minimum kg
@@ -199,7 +200,7 @@ const PaymentService = {
           language: "ID",
           line_items: [
             {
-              name: `${_order.package.name.replace(/[^a-zA-Z ]/g, " ")} ${
+              name: `${_order.package.name.replace(/[^a-zA-Z0-9 ]/g, " ")} ${
                 _order.weight
               } kg - ${_order.laundry_partner.name}`,
               price: parseInt(pricing.price_after, 10),
