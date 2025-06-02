@@ -317,6 +317,7 @@ const AdminService = {
       status_payment: updated.status_payment || order.status_payment,
     };
 
+    // Order status changed to selesai then ...
     if (updated.status && updated.status === "selesai") {
       if (order.weight == 0)
         throw new BadRequestError("Gagal, update berat terlebih dahulu");
