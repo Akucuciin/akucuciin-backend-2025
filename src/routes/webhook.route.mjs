@@ -21,7 +21,7 @@ WebhookRouter.post("/api/payment/webhook", async (req, res) => {
     const orderJoined = ordersJoined[0];
     const _order = formatOrderFromDb(orderJoined);
 
-    await sendOrderPaymentCompletedToCustomer(_order, rawInvoice);
+    await sendOrderPaymentCompletedToCustomer(_order);
     console.log("Pembayaran sukses untuk order", orderId);
   }
 

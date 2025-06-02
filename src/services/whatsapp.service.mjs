@@ -141,11 +141,7 @@ export const sendOrderConfirmationToLaundry = async (ord) => {
   });
 };
 
-export const sendOrderCompletedConfirmationToCustomer = async (
-  telephone,
-  custName,
-  orderId
-) => {
+export const sendOrderCompletedConfirmationToCustomer = async (telephone, custName, orderId) => {
   const payload = {
     jid: `${telephone}@s.whatsapp.net`,
     content: `*✨ Yay, pesananmu sudah selesai! ✨*\n\nHalo, ${custName}\nTerima kasih sudah mempercayakan laundry kamu ke kami 🧺💙\n\nKami ingin denger pendapatmu, lho!\nYuk isi review-nya lewat menu Lihat Order di website. Feedback dari kamu bantu kami jadi lebih baik lagi 🙌\n\nAda kendala atau pertanyaan?\nLangsung aja hubungi kami—tim kami siap bantu kapan pun kamu butuh 🤝\n\nSampai jumpa lagi!\n\n====================\n\n_Pesan ini dikirim otomatis oleh sistem AkuCuciin._\n_${orderId}_`,
@@ -202,13 +198,10 @@ export const sendOrderPaymentToCustomer = async (ord, paymentLink) => {
   });
 };
 
-export const sendOrderPaymentCompletedToCustomer = async (
-  ord,
-  invoiceNumber
-) => {
+export const sendOrderPaymentCompletedToCustomer = async (ord) => {
   const payload = {
     jid: `${ord.customer.telephone}@s.whatsapp.net`,
-    content: `*✅ [PEMBAYARAN SUKSES]*\n\nHalo ${ord.customer.name}!\nPembayaran untuk pesanan kamu telah berhasil diproses 🧾✅.\n\nDetail:\nOrder ID: ${ord.id}\nInvoice Number: ${invoiceNumber}\nTotal Bayar: Rp${ord.price_after}\n\n\nTerimakasih telah menggunakan layanan Akucuciin!\nKami akan segera memproses pesanan kamu dan mengabari jika ada pembaruan status.\n🧺 Stay clean, stay fresh!\n\n====================\n\n_Pesan ini dikirim otomatis oleh sistem AkuCuciin._`,
+    content: `*✅ [PEMBAYARAN SUKSES]*\n\nHalo ${ord.customer.name}!\nPembayaran untuk pesanan kamu dengan ID ${ord.id} telah berhasil diproses. 🧾✅\nTerimakasih telah menggunakan layanan Akucuciin!\nKami akan segera memproses pesanan kamu dan mengabari jika ada pembaruan status.\n🧺 Stay clean, stay fresh!\n\n====================\n\n_Pesan ini dikirim otomatis oleh sistem AkuCuciin._`,
   };
 
   const xSignature = generateXSignature(payload);
