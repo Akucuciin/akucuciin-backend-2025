@@ -1,6 +1,7 @@
 import axios from "axios";
 import crypto from "crypto";
 import AppConfig from "../configs/app.config.mjs";
+import { formatRupiah } from "../utils/format.utils.mjs";
 
 const generateXSignature = (payload) => {
   const payloadStringify = JSON.stringify(payload);
@@ -199,9 +200,11 @@ export const sendOrderPaymentToCustomer = async (ord, paymentLink) => {
 };
 
 export const sendOrderPaymentCompletedToCustomer = async (ord, invoiceNumber) => {
+  const formattedPriceAfter = formatRupiah(ord.price_after);
+
   const payload = {
     jid: `${ord.customer.telephone}@s.whatsapp.net`,
-    content: `*✅ [PEMBAYARAN SUKSES]*\n\nHalo ${ord.customer.name}!\nPembayaran untuk pesanan kamu telah berhasil diproses 🧾✅.\n\nDetail:\nOrder ID: ${ord.id}\nInvoice Number: ${invoiceNumber}\nTotal Bayar: Rp${ord.price_after}\n\nTerimakasih telah menggunakan layanan Akucuciin!\nKami akan segera memproses pesanan kamu dan mengabari jika ada pembaruan status.\n🧺 Stay clean, stay fresh!\n\n====================\n\n_Pesan ini dikirim otomatis oleh sistem AkuCuciin._`,
+    content: `*✅ [PEMBAYARAN SUKSES]*\n\nHalo ${ord.customer.name}!\nPembayaran untuk pesanan kamu telah berhasil diproses 🧾✅.\n\nDetail:\nOrder ID: ${ord.id}\nInvoice Number: ${invoiceNumber}\nTotal Bayar: Rp${formattedPriceAfter}\n\nTerimakasih telah menggunakan layanan Akucuciin!\nKami akan segera memproses pesanan kamu dan mengabari jika ada pembaruan status.\n🧺 Stay clean, stay fresh!\n\n====================\n\n_Pesan ini dikirim otomatis oleh sistem AkuCuciin._`,
   };
 
   const xSignature = generateXSignature(payload);
