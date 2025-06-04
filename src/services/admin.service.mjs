@@ -12,7 +12,7 @@ import {
   NotFoundError,
   ServerError,
 } from "../errors/customErrors.mjs";
-import { formatOrdersFromDb } from "../utils/order.utils.mjs";
+import { formatOrderFromDb, formatOrdersFromDb } from "../utils/order.utils.mjs";
 import {
   generateNanoidWithPrefix,
   lowerAndCapitalizeFirstLetter,
@@ -21,6 +21,7 @@ import DriverSchema from "../validators/driver.schema.mjs";
 import LaundryPartnerSchema from "../validators/laundryPartner.schema.mjs";
 import OrderSchema from "../validators/order.schema.mjs";
 import validate from "../validators/validator.mjs";
+import CustomerStaticService from "./customer.static-service.mjs";
 import {
   sendOrderAssignedPengantaranToDriver,
   sendOrderAssignedToDriver,
@@ -317,6 +318,7 @@ const AdminService = {
       status_payment: updated.status_payment || order.status_payment,
     };
 
+    // Order status changed to selesai then ...
     if (updated.status && updated.status === "selesai") {
       if (order.weight == 0)
         throw new BadRequestError("Gagal, update berat terlebih dahulu");
@@ -328,6 +330,9 @@ const AdminService = {
       const ordersJoined = await OrderQuery.getOrderJoinedById(order_id);
       const orderJoined = ordersJoined[0];
       await sendOrderCompletedConfirmationToCustomer(orderJoined.c_telephone, orderJoined.c_name, order_id);
+
+      const orderJoinedFormatted = formatOrderFromDb(orderJoined);
+      await CustomerStaticService.performSuccesfullReferralCodePipeline(orderJoinedFormatted.customer.email);
     }
 
     const result = await OrderQuery.updateStatus(

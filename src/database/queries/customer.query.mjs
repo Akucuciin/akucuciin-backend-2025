@@ -34,6 +34,17 @@ const CustomerQuery = {
     ]);
     return results;
   },
+  decreaseReferralCodeUntilNextReward: async function (email) {
+    const [results] = await db.query(
+      `
+        UPDATE customers
+        SET referral_code_until_next_reward = referral_code_until_next_reward - 1
+        WHERE id = ?
+    `,
+      [customer_id]
+    );
+    return results;
+  },
   getCustomerProfileByEmail: async function (email) {
     const [results] = await db.query(
       `SELECT 
@@ -46,6 +57,8 @@ const CustomerQuery = {
         c.created_at,
         c.updated_at,
         c.isActive,
+        c.referral_code_successful_count,
+        c.referral_code_until_next_reward,
         COALESCE(rc.referral_count, 0) AS referral_code_used
         FROM customers c
         LEFT JOIN (
@@ -75,6 +88,17 @@ const CustomerQuery = {
       [email]
     );
     return results[0];
+  },
+  increaseReferralCodeSuccessfulCount: async function (email) {
+    const [results] = await db.query(
+      `
+        UPDATE customers
+        SET referral_code_successful_count = referral_code_successful_count + 1
+        WHERE id = ?
+    `,
+      [customer_id]
+    );
+    return results;
   },
   isCustomerActive: async function (email) {
     const [results] = await db.query(

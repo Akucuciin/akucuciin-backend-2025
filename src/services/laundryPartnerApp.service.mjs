@@ -60,6 +60,7 @@ const LaundryPartnerAppService = {
         `Failed, order status is already [${order.status}]`
       );
 
+    // Order status changed to selesai then ...
     if (updated.status && updated.status === "selesai") {
       if (order.weight == 0)
         throw new BadRequestError("Gagal, update berat terlebih dahulu");
