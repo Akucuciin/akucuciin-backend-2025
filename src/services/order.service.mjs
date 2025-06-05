@@ -73,9 +73,18 @@ const OrderService = {
         }
       }
 
+      if (coupon.customer_id) {
+        // then its only valid for THAT customer only
+        if (coupon.customer_id !== req.user.id) {
+          throw new BadRequestError(
+            `Gagal, Kupon ini tidak valid untuk akun Anda.`
+          );
+        }
+      }
+
       if (coupon.is_used === 1) {
         throw new BadRequestError(
-          `Gagal, Kupon ${order.coupon_code} (sekali pakai), sudah pernah digunakan pelanggan lain`
+          `Gagal, Kupon ${order.coupon_code} (sekali pakai), sudah digunakan`
         );
       } else if (coupon.is_used === -1) {
         // Coupon is infinitely used

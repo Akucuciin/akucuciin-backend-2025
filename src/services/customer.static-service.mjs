@@ -29,7 +29,8 @@ const CustomerStaticService = {
         1,
         null,
         0,
-        null
+        null,
+        referredCustomer.id
       );
 
       await CustomerQuery.resetReferralCodeUntilNextReward(referredCustomer.email);
