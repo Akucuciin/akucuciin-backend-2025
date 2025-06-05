@@ -1,4 +1,5 @@
 import AppConfig from "../configs/app.config.mjs";
+import CustomerQuery from "../database/queries/customer.query.mjs";
 import LaundryPartnerAppQuery from "../database/queries/laundryPartnerApp.query.mjs";
 import OrderQuery from "../database/queries/order.query.mjs";
 import { BadRequestError } from "../errors/customErrors.mjs";
@@ -9,6 +10,7 @@ import {
 } from "../utils/order.utils.mjs";
 import LaundryPartnerAppSchema from "../validators/laundryPartnerApp.schema.mjs";
 import validate from "../validators/validator.mjs";
+import CustomerStaticService from "./customer.static-service.mjs";
 import PaymentService from "./payment.service.mjs";
 import {
   sendOrderCompletedConfirmationToCustomer,
@@ -74,6 +76,12 @@ const LaundryPartnerAppService = {
         order.c_name,
         order_id
       );
+
+      if (order.referral_code){
+        const orderJoinedFormatted = formatOrderFromDb(order);
+        const referredCustomer = await CustomerQuery.getCustomerByReferralCode(order.referral_code);
+        await CustomerStaticService.performSuccesfullReferralCodePipeline(orderJoinedFormatted.customer.email, referredCustomer);
+      }
     }
 
     const values = {

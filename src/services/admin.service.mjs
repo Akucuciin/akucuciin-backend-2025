@@ -3,6 +3,7 @@ import ExcelJs from "exceljs";
 import fs from "fs";
 import AdminQuery from "../database/queries/admin.query.mjs";
 
+import CustomerQuery from "../database/queries/customer.query.mjs";
 import DriverQuery from "../database/queries/driver.query.mjs";
 import LaundryPartnerQuery from "../database/queries/laundryPartner.query.mjs";
 import LaundryPartnerImageQuery from "../database/queries/laundryPartnerImage.query.mjs";
@@ -331,8 +332,11 @@ const AdminService = {
       const orderJoined = ordersJoined[0];
       await sendOrderCompletedConfirmationToCustomer(orderJoined.c_telephone, orderJoined.c_name, order_id);
 
-      const orderJoinedFormatted = formatOrderFromDb(orderJoined);
-      await CustomerStaticService.performSuccesfullReferralCodePipeline(orderJoinedFormatted.customer.email);
+      if (orderJoined.referral_code) {
+        const orderJoinedFormatted = formatOrderFromDb(orderJoined);
+        const referredCustomer = await CustomerQuery.getCustomerByReferralCode(orderJoined.referral_code);
+        await CustomerStaticService.performSuccesfullReferralCodePipeline(orderJoinedFormatted.customer.email, referredCustomer);
+      }
     }
 
     const result = await OrderQuery.updateStatus(
