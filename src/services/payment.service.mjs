@@ -97,11 +97,16 @@ const PaymentService = {
       let discountMultiplier = 0;
       let isCoupon = false;
       let coupon = null;
+      let isReferralCode = false;
       // === Step 1.1: Coupon logic
       if (_order.coupon_code) {
         coupon = await CouponQuery.get(_order.coupon_code, trx);
         discountMultiplier = coupon.multiplier / 100; // eg: multipler = 20, the 0.2
         isCoupon = true;
+      }
+
+      if (_order.referral_code) {
+        isReferralCode = true;
       }
 
       const calculatePriceAfter = async (_order) => {
@@ -126,6 +131,9 @@ const PaymentService = {
         let driver_pay = 0;
         let discount_cut = 0;
 
+        let referralCodeApplied = isReferralCode;
+        let referral_cut = 0;
+
         if (discountApplied) {
           if (coupon.min_weight && _order.weight < coupon.min_weight) {
             // not meet minimum kg,  set coupon to be used again
@@ -147,6 +155,10 @@ const PaymentService = {
           }
         }
 
+        if (referralCodeApplied) {
+          referral_cut = (5 / 100) * price_after;
+        }
+
         if (hasDriver) {
           driver_pay = 3000;
         }
@@ -159,17 +171,21 @@ const PaymentService = {
           discountApplied: discountApplied,
           haveMaxDiscount: haveMaxDiscount,
           hasDriver: hasDriver,
+          referralCodeApplied: referralCodeApplied,
+          referral_cut: referral_cut,
         };
       };
 
       const pricing = await calculatePriceAfter(_order);
       pricing.discount_cut = parseInt(`-${pricing.discount_cut}`, 10);
+      pricing.referral_cut = parseInt(`-${pricing.referral_cut}`, 10);
 
       const totalPrice =
         pricing.price_after +
         pricing.admin_pay +
         pricing.discount_cut +
-        pricing.driver_pay;
+        pricing.driver_pay +
+        pricing.referral_cut;
 
       console.error(pricing);
 
@@ -224,6 +240,13 @@ const PaymentService = {
                       : ""
                   }`,
                   price: pricing.discount_cut,
+                  quantity: 1,
+                }
+              : null,
+            pricing.referralCodeApplied
+              ? {
+                  name: `Potongan Referral Code - 5%`,
+                  price: pricing.referral_cut,
                   quantity: 1,
                 }
               : null,
