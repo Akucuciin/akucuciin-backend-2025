@@ -156,7 +156,7 @@ const PaymentService = {
         }
 
         if (referralCodeApplied) {
-          referral_cut = (5 / 100) * price_after;
+          referral_cut = (5 / 100) * (price_after - discount_cut);
         }
 
         if (hasDriver) {
@@ -245,7 +245,7 @@ const PaymentService = {
               : null,
             pricing.referralCodeApplied
               ? {
-                  name: `Potongan Referral Code - 5%`,
+                  name: pricing.discountApplied ? `Potongan +5% Referral Code` : `Potongan Referral Code 5%`,
                   price: pricing.referral_cut,
                   quantity: 1,
                 }
