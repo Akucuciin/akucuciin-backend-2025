@@ -2,6 +2,7 @@ import bcrypt from "bcrypt";
 
 import AppConfig from "../configs/app.config.mjs";
 import AuthQuery from "../database/queries/auth.query.mjs";
+import CouponQuery from "../database/queries/coupon.query.mjs";
 import CustomerQuery from "../database/queries/customer.query.mjs";
 import OrderQuery from "../database/queries/order.query.mjs";
 import {
@@ -11,13 +12,22 @@ import {
   NotFoundError,
   TokenInvalidError,
 } from "../errors/customErrors.mjs";
-import formatOrdersFromDb from "../utils/order.utils.mjs";
+import {
+  formatOrderFromDb,
+  formatOrdersFromDb,
+} from "../utils/order.utils.mjs";
 import { generateNanoidWithPrefix } from "../utils/utils.mjs";
 import CustomerSchema from "../validators/customer.schema.mjs";
 import OrderSchema from "../validators/order.schema.mjs";
 import validate from "../validators/validator.mjs";
 import MailService from "./mail.service.mjs";
+import PaymentService from "./payment.service.mjs";
 import TokenService from "./token.service.mjs";
+import {
+  sendNewOrderPaymentToCustomer,
+  sendOrderCancellationConfirmationToCustomer,
+  sendOrderCancellationConfirmationToLaundry,
+} from "./whatsapp.service.mjs";
 
 const CustomerService = {
   getProfile: async (req) => {
@@ -98,7 +108,7 @@ const CustomerService = {
       newCustomer.id,
       newCustomer.email
     );
-    MailService.sendVerifyEmail(newCustomer.email, registerToken);
+    await MailService.sendVerifyEmail(newCustomer.email, registerToken);
 
     return {
       id: newCustomer.id,
@@ -112,6 +122,57 @@ const CustomerService = {
     const orders = await OrderQuery.getOrdersJoinedByCustomer(req.user.id);
     const ordersFormatted = formatOrdersFromDb(orders);
     return ordersFormatted;
+  },
+  payOrder: async (req) => {
+    const { order_id } = req.params;
+    let order = await OrderQuery.getOrderJoinedById(order_id);
+    order = order[0];
+
+    if (!order) throw new NotFoundError("Failed, order not found");
+    if (order.c_id != req.user.id)
+      throw new AuthorizationError("Failed, order is not yours");
+
+    if (order.price == 0 && order.price_after == 0)
+      throw new BadRequestError("Failed, order not ready to pay yet");
+
+    if (!order.payment_link)
+      throw new BadRequestError("Failed, order doesnt have a payment link yet");
+
+    if (order.status_payment == "sudah bayar") {
+      throw new BadRequestError("Order already paid");
+    }
+
+    // CHECK TRANSACTION STATUS - IF EXPIRED GENERATE AGAIN
+    const isPaymentLinkValid =
+      order.payment_link_expired_at &&
+      new Date(order.payment_link_expired_at) > new Date();
+
+    if (isPaymentLinkValid) {
+      return {
+        url: order.payment_link,
+        status: "Valid Payment Link",
+      };
+    }
+
+    const _order = formatOrderFromDb(order);
+    const expiredAt = new Date(
+      Date.now() + AppConfig.PAYMENT.DOKU.expiredTime * 60 * 1000
+    );
+
+    const newPaymentLink = await PaymentService.Doku.generateOrderPaymentLink(
+      order_id,
+      _order
+    );
+
+    await OrderQuery.updatePaymentLinkOrder(
+      order_id,
+      newPaymentLink,
+      expiredAt
+    );
+
+    await sendNewOrderPaymentToCustomer(_order, newPaymentLink);
+    return { url: newPaymentLink, status: "Valid, New Payment Link" };
+    // END CHECK TRANSACTION STATUS - IF EXPIRED GENERATE AGAIN
   },
   giveRatingAndReview: async (req) => {
     const { rating, review } = validate(
@@ -142,23 +203,37 @@ const CustomerService = {
   },
   cancelOrder: async (req) => {
     const { order_id } = req.params;
-    const order = await OrderQuery.getOrderById(order_id);
-    if (!order) throw new NotFoundError("Failed, order not found");
-    if (order.customer_id != req.user.id)
+    const order = await OrderQuery.getOrderJoinedById(order_id);
+
+    if (!order[0]) throw new NotFoundError("Failed, order not found");
+    if (order[0].c_id != req.user.id)
       throw new AuthorizationError("Failed, order is not yours");
     if (
-      order.status === "selesai" ||
-      order.status === "penjemputan" ||
-      order.status === "pencucian" ||
-      order.status === "batal"
+      order[0].status === "selesai" ||
+      order[0].status === "penjemputan" ||
+      order[0].status === "pencucian" ||
+      order[0].status === "batal" ||
+      order[0].status === "pengantaran"
     )
       throw new BadRequestError(
-        `Failed, order status is already [${order.status}]`
+        `Failed, order status is already [${order[0].status}]`
       );
 
     await OrderQuery.cancelOrder(order_id);
+    if (order[0].coupon_code) {
+      const coupon = await CouponQuery.get(order[0].coupon_code);
+      if (coupon.is_used === -1) {
+        // coupon is infinitely used
+      } else {
+        await CouponQuery.setNotUsed(order[0].coupon_code);
+      }
+    }
 
-    return `Order ${order_id} cancelled, confirm to whatsapp for more informations`;
+    const ord = formatOrdersFromDb(order)[0];
+    await sendOrderCancellationConfirmationToCustomer(ord);
+    await sendOrderCancellationConfirmationToLaundry(ord);
+
+    return `Order ${order_id} cancelled.`;
   },
   verify: async (req) => {
     const { register_token, email: emailParams } = req.params;
@@ -183,7 +258,7 @@ const CustomerService = {
       TokenService.generateRequestResetPasswordToken(email);
 
     await AuthQuery.addResetPasswordToken(resetPasswordToken);
-    MailService.sendRequestResetPassword(email, resetPasswordToken);
+    await MailService.sendRequestResetPassword(email, resetPasswordToken);
     return `Requested to ${email}`;
   },
   resendVerificationEmail: async (req) => {
@@ -209,7 +284,7 @@ const CustomerService = {
     );
 
     // TODO Mail Service kirim ulang verifikasi
-    MailService.resendVerifyEmail(email, registerToken);
+    await MailService.resendVerifyEmail(email, registerToken);
 
     return "Email terkirim, silahkan cek email ada, cek juga spam.";
   },

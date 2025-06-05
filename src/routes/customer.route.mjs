@@ -1,4 +1,5 @@
 import { Router } from "express";
+import passport from "../auth/passport.auth.mjs";
 import useRateLimiter from "../configs/rateLimiter.config.mjs";
 import CustomerController from "../controllers/customer.controller.mjs";
 import authorize from "../middlewares/auth.middleware.mjs";
@@ -23,6 +24,7 @@ CustomerRouter.post(
     CustomerController.createReferralCode(req, res, next)
 );
 
+// === Register, Auth
 CustomerRouter.post("/api/customer", async (req, res, next) =>
   CustomerController.register(req, res, next)
 );
@@ -36,9 +38,21 @@ CustomerRouter.post("/api/customer/logout", async (req, res, next) =>
 );
 
 CustomerRouter.get(
+  "/api/customer/login/google-auth",
+  passport.authenticate("customer-google-auth", { scope: ["profile", "email"] })
+);
+// === END Register, Auth
+
+// === ORDER
+CustomerRouter.get(
   "/api/customer/orders",
   authorize("customer-jwt"),
   async (req, res, next) => CustomerController.getOrders(req, res, next)
+);
+CustomerRouter.get(
+  "/api/customer/order/:order_id/pay",
+  authorize("customer-jwt"),
+  async (req, res, next) => CustomerController.payOrder(req, res, next)
 );
 CustomerRouter.post(
   "/api/customer/order/:order_id/review",
@@ -51,6 +65,7 @@ CustomerRouter.delete(
   authorize("customer-jwt"),
   async (req, res, next) => CustomerController.cancelOrder(req, res, next)
 );
+// === END ORDER
 
 CustomerRouter.get(
   "/verify/customer/:email/:register_token",

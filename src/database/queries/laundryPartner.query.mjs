@@ -46,6 +46,42 @@ const LaundryPartnerQuery = {
     );
     return results;
   },
+  getPackagesTopPicks: async function (laundry_partner_id) {
+    const [results] = await db.query(
+      `
+      SELECT 
+          lpp.id,
+          lpp.name,
+          lpp.description,
+          lpp.features,
+          lpp.price_text,
+          top_packages.total_orders,
+          top_packages.avg_rating
+      FROM 
+          laundry_partners_packages lpp
+      JOIN (
+          SELECT 
+              o.package_id,
+              COUNT(*) AS total_orders,
+              ROUND(AVG(CASE WHEN o.rating > 0 THEN o.rating ELSE NULL END), 2) AS avg_rating
+          FROM 
+              orders o
+          WHERE 
+              o.laundry_partner_id = ?
+              AND o.status != 'batal'
+          GROUP BY 
+              o.package_id
+          ORDER BY 
+              total_orders DESC
+          LIMIT 3
+      ) top_packages ON lpp.id = top_packages.package_id
+      WHERE
+          lpp.deleted_at IS NULL;
+      `,
+      [laundry_partner_id]
+    );
+    return results;
+  },
   getPackageOfPartnerById: async function (laundry_partner_id, id) {
     const [results] = await db.query(
       `
@@ -53,6 +89,16 @@ const LaundryPartnerQuery = {
       WHERE laundry_partner_id = ? AND id = ? AND deleted_at IS NULL
       `,
       [laundry_partner_id, id]
+    );
+    return results[0];
+  },
+  getPartnerForAuth: async function (email) {
+    const [results] = await db.query(
+      `
+      SELECT id, email, password FROM laundry_partners
+      WHERE email = ?
+      `,
+      [email]
     );
     return results[0];
   },
@@ -88,10 +134,59 @@ const LaundryPartnerQuery = {
     `);
     return results;
   },
+  getPartnerAverageRating: async function (laundry_partner_id) {
+    const [results] = await db.query(
+      `
+        SELECT 
+            laundry_partner_id,
+            ROUND(AVG(CASE WHEN rating > 0 THEN rating ELSE NULL END), 2) AS avg_rating,
+            COUNT(CASE WHEN rating > 0 THEN 1 ELSE NULL END) AS total_reviews
+        FROM 
+            orders
+        WHERE 
+            laundry_partner_id = ?
+            AND status != 'batal'
+        GROUP BY 
+            laundry_partner_id;
+      `,
+      [laundry_partner_id]
+    );
+    return results[0];
+  },
+  getPartnerReviews: async function (laundry_partner_id) {
+    const [results] = await db.query(
+      `
+      SELECT 
+          o.id,
+          o.rating,
+          o.review,
+          c.name AS customer_name,
+          p.name AS package_name
+      FROM 
+          orders o
+      JOIN customers c ON o.customer_id = c.id
+      JOIN laundry_partners_packages p ON o.package_id = p.id
+      WHERE 
+          o.laundry_partner_id = ?
+          AND o.rating > 0
+      ORDER BY 
+          o.created_at DESC;
+      `,
+      [laundry_partner_id]
+    );
+    return results;
+  },
   isEmailExists: async function (email) {
     const [results] = await db.query(
       `SELECT count(email) as isExist FROM laundry_partners WHERE email = ?`,
       [email]
+    );
+    return results[0].isExist;
+  },
+  isValidPartner: async function (id) {
+    const [results] = await db.query(
+      `SELECT count(id) as isExist FROM laundry_partners WHERE id = ?`,
+      [id]
     );
     return results[0].isExist;
   },

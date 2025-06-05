@@ -3,6 +3,7 @@ import ExcelJs from "exceljs";
 import fs from "fs";
 import AdminQuery from "../database/queries/admin.query.mjs";
 
+import CustomerQuery from "../database/queries/customer.query.mjs";
 import DriverQuery from "../database/queries/driver.query.mjs";
 import LaundryPartnerQuery from "../database/queries/laundryPartner.query.mjs";
 import LaundryPartnerImageQuery from "../database/queries/laundryPartnerImage.query.mjs";
@@ -12,7 +13,7 @@ import {
   NotFoundError,
   ServerError,
 } from "../errors/customErrors.mjs";
-import formatOrdersFromDb from "../utils/order.utils.mjs";
+import { formatOrderFromDb, formatOrdersFromDb } from "../utils/order.utils.mjs";
 import {
   generateNanoidWithPrefix,
   lowerAndCapitalizeFirstLetter,
@@ -21,6 +22,12 @@ import DriverSchema from "../validators/driver.schema.mjs";
 import LaundryPartnerSchema from "../validators/laundryPartner.schema.mjs";
 import OrderSchema from "../validators/order.schema.mjs";
 import validate from "../validators/validator.mjs";
+import CustomerStaticService from "./customer.static-service.mjs";
+import {
+  sendOrderAssignedPengantaranToDriver,
+  sendOrderAssignedToDriver,
+  sendOrderCompletedConfirmationToCustomer,
+} from "./whatsapp.service.mjs";
 
 const AdminService = {
   getCustomers: async (req) => {
@@ -248,11 +255,23 @@ const AdminService = {
     return "File succesfully deleted";
   },
   exportOrderToExcel: async (req) => {
-    const orders = await OrderQuery.getOrdersForReport();
+    let { startDate, endDate } = req.query;
+    if (startDate && endDate) {
+      const isValidDate = (dateStr) => /^\d{4}-\d{2}-\d{2}$/.test(dateStr);
+      if (!isValidDate(startDate) || !isValidDate(endDate)) {
+        throw new BadRequestError("Invalid Query Parameter");
+      }
+      const parsedEnd = new Date(endDate);
+      const endPlusOne = new Date(parsedEnd);
+      endPlusOne.setDate(endPlusOne.getDate() + 1);
+      endDate = endPlusOne.toISOString().slice(0, 10);
+    }
+
+    const orders = await OrderQuery.getOrdersForReport(startDate, endDate);
 
     const workbook = new ExcelJs.Workbook();
     const worksheet = workbook.addWorksheet("Orders");
-    
+
     worksheet.columns = Object.keys(orders[0]).map((key) => ({
       header: key.toUpperCase(),
       key: key,
@@ -264,7 +283,19 @@ const AdminService = {
     return workbook;
   },
   getOrdersJoined: async (req) => {
-    const orders = await OrderQuery.getOrdersJoined();
+    let { startDate, endDate } = req.query;
+    if (startDate && endDate) {
+      const isValidDate = (dateStr) => /^\d{4}-\d{2}-\d{2}$/.test(dateStr);
+      if (!isValidDate(startDate) || !isValidDate(endDate)) {
+        throw new BadRequestError("Invalid Query Parameter");
+      }
+      const parsedEnd = new Date(endDate);
+      const endPlusOne = new Date(parsedEnd);
+      endPlusOne.setDate(endPlusOne.getDate() + 1);
+      endDate = endPlusOne.toISOString().slice(0, 10);
+    }
+
+    const orders = await OrderQuery.getOrdersJoined(startDate, endDate);
 
     const ordersFormatted = formatOrdersFromDb(orders);
 
@@ -288,6 +319,26 @@ const AdminService = {
       status_payment: updated.status_payment || order.status_payment,
     };
 
+    // Order status changed to selesai then ...
+    if (updated.status && updated.status === "selesai") {
+      if (order.weight == 0)
+        throw new BadRequestError("Gagal, update berat terlebih dahulu");
+      if (order.price_after == 0)
+        throw new BadRequestError("Gagal, mitra belum mengupdate harga");
+      if (order.status_payment === "belum bayar")
+        throw new BadRequestError("Gagal, customer belum membayar pesanan ini");
+
+      const ordersJoined = await OrderQuery.getOrderJoinedById(order_id);
+      const orderJoined = ordersJoined[0];
+      await sendOrderCompletedConfirmationToCustomer(orderJoined.c_telephone, orderJoined.c_name, order_id);
+
+      if (orderJoined.referral_code) {
+        const orderJoinedFormatted = formatOrderFromDb(orderJoined);
+        const referredCustomer = await CustomerQuery.getCustomerByReferralCode(orderJoined.referral_code);
+        await CustomerStaticService.performSuccesfullReferralCodePipeline(orderJoinedFormatted.customer.email, referredCustomer);
+      }
+    }
+
     const result = await OrderQuery.updateStatus(
       values.order_id,
       values.status,
@@ -295,6 +346,16 @@ const AdminService = {
       values.price,
       values.status_payment
     );
+
+    if (updated.status && updated.status === "pengantaran") {
+      // status is updated, and the updated is 'pengantaran'
+      const _orders = await OrderQuery.getOrderJoinedById(order_id);
+      const _order = _orders[0];
+      const _ord = formatOrdersFromDb(_orders)[0];
+      if (_ord.driver.id) {
+        await sendOrderAssignedPengantaranToDriver(_ord);
+      }
+    }
 
     if (!result.affectedRows) throw new BadRequestError("Failed to update");
 
@@ -307,7 +368,9 @@ const AdminService = {
     if (!driver) throw new NotFoundError("Failed, driver not found");
     delete driver.password;
 
-    const order = await OrderQuery.getOrderById(order_id);
+    const orders = await OrderQuery.getOrderJoinedById(order_id);
+    const order = orders[0];
+
     if (!order) throw new NotFoundError("Failed, order not found");
     if (
       order.status === "selesai" ||
@@ -320,6 +383,9 @@ const AdminService = {
       );
 
     await OrderQuery.assignDriver(order_id, driver_id);
+
+    const ord = formatOrdersFromDb(orders)[0];
+    await sendOrderAssignedToDriver(ord);
 
     return `Assigned ${order_id} to driver ${driver_id}`;
   },

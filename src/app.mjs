@@ -9,12 +9,18 @@ import AuthRouter from "./routes/auth.route.mjs";
 import CustomerRouter from "./routes/customer.route.mjs";
 
 import "./auth/passport.auth.mjs";
+import requestLogger from "./middlewares/requestLogger.middleware.mjs";
 import AdminRouter from "./routes/admin.route.mjs";
 import DriverRouter from "./routes/driver.route.mjs";
 import LaundryPartnerRouter from "./routes/laundryPartner.route.mjs";
+import LaundryPartnerAppRouter from "./routes/laundryPartnerApp.route.mjs";
 import OrderRouter from "./routes/order.route.mjs";
+import WebhookRouter from "./routes/webhook.route.mjs";
 
 const app = express();
+app.use(requestLogger);
+
+app.set("trust proxy", 1)
 app.set("view engine", "ejs");
 app.disable("x-powered-by");
 
@@ -33,7 +39,9 @@ app.use(DriverRouter);
 app.use(CustomerRouter);
 app.use(AuthRouter);
 app.use(LaundryPartnerRouter);
+app.use(LaundryPartnerAppRouter);
 app.use(OrderRouter);
+app.use(WebhookRouter);
 
 app.use(errorHandler);
 
