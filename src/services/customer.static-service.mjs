@@ -19,12 +19,12 @@ const CustomerStaticService = {
         referredCustomer.email,
         true
       );
-      const newCouponMultiplier = 20;
+      const newCouponMultiplier = 10;
 
       await CouponQuery.create(
         newCouponName,
         newCouponMultiplier,
-        `Voucher 20% off untuk ${referredCustomer.email} hasil referral code`,
+        `Voucher ${newCouponMultiplier}% off untuk ${referredCustomer.email} hasil referral code`,
         0,
         1,
         null,
