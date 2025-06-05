@@ -142,7 +142,11 @@ export const sendOrderConfirmationToLaundry = async (ord) => {
   });
 };
 
-export const sendOrderCompletedConfirmationToCustomer = async (telephone, custName, orderId) => {
+export const sendOrderCompletedConfirmationToCustomer = async (
+  telephone,
+  custName,
+  orderId
+) => {
   const payload = {
     jid: `${telephone}@s.whatsapp.net`,
     content: `*✨ Yay, pesananmu sudah selesai! ✨*\n\nHalo, ${custName}\nTerima kasih sudah mempercayakan laundry kamu ke kami 🧺💙\n\nKami ingin denger pendapatmu, lho!\nYuk isi review-nya lewat menu Lihat Order di website. Feedback dari kamu bantu kami jadi lebih baik lagi 🙌\n\nAda kendala atau pertanyaan?\nLangsung aja hubungi kami—tim kami siap bantu kapan pun kamu butuh 🤝\n\nSampai jumpa lagi!\n\n====================\n\n_Pesan ini dikirim otomatis oleh sistem AkuCuciin._\n_${orderId}_`,
@@ -199,7 +203,10 @@ export const sendOrderPaymentToCustomer = async (ord, paymentLink) => {
   });
 };
 
-export const sendOrderPaymentCompletedToCustomer = async (ord, invoiceNumber) => {
+export const sendOrderPaymentCompletedToCustomer = async (
+  ord,
+  invoiceNumber
+) => {
   const formattedPriceAfter = formatRupiah(ord.price_after);
 
   const payload = {
@@ -215,3 +222,36 @@ export const sendOrderPaymentCompletedToCustomer = async (ord, invoiceNumber) =>
     },
   });
 };
+
+export const sendReferralCodeSuccessfullyUsedToReferredCustomer = async (
+  referredCustomer
+) => {
+  const payload = {
+    jid: `${referredCustomer.telephone}@s.whatsapp.net`,
+    content: `*✅ [REFERRAL CODE KAMU SUKSES DIGUNAKAN]*\n\nHalo ${referredCustomer.name}!\n\nReferral code kamu (${referredCustomer.referral_code}) sukses digunakan oleh orang lain lohhh\n\nStatistik Referral Code Kamu:\nTotal Sukses: ${referredCustomer.referral_code_success_count}\n\nYuk ajak ${referredCustomer.referral_code_until_next_reward} orang lagi untuk memakai kode referral kamu dan dapatkan voucher diskon!\n\n====================\n_Setiap 3 orang yang memakai referral code kamu dan menyelesaikan pesanan, kamu akan mendapatkan voucher diskon (berlaku kelipatan)_\n_Pesan ini dikirim otomatis oleh sistem AkuCuciin._`,
+  };
+
+  const xSignature = generateXSignature(payload);
+
+  await axios.post(`${AppConfig.Whatsapp.SEND_URL}/send`, payload, {
+    headers: {
+      "X-Signature": xSignature,
+    },
+  });
+};
+
+export const sendReferralCodeSuccessfullyUsedToReferredCustomerWithReward =
+  async (referredCustomer, couponName, couponMultiplier) => {
+    const payload = {
+      jid: `${referredCustomer.telephone}@s.whatsapp.net`,
+      content: `🎉🎉*VOUCHER DISKON UNTUKMU!*🎉🎉\n\nHalo ${referredCustomer.name}!\n\nTerima kasih sudah mengajak 3 teman kamu untuk laundry di AkuCuciin. Sebagai bentuk apresiasi, kamu berhak mendapatkan Voucher Diskon ${couponMultiplier}% secara GRATIS!\n\nKode Voucher: *${couponName}*\n_(Voucher hanya dapat digunakan untuk akun ${referredCustomer.email})_\n\nYuk, terus ajak temanmu pakai kode referralmu, dan kumpulkan lebih banyak voucher diskon berikutnya!\n\n====================\n_Setiap 3 orang yang memakai referral code kamu dan menyelesaikan pesanan, kamu akan mendapatkan voucher diskon (berlaku kelipatan)_\n_Pesan ini dikirim otomatis oleh sistem AkuCuciin._`,
+    };
+
+    const xSignature = generateXSignature(payload);
+
+    await axios.post(`${AppConfig.Whatsapp.SEND_URL}/send`, payload, {
+      headers: {
+        "X-Signature": xSignature,
+      },
+    });
+  };

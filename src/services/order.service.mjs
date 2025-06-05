@@ -38,6 +38,22 @@ const OrderService = {
     order.id = generateNanoidWithPrefix("ORDER");
     order.customer_id = req.user.id;
 
+    if (order.referral_code) {
+      const referral_code = await CustomerQuery.isReferralCodeExist(
+        order.referral_code
+      );
+      if (!referral_code)
+        throw new BadRequestError("Kode referral tidak ditemukan");
+
+      const customer = await CustomerQuery.getCustomerProfileByEmail(
+        req.user.email
+      );
+      if (order.referral_code === customer.referral_code)
+        throw new BadRequestError(
+          "Gagal, gunakan kode referral selain punya anda"
+        );
+    }
+
     if (order.coupon_code) {
       const coupon = await CouponQuery.get(order.coupon_code);
       if (!coupon) throw new BadRequestError("Kupon tidak ditemukan");
@@ -57,31 +73,24 @@ const OrderService = {
         }
       }
 
+      if (coupon.customer_id) {
+        // then its only valid for THAT customer only
+        if (coupon.customer_id !== req.user.id) {
+          throw new BadRequestError(
+            `Gagal, Kupon ini tidak valid untuk akun Anda.`
+          );
+        }
+      }
+
       if (coupon.is_used === 1) {
         throw new BadRequestError(
-          `Gagal, Kupon ${order.coupon_code} (sekali pakai), sudah pernah digunakan pelanggan lain`
+          `Gagal, Kupon ${order.coupon_code} (sekali pakai), sudah digunakan`
         );
       } else if (coupon.is_used === -1) {
         // Coupon is infinitely used
       } else if (coupon.is_used === 0) {
         await CouponQuery.setUsed(order.coupon_code);
       }
-    }
-
-    if (order.referral_code) {
-      const referral_code = await CustomerQuery.isReferralCodeExist(
-        order.referral_code
-      );
-      if (!referral_code)
-        throw new BadRequestError("Kode referral tidak ditemukan");
-
-      const customer = await CustomerQuery.getCustomerProfileByEmail(
-        req.user.email
-      );
-      if (order.referral_code === customer.referral_code)
-        throw new BadRequestError(
-          "Gagal, gunakan kode referral selain punya anda"
-        );
     }
 
     const laundry = await LaundryPartnerQuery.getById(order.laundry_partner_id);
