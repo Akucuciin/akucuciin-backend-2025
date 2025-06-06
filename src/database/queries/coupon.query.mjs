@@ -37,6 +37,15 @@ const CouponQuery = {
     ]);
     return results[0];
   },
+  getPackages: async function (coupon_code_name, conn = db) {
+    const [results] = await conn.query(
+      `
+        SELECT coupon_name, laundry_partner_package_id as package_id FROM coupons_for_packages WHERE coupon_name = ?
+      `,
+      [coupon_code_name]
+    );
+    return results;
+  },
   setUsed: async function (coupon_code_name) {
     const [results] = await db.query(
       `
