@@ -38,12 +38,13 @@ const OrderService = {
     order.id = generateNanoidWithPrefix("ORDER");
     order.customer_id = req.user.id;
 
+    // REFERRAL CODE APPLIED
     if (order.referral_code) {
       const referral_code = await CustomerQuery.isReferralCodeExist(
         order.referral_code
       );
       if (!referral_code)
-        throw new BadRequestError("Kode referral tidak ditemukan");
+        throw new BadRequestError("Gagal, Kode referral tidak ditemukan");
 
       const customer = await CustomerQuery.getCustomerProfileByEmail(
         req.user.email
@@ -54,6 +55,7 @@ const OrderService = {
         );
     }
 
+    // COUPON APPLIED
     if (order.coupon_code) {
       const coupon = await CouponQuery.get(order.coupon_code);
       if (!coupon) throw new BadRequestError("Kupon tidak ditemukan");
@@ -78,6 +80,16 @@ const OrderService = {
         if (coupon.customer_id !== req.user.id) {
           throw new BadRequestError(
             `Gagal, Kupon ini tidak valid untuk akun Anda.`
+          );
+        }
+      }
+
+      const allowedPackages = await CouponQuery.getPackages(order.coupon_code);
+      if (allowedPackages.length > 0) {
+        const allowedIds = allowedPackages.map((p) => p.package_id);
+        if (!allowedIds.includes(order.package_id)) {
+          throw new BadRequestError(
+            `Gagal, Kupon ini hanya berlaku untuk paket tertentu dan tidak berlaku untuk paket yang Anda pilih.`
           );
         }
       }
