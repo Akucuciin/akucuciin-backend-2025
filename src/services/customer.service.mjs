@@ -118,6 +118,12 @@ const CustomerService = {
       telephone: newCustomer.telephone,
     };
   },
+  getLastOrder: async (req) => {
+    const lastOrder = await OrderQuery.getLastOrder(req.user.id);
+    console.log(lastOrder);
+    const lastOrderFormatted = formatOrderFromDb(lastOrder);
+    return lastOrderFormatted;
+  },
   getOrders: async (req) => {
     const orders = await OrderQuery.getOrdersJoinedByCustomer(req.user.id);
     const ordersFormatted = formatOrdersFromDb(orders);
