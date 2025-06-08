@@ -68,6 +68,17 @@ const CustomerController = {
       next(error);
     }
   },
+  getLastOrder: async (req, res, next) => {
+    try {
+      const result = await CustomerService.getLastOrder(req);
+      return res.status(200).json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
   getOrders: async (req, res, next) => {
     try {
       const result = await CustomerService.getOrders(req);

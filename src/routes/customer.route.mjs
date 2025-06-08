@@ -45,6 +45,12 @@ CustomerRouter.get(
 
 // === ORDER
 CustomerRouter.get(
+  "/api/customer/last-order",
+  authorize("customer-jwt"),
+  async (req, res, next) =>
+    CustomerController.getLastOrder(req, res, next)
+);
+CustomerRouter.get(
   "/api/customer/orders",
   authorize("customer-jwt"),
   async (req, res, next) => CustomerController.getOrders(req, res, next)
