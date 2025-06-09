@@ -127,7 +127,7 @@ const PaymentService = {
         let discountApplied = isCoupon;
         let haveMaxDiscount = false;
         const hasDriver = _order.driver?.id;
-        const admin_pay = 1000;
+        let admin_pay = 1000;
         let driver_pay = 0;
         let discount_cut = 0;
 
@@ -152,6 +152,11 @@ const PaymentService = {
             }
 
             if (coupon.max_discount) haveMaxDiscount = true;
+
+            if (coupon.multiplier == 100 && !coupon.max_discount) {
+              // 100% Discount
+              admin_pay = 1;
+            }
           }
         }
 
@@ -245,7 +250,9 @@ const PaymentService = {
               : null,
             pricing.referralCodeApplied
               ? {
-                  name: pricing.discountApplied ? `Potongan +5% Referral Code` : `Potongan Referral Code 5%`,
+                  name: pricing.discountApplied
+                    ? `Potongan +5% Referral Code`
+                    : `Potongan Referral Code 5%`,
                   price: pricing.referral_cut,
                   quantity: 1,
                 }
