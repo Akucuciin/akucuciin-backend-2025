@@ -14,7 +14,7 @@ const WebhookRouter = Router();
 WebhookRouter.post("/api/payment/webhook", async (req, res) => {
   // --- Signature Verification
   const secretKey = AppConfig.PAYMENT.DOKU.secretKey;
-  const receivedSignature = req.headers["x-signature"];
+  const receivedSignature = req.headers["signature"];
 
   if (!receivedSignature) {
     throw new AuthenticationError("Signature not found");
