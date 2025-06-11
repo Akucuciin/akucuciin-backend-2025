@@ -90,6 +90,17 @@ const CustomerController = {
       next(error);
     }
   },
+  getOrder: async (req, res, next) => {
+    try {
+      const result = await CustomerService.getOrder(req);
+      return res.status(200).json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
   payOrder: async (req, res, next) => {
     try {
       const result = await CustomerService.payOrder(req);

@@ -47,13 +47,17 @@ CustomerRouter.get(
 CustomerRouter.get(
   "/api/customer/last-order",
   authorize("customer-jwt"),
-  async (req, res, next) =>
-    CustomerController.getLastOrder(req, res, next)
+  async (req, res, next) => CustomerController.getLastOrder(req, res, next)
 );
 CustomerRouter.get(
   "/api/customer/orders",
   authorize("customer-jwt"),
   async (req, res, next) => CustomerController.getOrders(req, res, next)
+);
+CustomerRouter.get(
+  "/api/customer/order/:order_id",
+  authorize("customer-jwt"),
+  async (req, res, next) => CustomerController.getOrder(req, res, next)
 );
 CustomerRouter.get(
   "/api/customer/order/:order_id/pay",
