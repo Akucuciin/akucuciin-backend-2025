@@ -1,39 +1,53 @@
+import crypto from "crypto";
 import { Router } from "express";
-import crypto from "node:crypto";
 import passport from "../auth/passport.auth.mjs";
 import AppConfig from "../configs/app.config.mjs";
 import AuthQuery from "../database/queries/auth.query.mjs";
 import OrderQuery from "../database/queries/order.query.mjs";
-import { AuthenticationError } from "../errors/customErrors.mjs";
 import TokenService from "../services/token.service.mjs";
 import { sendOrderPaymentCompletedToCustomer } from "../services/whatsapp.service.mjs";
 import { formatOrderFromDb } from "../utils/order.utils.mjs";
 
 const WebhookRouter = Router();
-
 WebhookRouter.post("/api/payment/webhook", async (req, res) => {
   // --- Signature Verification
-  const secretKey = AppConfig.PAYMENT.DOKU.secretKey;
   const receivedSignature = req.headers["signature"];
+  const clientId = req.headers["client-id"];
+  const requestId = req.headers["request-id"];
+  const requestTimestamp = req.headers["request-timestamp"];
+  const requestTarget = "/api/payment/webhook";
+
+  const secretKey = AppConfig.PAYMENT.DOKU.secretKey;
 
   if (!receivedSignature) {
-    throw new AuthenticationError("Signature not found");
+    return res.status(401).send("Missing Signature");
   }
 
-  const generatedSignature = crypto
-    .createHmac("sha256", secretKey)
-    .update(req.rawBody)
-    .digest("hex");
+  // ✅ Step 1: Digest = base64(sha256(rawBody))
+  const digest = crypto
+    .createHash("sha256")
+    .update(req.rawBody, "utf8")
+    .digest("base64");
 
-  const isSignatureValid = crypto.timingSafeEqual(
-    Buffer.from(generatedSignature, "hex"),
-    Buffer.from(receivedSignature, "hex")
-  );
+  // ✅ Step 2: Construct signature string
+  const signatureString = `Client-Id:${clientId}\nRequest-Id:${requestId}\nRequest-Timestamp:${requestTimestamp}\nRequest-Target:${requestTarget}\nDigest:${digest}`;
 
-  if (!isSignatureValid) {
-    throw new AuthenticationError("Invalid signature");
+  // ✅ Step 3: Create HMAC SHA256 base64 signature
+  const generatedSignature =
+    "HMACSHA256=" +
+    crypto
+      .createHmac("sha256", secretKey)
+      .update(signatureString)
+      .digest("base64");
+
+  // ✅ Step 4: Compare
+  console.log("Generated Signature:", generatedSignature);
+  console.log("Received Signature:", receivedSignature);
+  if (generatedSignature !== receivedSignature) {
+    return res.status(401).send("Invalid Signature");
   }
-  // --- End
+
+  // --- End of Signature Verification
 
   const notification = req.body;
   const rawInvoice = notification.order.invoice_number;
@@ -50,7 +64,7 @@ WebhookRouter.post("/api/payment/webhook", async (req, res) => {
     console.log("Pembayaran sukses untuk order", orderId);
   }
 
-  res.status(200).send("OK");
+  return res.status(200).send("OK");
 });
 
 WebhookRouter.get(
