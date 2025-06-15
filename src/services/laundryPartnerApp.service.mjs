@@ -77,10 +77,15 @@ const LaundryPartnerAppService = {
         order_id
       );
 
-      if (order.referral_code){
+      if (order.referral_code) {
         const orderJoinedFormatted = formatOrderFromDb(order);
-        const referredCustomer = await CustomerQuery.getCustomerByReferralCode(order.referral_code);
-        await CustomerStaticService.performSuccesfullReferralCodePipeline(orderJoinedFormatted.customer.email, referredCustomer);
+        const referredCustomer = await CustomerQuery.getCustomerByReferralCode(
+          order.referral_code
+        );
+        await CustomerStaticService.performSuccesfullReferralCodePipeline(
+          orderJoinedFormatted.customer.email,
+          referredCustomer
+        );
       }
     }
 
@@ -118,6 +123,10 @@ const LaundryPartnerAppService = {
 
       if (order.price_after != 0) {
         throw new BadRequestError("Gagal, harga tidak dapat dirubah kembali");
+      }
+
+      if (order.status_payment === "sudah bayar") {
+        throw new BadRequestError("Gagal, customer sudah membayar pesanan ini");
       }
 
       if (order.status === "batal" || order.status === "selesai")
