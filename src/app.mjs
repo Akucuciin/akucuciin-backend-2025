@@ -30,7 +30,13 @@ const corsOptions = {
   methods: ["GET", "POST", "PUT", "DELETE"],
 };
 app.use(cors(corsOptions));
-app.use(express.json());
+app.use(
+  express.json({
+    verify: (req, res, buf) => {
+      req.rawBody = buf.toString("utf8"); // raw body for signature verification [DOKU]
+    },
+  })
+);
 app.use(passport.initialize());
 
 app.use("/static", express.static("storage"));
