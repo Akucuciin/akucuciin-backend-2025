@@ -1,9 +1,9 @@
-import crypto from "crypto";
 import { Router } from "express";
 import passport from "../auth/passport.auth.mjs";
 import AppConfig from "../configs/app.config.mjs";
 import AuthQuery from "../database/queries/auth.query.mjs";
 import OrderQuery from "../database/queries/order.query.mjs";
+import PaymentService from "../services/payment.service.mjs";
 import TokenService from "../services/token.service.mjs";
 import { sendOrderPaymentCompletedToCustomer } from "../services/whatsapp.service.mjs";
 import { formatOrderFromDb } from "../utils/order.utils.mjs";
@@ -11,40 +11,29 @@ import { formatOrderFromDb } from "../utils/order.utils.mjs";
 const WebhookRouter = Router();
 WebhookRouter.post("/api/payment/webhook", async (req, res) => {
   // --- Signature Verification
-  const receivedSignature = req.headers["signature"];
-  const clientId = req.headers["client-id"];
-  const requestId = req.headers["request-id"];
-  const requestTimestamp = req.headers["request-timestamp"];
-  const requestTarget = "/api/payment/webhook";
+  try {
+    const receivedSignature = req.headers["signature"];
+    const requestId = req.headers["request-id"];
+    const requestTimestamp = req.headers["request-timestamp"];
+    const requestTarget = "/api/payment/webhook";
 
-  const secretKey = AppConfig.PAYMENT.DOKU.secretKey;
+    if (!receivedSignature) {
+      return res.status(401).send("Missing Signature");
+    }
 
-  if (!receivedSignature) {
-    return res.status(401).send("Missing Signature");
-  }
+    const generatedSignature =
+      PaymentService.Doku.generateSignatureForValidation(
+        req.rawBody,
+        requestId,
+        requestTimestamp,
+        requestTarget
+      );
 
-  // ✅ Step 1: Digest = base64(sha256(rawBody))
-  const digest = crypto
-    .createHash("sha256")
-    .update(req.rawBody, "utf8")
-    .digest("base64");
-
-  // ✅ Step 2: Construct signature string
-  const signatureString = `Client-Id:${clientId}\nRequest-Id:${requestId}\nRequest-Timestamp:${requestTimestamp}\nRequest-Target:${requestTarget}\nDigest:${digest}`;
-
-  // ✅ Step 3: Create HMAC SHA256 base64 signature
-  const generatedSignature =
-    "HMACSHA256=" +
-    crypto
-      .createHmac("sha256", secretKey)
-      .update(signatureString)
-      .digest("base64");
-
-  // ✅ Step 4: Compare
-  console.log("Generated Signature:", generatedSignature);
-  console.log("Received Signature:", receivedSignature);
-  if (generatedSignature !== receivedSignature) {
-    return res.status(401).send("Invalid Signature");
+    if (generatedSignature !== receivedSignature) {
+      return res.status(401).send("Invalid Signature");
+    }
+  } catch (error) {
+    return res.status(401).send("Signature verification failed");
   }
 
   // --- End of Signature Verification
