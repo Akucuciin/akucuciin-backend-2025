@@ -6,7 +6,7 @@ import LaundryPartnerAppQuery from "../database/queries/laundryPartnerApp.query.
 import { BadRequestError } from "../errors/customErrors.mjs";
 import { generateInvoiceNumberForPayment } from "../utils/order.utils.mjs";
 
-function generateDigest(jsonBody) {
+export function generateDigest(jsonBody) {
   let jsonStringHash256 = crypto
     .createHash("sha256")
     .update(jsonBody, "utf-8")
@@ -71,6 +71,22 @@ const PaymentService = {
         requestId,
         timestamp,
         AppConfig.PAYMENT.DOKU.signature.requestTarget,
+        digestHash,
+        AppConfig.PAYMENT.DOKU.secretKey
+      );
+    },
+    generateSignatureForValidation: (
+      rawBody,
+      requestId,
+      timestamp,
+      requestTarget
+    ) => {
+      const digestHash = generateDigest(rawBody);
+      return generateSignatureDoku(
+        AppConfig.PAYMENT.DOKU.clientId,
+        requestId,
+        timestamp,
+        requestTarget,
         digestHash,
         AppConfig.PAYMENT.DOKU.secretKey
       );
