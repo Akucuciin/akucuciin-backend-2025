@@ -111,23 +111,23 @@ export const sendOrderConfirmationToLaundry = async (ord) => {
     jid: `${ord.laundry_partner.telephone}@s.whatsapp.net`,
     content: `*[Order baru telah diterima]*\n\nHalo ${
       ord.laundry_partner.name
-    }! Order baru telah masuk, Berikut adalah detail pesanan:\n\nID: ${
+    }!\nOrder baru telah masuk, Berikut adalah detail pesanan:\n\nID: ${
       ord.id
-    }\n\n==Customer==\nNama: ${ord.customer.name}\nEmail: ${
+    }\n\n==Customer==\n*Nama*: ${ord.customer.name}\n*Email*: ${
       ord.customer.email
-    }\nAlamat: ${ord.customer.address}\nPinpoint: ${
+    }\n*Alamat*: ${ord.customer.address}\n*Pinpoint*: ${
       ord.maps_pinpoint
-    }\nNo HP Customer: https://wa.me/${
+    }\n*No HP Customer*: https://wa.me/${
       ord.customer.telephone
     }\n\n==LAUNDRY==\n${ord.laundry_partner.name}, ${
       ord.laundry_partner.area
-    }, ${ord.laundry_partner.city}\nNo HP laundry: https://wa.me/${
-      ord.laundry_partner.telephone
-    }\n\nPaket Laundry: ${ord.package.name}\nDeskripsi:${
-      ord.package.description
-    }\nNote: ${ord.note || "-"}\nPickup Date: ${
-      ord.pickup_date || "-"
-    }\n\nKupon: ${ord.coupon_code || "-"}\nReferral Code: ${
+    }, ${ord.laundry_partner.city}\n\n*Paket Laundry*: ${
+      ord.package.name
+    }\n*Deskripsi*: ${ord.package.description}\n*Note*: ${
+      ord.note || "-"
+    }\n*Pickup Date*: ${ord.pickup_date || "-"}\n\n*Kupon*: ${
+      ord.coupon_code || "-"
+    }\n*Referral Code*: ${
       ord.referral_code || "-"
     }\n====================\n\n_Pesan ini dibuat otomatis oleh sistem Akucuciin_\nTanggal: ${
       ord.created_at
