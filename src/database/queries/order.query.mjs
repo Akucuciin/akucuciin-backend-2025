@@ -359,9 +359,10 @@ const OrderQuery = {
     coupon_code,
     note,
     pickup_date,
-    referral_code
+    referral_code,
+    conn = db
   ) {
-    const [results] = await db.query(
+    const [results] = await conn.query(
       `
         INSERT INTO orders
         (id, customer_id, laundry_partner_id, package_id, content, status, maps_pinpoint, weight, price, coupon_code, note, pickup_date, referral_code)

@@ -45,8 +45,8 @@ const CustomerQuery = {
     );
     return results;
   },
-  getCustomerProfileByEmail: async function (email) {
-    const [results] = await db.query(
+  getCustomerProfileByEmail: async function (email, conn = db) {
+    const [results] = await conn.query(
       `SELECT 
         c.id,
         c.email,
@@ -122,8 +122,8 @@ const CustomerQuery = {
     );
     return results[0].isExist;
   },
-  isReferralCodeExist: async function (referral_code) {
-    const [results] = await db.query(
+  isReferralCodeExist: async function (referral_code, conn = db) {
+    const [results] = await conn.query(
       `SELECT count(referral_code) as isExist FROM customers WHERE referral_code = ?`,
       [referral_code]
     );
