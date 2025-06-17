@@ -46,8 +46,8 @@ const CouponQuery = {
     );
     return results;
   },
-  setUsed: async function (coupon_code_name) {
-    const [results] = await db.query(
+  setUsed: async function (coupon_code_name, conn = db) {
+    const [results] = await conn.query(
       `
         UPDATE coupons
         SET is_used = 1
