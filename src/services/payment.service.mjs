@@ -169,9 +169,14 @@ const PaymentService = {
 
             if (coupon.max_discount) haveMaxDiscount = true;
 
-            if (coupon.multiplier == 100 && !coupon.max_discount) {
-              // 100% Discount
-              admin_pay = 1;
+            if (coupon.multiplier == 100) {
+              if (discount_cut < coupon.max_discount) {
+                // 100% Discount but not meet max discount
+                admin_pay = 1;
+              } else {
+                // 100% Discount and meet max discount
+                admin_pay = 1000;
+              }
             }
           }
         }
