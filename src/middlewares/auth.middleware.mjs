@@ -12,7 +12,7 @@ const authorize = (strategy) => {
         return next(err);
       }
       if (!user) {
-        return res.status(401).json({ success: false, message: message });
+        return res.status(401).json({ success: false, message: message, error: info?.message || null });
       }
       req.user = user;
       next();
