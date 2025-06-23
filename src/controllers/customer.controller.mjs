@@ -35,6 +35,14 @@ const CustomerController = {
       next(error);
     }
   },
+  checkReferralCode: async (req, res, next) => {
+    try {
+      const result = await CustomerService.checkReferralCode(req);
+      return res.status(200).json({ success: true, data: result });
+    } catch (error) {
+      next(error);
+    }
+  },
   register: async (req, res, next) => {
     try {
       const result = await CustomerService.register(req);

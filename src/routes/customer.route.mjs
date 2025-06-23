@@ -23,6 +23,11 @@ CustomerRouter.post(
   async (req, res, next) =>
     CustomerController.createReferralCode(req, res, next)
 );
+CustomerRouter.get(
+  "/api/customer/public/referral_code/:referral_code",
+  authorize("customer-jwt"),
+  async (req, res, next) => CustomerController.checkReferralCode(req, res, next)
+);
 
 // === Register, Auth
 CustomerRouter.post("/api/customer", async (req, res, next) =>

@@ -87,6 +87,29 @@ const CustomerService = {
 
     return `Referral code ${referral_code} created!`;
   },
+  checkReferralCode: async (req) => {
+    const { referral_code } = req.params;
+
+    /* const isReferralCodeExist = await CustomerQuery.isReferralCodeExist(
+       referral_code
+     );
+     if (!isReferralCodeExist)
+       throw new NotFoundError(`Referral code ${referral_code} tidak ditemukan`);
+    */
+   
+    // no need to check if referral code exists, because it will be checked using getCustomerByReferralCode
+    const customer = await CustomerQuery.getCustomerByReferralCode(
+      referral_code
+    );
+    if (!customer)
+      throw new NotFoundError(`Referral code ${referral_code} tidak ditemukan`);
+    if (customer.id === req.user.id)
+      throw new BadRequestError(
+        `Referral code ${referral_code} merupakan milik anda sendiri`
+      );
+
+    return "Referral code valid, dimiliki oleh: " + customer.name;
+  },
   register: async (req) => {
     const newCustomer = validate(CustomerSchema.register, req.body);
 
