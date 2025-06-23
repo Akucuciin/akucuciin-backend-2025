@@ -11,6 +11,7 @@ import CustomerRouter from "./routes/customer.route.mjs";
 import "./auth/passport.auth.mjs";
 import requestLogger from "./middlewares/requestLogger.middleware.mjs";
 import AdminRouter from "./routes/admin.route.mjs";
+import CouponRouter from "./routes/coupon.route.mjs";
 import DriverRouter from "./routes/driver.route.mjs";
 import LaundryPartnerRouter from "./routes/laundryPartner.route.mjs";
 import LaundryPartnerAppRouter from "./routes/laundryPartnerApp.route.mjs";
@@ -47,6 +48,7 @@ app.use(AuthRouter);
 app.use(LaundryPartnerRouter);
 app.use(LaundryPartnerAppRouter);
 app.use(OrderRouter);
+app.use(CouponRouter);
 app.use(WebhookRouter);
 
 app.use(errorHandler);
