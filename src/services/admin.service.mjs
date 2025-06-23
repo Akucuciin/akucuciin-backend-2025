@@ -13,7 +13,10 @@ import {
   NotFoundError,
   ServerError,
 } from "../errors/customErrors.mjs";
-import { formatOrderFromDb, formatOrdersFromDb } from "../utils/order.utils.mjs";
+import {
+  formatOrderFromDb,
+  formatOrdersFromDb,
+} from "../utils/order.utils.mjs";
 import {
   generateNanoidWithPrefix,
   lowerAndCapitalizeFirstLetter,
@@ -284,15 +287,20 @@ const AdminService = {
   },
   getOrdersJoined: async (req) => {
     let { startDate, endDate } = req.query;
+
     if (startDate && endDate) {
       const isValidDate = (dateStr) => /^\d{4}-\d{2}-\d{2}$/.test(dateStr);
       if (!isValidDate(startDate) || !isValidDate(endDate)) {
-        throw new BadRequestError("Invalid Query Parameter");
+        throw new BadRequestError(
+          "Invalid Query Parameter, should be YYYY-MM-DD"
+        );
       }
+
+      startDate = new Date(startDate).toISOString();
       const parsedEnd = new Date(endDate);
-      const endPlusOne = new Date(parsedEnd);
-      endPlusOne.setDate(endPlusOne.getDate() + 1);
-      endDate = endPlusOne.toISOString().slice(0, 10);
+      parsedEnd.setDate(parsedEnd.getDate() + 1);
+      endDate = parsedEnd.toISOString();
+      console.log("startDate", startDate, "endDate", endDate);
     }
 
     const orders = await OrderQuery.getOrdersJoined(startDate, endDate);
@@ -330,12 +338,21 @@ const AdminService = {
 
       const ordersJoined = await OrderQuery.getOrderJoinedById(order_id);
       const orderJoined = ordersJoined[0];
-      await sendOrderCompletedConfirmationToCustomer(orderJoined.c_telephone, orderJoined.c_name, order_id);
+      await sendOrderCompletedConfirmationToCustomer(
+        orderJoined.c_telephone,
+        orderJoined.c_name,
+        order_id
+      );
 
       if (orderJoined.referral_code) {
         const orderJoinedFormatted = formatOrderFromDb(orderJoined);
-        const referredCustomer = await CustomerQuery.getCustomerByReferralCode(orderJoined.referral_code);
-        await CustomerStaticService.performSuccesfullReferralCodePipeline(orderJoinedFormatted.customer.email, referredCustomer);
+        const referredCustomer = await CustomerQuery.getCustomerByReferralCode(
+          orderJoined.referral_code
+        );
+        await CustomerStaticService.performSuccesfullReferralCodePipeline(
+          orderJoinedFormatted.customer.email,
+          referredCustomer
+        );
       }
     }
 
