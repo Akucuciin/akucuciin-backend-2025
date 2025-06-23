@@ -47,6 +47,10 @@ const CouponStaticService = {
       throw new BadRequestError(
         `Gagal, Kupon ${coupon_code} (sekali pakai), sudah digunakan`
       );
+    } else if (coupon.is_used === -1) {
+      // Coupon is infinitely used
+    } else if (coupon.is_used === 0) {
+      await CouponQuery.setUsed(coupon_code, trx);
     }
 
     return coupon;
