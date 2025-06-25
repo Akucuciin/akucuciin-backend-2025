@@ -16,7 +16,10 @@ import {
   formatOrderFromDb,
   formatOrdersFromDb,
 } from "../utils/order.utils.mjs";
-import { generateNanoidWithPrefix } from "../utils/utils.mjs";
+import {
+  generateNanoidWithPrefix,
+  transformPhoneNumber,
+} from "../utils/utils.mjs";
 import CustomerSchema from "../validators/customer.schema.mjs";
 import OrderSchema from "../validators/order.schema.mjs";
 import validate from "../validators/validator.mjs";
@@ -50,6 +53,7 @@ const CustomerService = {
       address: updatedCustomer.address || customer.address,
       telephone: updatedCustomer.telephone || customer.telephone,
     };
+    values.telephone = transformPhoneNumber(values.telephone);
 
     await CustomerQuery.updateCustomer(
       values.id,
@@ -118,6 +122,7 @@ const CustomerService = {
 
     newCustomer.id = generateNanoidWithPrefix("CUST");
     newCustomer.password = await bcrypt.hash(newCustomer.password, 12);
+    newCustomer.telephone = transformPhoneNumber(newCustomer.telephone);
 
     await CustomerQuery.registerCustomer(
       newCustomer.id,

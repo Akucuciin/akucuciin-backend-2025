@@ -20,6 +20,7 @@ import {
 import {
   generateNanoidWithPrefix,
   lowerAndCapitalizeFirstLetter,
+  transformPhoneNumber,
 } from "../utils/utils.mjs";
 import DriverSchema from "../validators/driver.schema.mjs";
 import LaundryPartnerSchema from "../validators/laundryPartner.schema.mjs";
@@ -63,6 +64,7 @@ const AdminService = {
     laundryPartner.password = await bcrypt.hash(laundryPartner.password, 12);
     laundryPartner.city = lowerAndCapitalizeFirstLetter(laundryPartner.city);
     laundryPartner.area = lowerAndCapitalizeFirstLetter(laundryPartner.area);
+    laundryPartner.telephone = transformPhoneNumber(laundryPartner.telephone);
 
     await LaundryPartnerQuery.register(
       laundryPartner.id,
@@ -134,6 +136,7 @@ const AdminService = {
     };
     values.city = lowerAndCapitalizeFirstLetter(values.city);
     values.area = lowerAndCapitalizeFirstLetter(values.area);
+    values.telephone = transformPhoneNumber(values.telephone);
 
     await LaundryPartnerQuery.update(
       values.email,
