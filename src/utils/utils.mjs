@@ -42,6 +42,7 @@ function lowerAndCapitalizeFirstLetter(val) {
 }
 
 export const transformPhoneNumber = (phone) => {
+  // transform phone number to 62xxxxx format
   if (!phone) return "";
 
   let cleaned = phone.replace(/\D/g, "");
