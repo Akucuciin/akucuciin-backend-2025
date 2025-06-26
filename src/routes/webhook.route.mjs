@@ -64,8 +64,8 @@ WebhookRouter.get(
   }),
   async (req, res) => {
     const { id, email } = req.user;
-    const accessToken = TokenService.generateAccessToken(id, email);
-    const refreshToken = TokenService.generateRefreshToken(id, email);
+    const accessToken = TokenService.generateAccessToken(id, email, "customer");
+    const refreshToken = TokenService.generateRefreshToken(id, email, "customer");
 
     try {
       await AuthQuery.addRefreshToken(id, refreshToken);
