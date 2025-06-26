@@ -63,6 +63,7 @@ passport.use(
         return done(null, {
           id: newCustomerId,
           email: emailFromOAuth,
+          role: "customer",
         });
       }
     }
