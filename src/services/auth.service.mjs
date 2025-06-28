@@ -26,8 +26,8 @@ const AuthService = {
       throw new AuthenticationError("Login gagal, email atau password salah");
 
     const { id, email } = admin;
-    const accessToken = TokenService.generateAccessToken(id, email);
-    const refreshToken = TokenService.generateRefreshToken(id, email);
+    const accessToken = TokenService.generateAccessToken(id, email, "admin");
+    const refreshToken = TokenService.generateRefreshToken(id, email, "admin");
 
     try {
       await AuthQuery.addRefreshToken(id, refreshToken);
@@ -61,8 +61,8 @@ const AuthService = {
       throw new AuthenticationError("Login gagal, email atau password salah");
 
     const { id, email } = customer;
-    const accessToken = TokenService.generateAccessToken(id, email);
-    const refreshToken = TokenService.generateRefreshToken(id, email);
+    const accessToken = TokenService.generateAccessToken(id, email, "customer");
+    const refreshToken = TokenService.generateRefreshToken(id, email, "customer");
 
     try {
       await AuthQuery.addRefreshToken(id, refreshToken);
@@ -89,8 +89,8 @@ const AuthService = {
       throw new AuthenticationError("Login gagal, email atau password salah");
 
     const { id, email } = driver;
-    const accessToken = TokenService.generateAccessToken(id, email);
-    const refreshToken = TokenService.generateRefreshToken(id, email);
+    const accessToken = TokenService.generateAccessToken(id, email, "driver");
+    const refreshToken = TokenService.generateRefreshToken(id, email, "driver");
 
     try {
       await AuthQuery.addRefreshToken(id, refreshToken);
@@ -120,8 +120,8 @@ const AuthService = {
         throw new AuthenticationError("Login gagal, kredensial salah");
 
       const { id, email } = partner;
-      const accessToken = TokenService.generateAccessToken(id, email);
-      const refreshToken = TokenService.generateRefreshToken(id, email);
+      const accessToken = TokenService.generateAccessToken(id, email, "laundry-partner");
+      const refreshToken = TokenService.generateRefreshToken(id, email, "laundry-partner");
 
       try {
         await AuthQuery.addRefreshToken(id, refreshToken);
@@ -162,12 +162,12 @@ const AuthService = {
     if (!isRefreshTokenExists)
       throw new AuthenticationError("Invalid refresh token");
 
-    const { id, email } = TokenService.verifyToken(
+    const { id, email, role } = TokenService.verifyToken(
       refreshToken,
       AppConfig.JWT.refreshTokenSecret
     );
-    let newAccessToken = TokenService.generateAccessToken(id, email);
-    let newRefreshToken = TokenService.generateRefreshToken(id, email);
+    let newAccessToken = TokenService.generateAccessToken(id, email, role);
+    let newRefreshToken = TokenService.generateRefreshToken(id, email, role);
     await AuthQuery.updateRefreshToken(id, newRefreshToken);
 
     return { accessToken: newAccessToken, refreshToken: newRefreshToken };
