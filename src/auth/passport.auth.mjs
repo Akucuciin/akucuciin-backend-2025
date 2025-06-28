@@ -42,6 +42,7 @@ passport.use(
         return done(null, {
           id: customer.id,
           email: customer.email,
+          role: "customer"
         });
       } else {
         console.error(`${new Date()} ${emailFromOAuth} DIDNT YET REGISTERED`);
