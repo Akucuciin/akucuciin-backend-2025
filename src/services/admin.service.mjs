@@ -34,6 +34,11 @@ import {
 } from "./whatsapp.service.mjs";
 
 const AdminService = {
+  getProfile: async (req) => {
+    const admin = await AdminQuery.getAdminProfileByEmail(req.user.email);
+    // admin is guaranteed to be found if authenticated
+    return admin;
+  },
   getCustomers: async (req) => {
     const customers = await AdminQuery.getCustomers();
     return customers;

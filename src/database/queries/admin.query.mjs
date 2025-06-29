@@ -33,6 +33,12 @@ const AdminQuery = {
     ]);
     return results[0];
   },
+  getAdminProfileByEmail: async function (email) {
+    const [results] = await db.query(`SELECT id, email FROM admins WHERE email = ?`, [
+      email,
+    ]);
+    return results[0];
+  },
   getCustomers: async function () {
     const [results] = await db.query(
       `
