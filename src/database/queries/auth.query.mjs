@@ -1,4 +1,4 @@
-import db from "../connection.mjs";
+import db from '../connection.mjs';
 
 const AuthQuery = {
   addRefreshToken: async function (id, refreshToken) {

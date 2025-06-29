@@ -1,5 +1,5 @@
-import CouponQuery from "../database/queries/coupon.query.mjs";
-import { BadRequestError } from "../errors/customErrors.mjs";
+import CouponQuery from '../database/queries/coupon.query.mjs';
+import { BadRequestError } from '../errors/customErrors.mjs';
 
 const CouponStaticService = {
   validateCouponCodeForOrder: async (order, userId, trx) => {
@@ -9,7 +9,7 @@ const CouponStaticService = {
 
     const coupon = await CouponQuery.get(coupon_code, trx);
     if (!coupon) {
-      throw new BadRequestError("Kupon tidak ditemukan");
+      throw new BadRequestError('Kupon tidak ditemukan');
     }
 
     if (!coupon.is_active) {
@@ -57,7 +57,7 @@ const CouponStaticService = {
   },
   validateCoupon: async (couponCode, userId) => {
     const coupon = await CouponQuery.get(couponCode);
-    if (!coupon) throw new BadRequestError("Kupon tidak ditemukan");
+    if (!coupon) throw new BadRequestError('Kupon tidak ditemukan');
     if (!coupon.is_active) {
       throw new BadRequestError(`Kupon ${couponCode} sudah tidak aktif`);
     }

@@ -1,4 +1,4 @@
-import db from "../connection.mjs";
+import db from '../connection.mjs';
 
 const CustomerQuery = {
   activateCustomer: async function (email) {

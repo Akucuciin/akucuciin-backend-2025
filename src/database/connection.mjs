@@ -1,6 +1,6 @@
-import mysql from "mysql2/promise";
+import mysql from 'mysql2/promise';
 
-import AppConfig from "../configs/app.config.mjs";
+import AppConfig from '../configs/app.config.mjs';
 
 const db = mysql.createPool({
   host: AppConfig.DB.host,

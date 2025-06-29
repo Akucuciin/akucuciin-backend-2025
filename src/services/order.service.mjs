@@ -1,20 +1,20 @@
-import CustomerQuery from "../database/queries/customer.query.mjs";
-import LaundryPartnerQuery from "../database/queries/laundryPartner.query.mjs";
-import OrderQuery from "../database/queries/order.query.mjs";
+import CustomerQuery from '../database/queries/customer.query.mjs';
+import LaundryPartnerQuery from '../database/queries/laundryPartner.query.mjs';
+import OrderQuery from '../database/queries/order.query.mjs';
 import {
   AuthorizationError,
   BadRequestError,
-} from "../errors/customErrors.mjs";
-import { withTransaction } from "../utils/db.utils.mjs";
-import { formatOrdersFromDb } from "../utils/order.utils.mjs";
-import { generateNanoidWithPrefix } from "../utils/utils.mjs";
-import OrderSchema from "../validators/order.schema.mjs";
-import validate from "../validators/validator.mjs";
-import CouponStaticService from "./coupon.static-service.mjs";
+} from '../errors/customErrors.mjs';
+import { withTransaction } from '../utils/db.utils.mjs';
+import { formatOrdersFromDb } from '../utils/order.utils.mjs';
+import { generateNanoidWithPrefix } from '../utils/utils.mjs';
+import OrderSchema from '../validators/order.schema.mjs';
+import validate from '../validators/validator.mjs';
+import CouponStaticService from './coupon.static-service.mjs';
 import {
   sendOrderConfirmationToCustomer,
   sendOrderConfirmationToLaundry,
-} from "./whatsapp.service.mjs";
+} from './whatsapp.service.mjs';
 
 const OrderService = {
   create: async (req) => {
@@ -25,26 +25,26 @@ const OrderService = {
       );
       if (!customer.address?.trim()) {
         throw new AuthorizationError(
-          "Gagal, silahkan isi data alamat terlebih dahulu pada profile anda"
+          'Gagal, silahkan isi data alamat terlebih dahulu pada profile anda'
         );
       }
 
       if (!customer.telephone?.trim()) {
         throw new AuthorizationError(
-          "Gagal, silahkan isi data nomor telephone (Whatsapp) terlebih dahulu pada profile anda"
+          'Gagal, silahkan isi data nomor telephone (Whatsapp) terlebih dahulu pada profile anda'
         );
       }
 
       const order = validate(OrderSchema.create, req.body);
 
-      order.id = generateNanoidWithPrefix("ORDER");
+      order.id = generateNanoidWithPrefix('ORDER');
       order.customer_id = req.user.id;
 
       // REFERRAL CODE APPLIED
       if (order.referral_code) {
         if (order.referral_code === customer.referral_code)
           throw new BadRequestError(
-            "Gagal, gunakan kode referral selain punya anda"
+            'Gagal, gunakan kode referral selain punya anda'
           );
 
         const referral_code = await CustomerQuery.isReferralCodeExist(
@@ -52,7 +52,7 @@ const OrderService = {
           trx
         );
         if (!referral_code)
-          throw new BadRequestError("Gagal, Kode referral tidak ditemukan");
+          throw new BadRequestError('Gagal, Kode referral tidak ditemukan');
       }
 
       // COUPON APPLIED
@@ -69,14 +69,14 @@ const OrderService = {
         trx
       );
       if (!laundry || !laundry.is_active)
-        throw new BadRequestError("Gagal, laundry tidak ditemukan");
+        throw new BadRequestError('Gagal, laundry tidak ditemukan');
       const laundryPackages = await LaundryPartnerQuery.getPackageOfPartnerById(
         order.laundry_partner_id,
         order.package_id,
         trx
       );
       if (!laundryPackages)
-        throw new BadRequestError("Gagal, paket laundry tidak ditemukan");
+        throw new BadRequestError('Gagal, paket laundry tidak ditemukan');
 
       await OrderQuery.create(
         order.id,
@@ -99,8 +99,8 @@ const OrderService = {
 
       const ord = formatOrdersFromDb(orderFromDb)[0];
 
-      ord.created_at_tz = new Date(ord.created_at).toLocaleString("id-ID", {
-        timeZone: "Asia/Bangkok",
+      ord.created_at_tz = new Date(ord.created_at).toLocaleString('id-ID', {
+        timeZone: 'Asia/Bangkok',
       });
 
       try {
@@ -111,7 +111,7 @@ const OrderService = {
         await sendOrderConfirmationToLaundry(ord);
       } catch (err) {
         throw new BadRequestError(
-          "Gagal, tidak bisa mengirim notifikasi Whatsapp, silahkan coba lagi"
+          'Gagal, tidak bisa mengirim notifikasi Whatsapp, silahkan coba lagi'
         );
       }
 

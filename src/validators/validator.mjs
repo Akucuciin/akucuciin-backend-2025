@@ -1,4 +1,4 @@
-import { BadRequestError } from "../errors/customErrors.mjs";
+import { BadRequestError } from '../errors/customErrors.mjs';
 
 const validate = (schema, req) => {
   const validation = schema.validate(req);

@@ -1,4 +1,4 @@
-import db from "../connection.mjs";
+import db from '../connection.mjs';
 
 const LaundryPartnerImageQuery = {
   addImage: async function (id, partner_id, filepath) {

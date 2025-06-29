@@ -1,6 +1,6 @@
-import jwt from "jsonwebtoken";
-import { v7 as uuidV7 } from "uuid";
-import AppConfig from "../configs/app.config.mjs";
+import jwt from 'jsonwebtoken';
+import { v7 as uuidV7 } from 'uuid';
+import AppConfig from '../configs/app.config.mjs';
 
 const TokenService = {
   generateAccessToken: (id, email, role) =>

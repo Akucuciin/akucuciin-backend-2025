@@ -1,4 +1,4 @@
-import { customAlphabet } from "nanoid";
+import { customAlphabet } from 'nanoid';
 
 export const formatOrdersFromDb = function (orders) {
   return orders.map((row) => ({
@@ -103,8 +103,8 @@ export const formatOrderFromDb = function (row) {
 // this will be invoice_number for doku payment
 export const generateInvoiceNumberForPayment = (partnerName, id) => {
   const nanoid = customAlphabet(
-    "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
+    '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
     6
   );
-  return `${partnerName.replace(/[^a-zA-Z0-9]/g, "")}::${id}::${nanoid()}`;
+  return `${partnerName.replace(/[^a-zA-Z0-9]/g, '')}::${id}::${nanoid()}`;
 };

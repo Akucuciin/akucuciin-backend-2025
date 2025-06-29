@@ -1,6 +1,6 @@
-import { nanoid } from "nanoid";
-import AdminService from "../services/admin.service.mjs";
-import AuthService from "../services/auth.service.mjs";
+import { nanoid } from 'nanoid';
+import AdminService from '../services/admin.service.mjs';
+import AuthService from '../services/auth.service.mjs';
 
 const AdminController = {
   getProfile: async (req, res, next) => {
@@ -173,20 +173,20 @@ const AdminController = {
       const workbook = await AdminService.exportOrderToExcel(req);
 
       const today = new Date();
-      const formattedToday = today.toLocaleDateString("en-GB", {
-        day: "2-digit",
-        month: "long",
-        year: "numeric",
+      const formattedToday = today.toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric',
       });
       const reportFilename = `Order Report_${formattedToday}_${nanoid(4)}.xlsx`;
 
       res.setHeader(
-        "Content-Disposition",
+        'Content-Disposition',
         `attachment; filename=${reportFilename}`
       );
       res.setHeader(
-        "Content-Type",
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        'Content-Type',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
       );
 
       await workbook.xlsx.write(res);

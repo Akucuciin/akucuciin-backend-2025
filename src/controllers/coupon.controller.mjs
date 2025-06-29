@@ -1,4 +1,4 @@
-import CouponService from "../services/coupon.service.mjs";
+import CouponService from '../services/coupon.service.mjs';
 
 const CouponController = {
   getCouponByCode: async (req, res, next) => {

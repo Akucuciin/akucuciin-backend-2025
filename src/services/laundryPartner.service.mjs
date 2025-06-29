@@ -1,14 +1,14 @@
-import LaundryPartnerQuery from "../database/queries/laundryPartner.query.mjs";
-import LaundryPartnerImageQuery from "../database/queries/laundryPartnerImage.query.mjs";
-import { NotFoundError } from "../errors/customErrors.mjs";
-import { lowerAndCapitalizeFirstLetter } from "../utils/utils.mjs";
+import LaundryPartnerQuery from '../database/queries/laundryPartner.query.mjs';
+import LaundryPartnerImageQuery from '../database/queries/laundryPartnerImage.query.mjs';
+import { NotFoundError } from '../errors/customErrors.mjs';
+import { lowerAndCapitalizeFirstLetter } from '../utils/utils.mjs';
 
 const LaundryPartnerService = {
   getPartnerByIdWithPackages: async (req) => {
     const { id } = req.params;
 
     const laundryPartner = await LaundryPartnerQuery.getById(id);
-    if (!laundryPartner) throw new NotFoundError("Failed, laundry not found");
+    if (!laundryPartner) throw new NotFoundError('Failed, laundry not found');
 
     const laundryPartnerPackages =
       await LaundryPartnerQuery.getPackagesOfPartnerById(id);
@@ -16,7 +16,7 @@ const LaundryPartnerService = {
     const formattedLaundryPartnerPackages = laundryPartnerPackages.map(
       (pkg) => ({
         ...pkg,
-        features: pkg.features.split(", ").map((f) => f.trim()),
+        features: pkg.features.split(', ').map((f) => f.trim()),
       })
     );
 
@@ -28,7 +28,7 @@ const LaundryPartnerService = {
     const { id } = req.params;
 
     const laundryPartner = await LaundryPartnerQuery.getById(id);
-    if (!laundryPartner) throw new NotFoundError("Failed, laundry not found");
+    if (!laundryPartner) throw new NotFoundError('Failed, laundry not found');
 
     const packagesTopPicks = await LaundryPartnerQuery.getPackagesTopPicks(id);
 
@@ -37,9 +37,8 @@ const LaundryPartnerService = {
   getPartnerImages: async (req) => {
     const { id: laundry_partner_id } = req.params;
 
-    const images = await LaundryPartnerImageQuery.getImagesOfPartnerById(
-      laundry_partner_id
-    );
+    const images =
+      await LaundryPartnerImageQuery.getImagesOfPartnerById(laundry_partner_id);
 
     return images;
   },
@@ -48,11 +47,10 @@ const LaundryPartnerService = {
 
     const isExist = await LaundryPartnerQuery.getById(laundry_partner_id);
 
-    if (!isExist) throw new NotFoundError("Laundry partner not found");
+    if (!isExist) throw new NotFoundError('Laundry partner not found');
 
-    const result = await LaundryPartnerQuery.getPartnerAverageRating(
-      laundry_partner_id
-    );
+    const result =
+      await LaundryPartnerQuery.getPartnerAverageRating(laundry_partner_id);
 
     let { avg_rating, total_reviews } = result ?? {};
     avg_rating = parseFloat(avg_rating);
@@ -60,7 +58,7 @@ const LaundryPartnerService = {
       avg_rating: avg_rating ?? 0,
       total_reviews: total_reviews ?? 0,
       label:
-        total_reviews > 0 ? `${avg_rating.toFixed(1)} / 5` : "Belum ada review",
+        total_reviews > 0 ? `${avg_rating.toFixed(1)} / 5` : 'Belum ada review',
     };
 
     return response;
@@ -70,11 +68,10 @@ const LaundryPartnerService = {
 
     const isExist = await LaundryPartnerQuery.getById(laundry_partner_id);
 
-    if (!isExist) throw new NotFoundError("Laundry partner not found");
+    if (!isExist) throw new NotFoundError('Laundry partner not found');
 
-    const result = await LaundryPartnerQuery.getPartnerReviews(
-      laundry_partner_id
-    );
+    const result =
+      await LaundryPartnerQuery.getPartnerReviews(laundry_partner_id);
 
     return result;
   },

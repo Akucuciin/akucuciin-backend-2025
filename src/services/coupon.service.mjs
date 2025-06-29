@@ -1,4 +1,4 @@
-import CouponStaticService from "./coupon.static-service.mjs";
+import CouponStaticService from './coupon.static-service.mjs';
 
 const CouponService = {
   getCouponByCode: async (req) => {
