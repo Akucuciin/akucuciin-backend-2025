@@ -3,6 +3,17 @@ import AdminService from "../services/admin.service.mjs";
 import AuthService from "../services/auth.service.mjs";
 
 const AdminController = {
+  getProfile: async (req, res, next) => {
+    try {
+      const result = await AdminService.getProfile(req);
+      return res.status(200).json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
   login: async (req, res, next) => {
     try {
       const result = await AuthService.loginAdmin(req);
@@ -168,7 +179,7 @@ const AdminController = {
         year: "numeric",
       });
       const reportFilename = `Order Report_${formattedToday}_${nanoid(4)}.xlsx`;
-      
+
       res.setHeader(
         "Content-Disposition",
         `attachment; filename=${reportFilename}`
