@@ -1,4 +1,4 @@
-import { rateLimit } from "express-rate-limit";
+import { rateLimit } from 'express-rate-limit';
 
 function useRateLimiter(limit, windowMinute, message) {
   return rateLimit({
@@ -7,7 +7,7 @@ function useRateLimiter(limit, windowMinute, message) {
     standardHeaders: true,
     legacyHeaders: false,
     message: {
-      errors: message ?? "Too many requests, please try again later.",
+      errors: message ?? 'Too many requests, please try again later.',
     },
     statusCode: 429,
     handler: (req, res, next, options) => {

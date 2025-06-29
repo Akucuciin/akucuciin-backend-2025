@@ -1,5 +1,5 @@
-import AuthService from "../services/auth.service.mjs";
-import LaundryPartnerService from "../services/laundryPartner.service.mjs";
+import AuthService from '../services/auth.service.mjs';
+import LaundryPartnerService from '../services/laundryPartner.service.mjs';
 
 const LaundryPartnerController = {
   login: async (req, res, next) => {
@@ -26,9 +26,8 @@ const LaundryPartnerController = {
   },
   getPartnerByIdWithPackages: async (req, res, next) => {
     try {
-      const result = await LaundryPartnerService.getPartnerByIdWithPackages(
-        req
-      );
+      const result =
+        await LaundryPartnerService.getPartnerByIdWithPackages(req);
       return res.status(200).json({
         success: true,
         data: result,
@@ -39,9 +38,8 @@ const LaundryPartnerController = {
   },
   getPartnerPackagesTopPicks: async (req, res, next) => {
     try {
-      const result = await LaundryPartnerService.getPartnerPackagesTopPicks(
-        req
-      );
+      const result =
+        await LaundryPartnerService.getPartnerPackagesTopPicks(req);
       return res.status(200).json({
         success: true,
         data: result,

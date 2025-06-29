@@ -1,4 +1,4 @@
-import db from "../connection.mjs";
+import db from '../connection.mjs';
 
 const OrderQuery = {
   assignDriver: async function (order_id, driver_id) {

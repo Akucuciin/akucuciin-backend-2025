@@ -1,4 +1,4 @@
-import db from "../connection.mjs";
+import db from '../connection.mjs';
 
 const LaundryPartnerQuery = {
   delete: async function (id) {

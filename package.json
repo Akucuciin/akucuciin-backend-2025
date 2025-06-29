@@ -5,7 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon ./src/server.mjs",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write ."
   },
   "author": "aghnat hasya sayyidina@akucuciin",
   "license": "ISC",

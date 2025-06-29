@@ -1,15 +1,15 @@
-import multer from "multer";
-import crypto from "node:crypto";
-import path from "node:path";
-import { BadRequestError } from "../errors/customErrors.mjs";
+import multer from 'multer';
+import crypto from 'node:crypto';
+import path from 'node:path';
+import { BadRequestError } from '../errors/customErrors.mjs';
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "storage");
+    cb(null, 'storage');
   },
   filename: (req, file, cb) => {
     const ext = path.extname(file.originalname);
-    cb(null, Date.now() + "-" + crypto.randomBytes(32).toString("hex") + ext);
+    cb(null, Date.now() + '-' + crypto.randomBytes(32).toString('hex') + ext);
   },
 });
 
@@ -22,7 +22,7 @@ const uploadPartnerImage = multer({
   fileFilter: function (req, file, cb) {
     checkFileType(file, cb);
   },
-}).single("image");
+}).single('image');
 
 function checkFileType(file, cb) {
   const filetypes = /jpeg|jpg|png/;
@@ -32,9 +32,8 @@ function checkFileType(file, cb) {
   if (mimetype && extname) {
     return cb(null, true);
   } else {
-    cb(new BadRequestError("Failed, image only"));
+    cb(new BadRequestError('Failed, image only'));
   }
 }
 
 export { uploadPartnerImage };
-

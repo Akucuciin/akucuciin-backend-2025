@@ -1,20 +1,33 @@
-import CouponQuery from "../database/queries/coupon.query.mjs";
-import CustomerQuery from "../database/queries/customer.query.mjs";
-import { generateCouponName } from "../utils/utils.mjs";
-import { sendReferralCodeSuccessfullyUsedToReferredCustomer, sendReferralCodeSuccessfullyUsedToReferredCustomerWithReward } from "./whatsapp.service.mjs";
+import CouponQuery from '../database/queries/coupon.query.mjs';
+import CustomerQuery from '../database/queries/customer.query.mjs';
+import { generateCouponName } from '../utils/utils.mjs';
+import {
+  sendReferralCodeSuccessfullyUsedToReferredCustomer,
+  sendReferralCodeSuccessfullyUsedToReferredCustomerWithReward,
+} from './whatsapp.service.mjs';
 
 const CustomerStaticService = {
-  performSuccesfullReferralCodePipeline: async function (email, referredCustomer) {
-    await CustomerQuery.increaseReferralCodeSuccessfulCount(referredCustomer.email);
+  performSuccesfullReferralCodePipeline: async function (
+    email,
+    referredCustomer
+  ) {
+    await CustomerQuery.increaseReferralCodeSuccessfulCount(
+      referredCustomer.email
+    );
 
-    await CustomerQuery.decreaseReferralCodeUntilNextReward(referredCustomer.email);
+    await CustomerQuery.decreaseReferralCodeUntilNextReward(
+      referredCustomer.email
+    );
 
-    const updatedReferredCustomer = await CustomerQuery.getCustomerByReferralCode(referredCustomer.referral_code);
+    const updatedReferredCustomer =
+      await CustomerQuery.getCustomerByReferralCode(
+        referredCustomer.referral_code
+      );
 
     if (updatedReferredCustomer.referral_code_until_next_reward == 0) {
       // customer eligible for referral code voucher
       const newCouponName = generateCouponName(
-        "REF",
+        'REF',
         5,
         referredCustomer.email,
         true
@@ -33,13 +46,27 @@ const CustomerStaticService = {
         referredCustomer.id
       );
 
-      await CustomerQuery.resetReferralCodeUntilNextReward(referredCustomer.email);
-      const updatedReferredCustomer = await CustomerQuery.getCustomerByReferralCode(referredCustomer.referral_code);
-      await sendReferralCodeSuccessfullyUsedToReferredCustomerWithReward(updatedReferredCustomer, newCouponName, newCouponMultiplier);
+      await CustomerQuery.resetReferralCodeUntilNextReward(
+        referredCustomer.email
+      );
+      const updatedReferredCustomer =
+        await CustomerQuery.getCustomerByReferralCode(
+          referredCustomer.referral_code
+        );
+      await sendReferralCodeSuccessfullyUsedToReferredCustomerWithReward(
+        updatedReferredCustomer,
+        newCouponName,
+        newCouponMultiplier
+      );
     } else {
       // customer not yet eligible for referral code voucher
-      const updatedReferredCustomer = await CustomerQuery.getCustomerByReferralCode(referredCustomer.referral_code);
-      await sendReferralCodeSuccessfullyUsedToReferredCustomer(updatedReferredCustomer);
+      const updatedReferredCustomer =
+        await CustomerQuery.getCustomerByReferralCode(
+          referredCustomer.referral_code
+        );
+      await sendReferralCodeSuccessfullyUsedToReferredCustomer(
+        updatedReferredCustomer
+      );
     }
   },
 };

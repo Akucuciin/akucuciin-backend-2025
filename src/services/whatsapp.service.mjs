@@ -1,14 +1,14 @@
-import axios from "axios";
-import crypto from "crypto";
-import AppConfig from "../configs/app.config.mjs";
-import { formatRupiah } from "../utils/format.utils.mjs";
+import axios from 'axios';
+import crypto from 'crypto';
+import AppConfig from '../configs/app.config.mjs';
+import { formatRupiah } from '../utils/format.utils.mjs';
 
 const generateXSignature = (payload) => {
   const payloadStringify = JSON.stringify(payload);
   const xSignature = crypto
-    .createHmac("sha256", AppConfig.Whatsapp.HMAC_SECRET)
+    .createHmac('sha256', AppConfig.Whatsapp.HMAC_SECRET)
     .update(payloadStringify)
-    .digest("hex");
+    .digest('hex');
   return xSignature;
 };
 
@@ -22,7 +22,7 @@ export const sendOrderAssignedToDriver = async (ord) => {
 
   await axios.post(`${AppConfig.Whatsapp.SEND_URL}/send`, payload, {
     headers: {
-      "X-Signature": xSignature,
+      'X-Signature': xSignature,
     },
   });
 };
@@ -37,7 +37,7 @@ export const sendOrderAssignedPengantaranToDriver = async (ord) => {
 
   await axios.post(`${AppConfig.Whatsapp.SEND_URL}/send`, payload, {
     headers: {
-      "X-Signature": xSignature,
+      'X-Signature': xSignature,
     },
   });
 };
@@ -52,7 +52,7 @@ export const sendOrderCancellationConfirmationToCustomer = async (ord) => {
 
   await axios.post(`${AppConfig.Whatsapp.SEND_URL}/send`, payload, {
     headers: {
-      "X-Signature": xSignature,
+      'X-Signature': xSignature,
     },
   });
 };
@@ -67,7 +67,7 @@ export const sendOrderCancellationConfirmationToLaundry = async (ord) => {
 
   await axios.post(`${AppConfig.Whatsapp.SEND_URL}/send`, payload, {
     headers: {
-      "X-Signature": xSignature,
+      'X-Signature': xSignature,
     },
   });
 };
@@ -79,12 +79,12 @@ export const sendOrderConfirmationToCustomer = async (ord) => {
       ord.customer.name
     },\n\nTerima kasih telah menggunakan layanan AkuCuciin. Berikut adalah detail pesanan Anda:\n\n== Detail Pesanan ==\n📦 Paket Laundry: ${
       ord.package.name
-    }\n📝 Catatan: ${ord.note || "-"}\n📅 Tanggal Penjemputan: ${
-      ord.pickup_date || "-"
+    }\n📝 Catatan: ${ord.note || '-'}\n📅 Tanggal Penjemputan: ${
+      ord.pickup_date || '-'
     }\n🗺️ Pin Lokasi Anda: ${ord.maps_pinpoint}\n🎟️ Kupon: ${
-      ord.coupon_code || "-"
+      ord.coupon_code || '-'
     }\n🎟️ Referral Code: ${
-      ord.referral_code || "-"
+      ord.referral_code || '-'
     }\n\n== Informasi Laundry ==\n🏠 Nama Laundry: ${
       ord.laundry_partner.name
     }\n📍 Lokasi: ${ord.laundry_partner.area}, ${
@@ -101,7 +101,7 @@ export const sendOrderConfirmationToCustomer = async (ord) => {
 
   await axios.post(`${AppConfig.Whatsapp.SEND_URL}/send`, payloadWaCustomer, {
     headers: {
-      "X-Signature": xSignature,
+      'X-Signature': xSignature,
     },
   });
 };
@@ -124,11 +124,11 @@ export const sendOrderConfirmationToLaundry = async (ord) => {
     }, ${ord.laundry_partner.city}\n\n*Paket Laundry*: ${
       ord.package.name
     }\n*Deskripsi*: ${ord.package.description}\n*Note*: ${
-      ord.note || "-"
-    }\n*Pickup Date*: ${ord.pickup_date || "-"}\n\n*Kupon*: ${
-      ord.coupon_code || "-"
+      ord.note || '-'
+    }\n*Pickup Date*: ${ord.pickup_date || '-'}\n\n*Kupon*: ${
+      ord.coupon_code || '-'
     }\n*Referral Code*: ${
-      ord.referral_code || "-"
+      ord.referral_code || '-'
     }\n====================\n\n_Pesan ini dibuat otomatis oleh sistem Akucuciin_\nTanggal: ${
       ord.created_at
     }`,
@@ -137,7 +137,7 @@ export const sendOrderConfirmationToLaundry = async (ord) => {
 
   await axios.post(`${AppConfig.Whatsapp.SEND_URL}/send`, payloadWaLaundry, {
     headers: {
-      "X-Signature": xSignature,
+      'X-Signature': xSignature,
     },
   });
 };
@@ -156,7 +156,7 @@ export const sendOrderCompletedConfirmationToCustomer = async (
 
   await axios.post(`${AppConfig.Whatsapp.SEND_URL}/send`, payload, {
     headers: {
-      "X-Signature": xSignature,
+      'X-Signature': xSignature,
     },
   });
 };
@@ -177,7 +177,7 @@ export const sendNewOrderPaymentToCustomer = async (ord, paymentLink) => {
 
   await axios.post(`${AppConfig.Whatsapp.SEND_URL}/send`, payload, {
     headers: {
-      "X-Signature": xSignature,
+      'X-Signature': xSignature,
     },
   });
 };
@@ -198,7 +198,7 @@ export const sendOrderPaymentToCustomer = async (ord, paymentLink) => {
 
   await axios.post(`${AppConfig.Whatsapp.SEND_URL}/send`, payload, {
     headers: {
-      "X-Signature": xSignature,
+      'X-Signature': xSignature,
     },
   });
 };
@@ -218,7 +218,7 @@ export const sendOrderPaymentCompletedToCustomer = async (
 
   await axios.post(`${AppConfig.Whatsapp.SEND_URL}/send`, payload, {
     headers: {
-      "X-Signature": xSignature,
+      'X-Signature': xSignature,
     },
   });
 };
@@ -235,7 +235,7 @@ export const sendReferralCodeSuccessfullyUsedToReferredCustomer = async (
 
   await axios.post(`${AppConfig.Whatsapp.SEND_URL}/send`, payload, {
     headers: {
-      "X-Signature": xSignature,
+      'X-Signature': xSignature,
     },
   });
 };
@@ -251,7 +251,7 @@ export const sendReferralCodeSuccessfullyUsedToReferredCustomerWithReward =
 
     await axios.post(`${AppConfig.Whatsapp.SEND_URL}/send`, payload, {
       headers: {
-        "X-Signature": xSignature,
+        'X-Signature': xSignature,
       },
     });
   };

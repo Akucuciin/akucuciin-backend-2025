@@ -1,9 +1,9 @@
-import ejs from "ejs";
-import { dirname } from "node:path";
-import { fileURLToPath } from "node:url";
-import nodemailer from "nodemailer";
-import path from "path";
-import AppConfig from "../configs/app.config.mjs";
+import ejs from 'ejs';
+import { dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import nodemailer from 'nodemailer';
+import path from 'path';
+import AppConfig from '../configs/app.config.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -24,7 +24,7 @@ const transporter = nodemailer.createTransport({
 const MailService = {
   sendVerifyEmail: async (email, registerToken) => {
     const emailContent = await ejs.renderFile(
-      path.join(__dirname, "../views/emails/register.ejs"),
+      path.join(__dirname, '../views/emails/register.ejs'),
       {
         verifyLink: `${AppConfig.URL.verifyServer}${email}/${registerToken}`,
         expirationTime: Number(AppConfig.JWT.verifyRegisterMaxAge) / 60,
@@ -34,21 +34,21 @@ const MailService = {
     mailOptions = {
       from: sender,
       to: email,
-      subject: "Aktivasi akun AkuCuciin",
+      subject: 'Aktivasi akun AkuCuciin',
       html: emailContent,
     };
 
     transporter.sendMail(mailOptions, (err, info) => {
       if (err) {
-        console.error("Error sending email:", err);
+        console.error('Error sending email:', err);
       } else {
-        console.log("Email sent:", info.response);
+        console.log('Email sent:', info.response);
       }
     });
   },
   resendVerifyEmail: async (email, registerToken) => {
     const emailContent = await ejs.renderFile(
-      path.join(__dirname, "../views/emails/resendVerification.ejs"),
+      path.join(__dirname, '../views/emails/resendVerification.ejs'),
       {
         verifyLink: `${AppConfig.URL.verifyServer}${email}/${registerToken}`,
         expirationTime: Number(AppConfig.JWT.verifyRegisterMaxAge) / 60,
@@ -58,21 +58,21 @@ const MailService = {
     mailOptions = {
       from: sender,
       to: email,
-      subject: "[Resend] Aktivasi akun AkuCuciin",
+      subject: '[Resend] Aktivasi akun AkuCuciin',
       html: emailContent,
     };
 
     transporter.sendMail(mailOptions, (err, info) => {
       if (err) {
-        console.error("Error sending email:", err);
+        console.error('Error sending email:', err);
       } else {
-        console.log("Email sent:", info.response);
+        console.log('Email sent:', info.response);
       }
     });
   },
   sendRequestResetPassword: async (email, resetPasswordToken) => {
     const emailContent = await ejs.renderFile(
-      path.join(__dirname, "../views/emails/resetPassword.ejs"),
+      path.join(__dirname, '../views/emails/resetPassword.ejs'),
       {
         resetLink: `${AppConfig.URL.requestResetPasswordForm}${email}/${resetPasswordToken}`,
         expirationTime: Number(AppConfig.JWT.resetPasswordMaxAge) / 60,
@@ -82,15 +82,15 @@ const MailService = {
     mailOptions = {
       from: sender,
       to: email,
-      subject: "Permintaan reset password akun AkuCuciin",
+      subject: 'Permintaan reset password akun AkuCuciin',
       html: emailContent,
     };
 
     transporter.sendMail(mailOptions, (err, info) => {
       if (err) {
-        console.error("Error sending email:", err);
+        console.error('Error sending email:', err);
       } else {
-        console.log("Email sent:", info.response);
+        console.log('Email sent:', info.response);
       }
     });
   },

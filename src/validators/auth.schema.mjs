@@ -1,4 +1,4 @@
-import Joi from "joi";
+import Joi from 'joi';
 
 const AuthSchema = {
   login: Joi.object({

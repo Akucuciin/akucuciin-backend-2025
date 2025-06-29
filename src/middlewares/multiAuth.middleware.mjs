@@ -1,7 +1,7 @@
-import passport from "passport";
+import passport from 'passport';
 
 const multiAuthorize = (roles) => {
-  const strategies = roles.split("|").map((role) => `${role}-jwt`);
+  const strategies = roles.split('|').map((role) => `${role}-jwt`);
 
   return async (req, res, next) => {
     let authenticated = false;
@@ -31,7 +31,7 @@ const multiAuthorize = (roles) => {
       if (authenticated) return next();
     }
 
-    const readableRoles = roles.replace(/\|/g, " or ");
+    const readableRoles = roles.replace(/\|/g, ' or ');
     return res.status(401).json({
       success: false,
       message: `Unauthorized, only ${readableRoles}`,
