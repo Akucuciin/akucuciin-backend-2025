@@ -159,7 +159,7 @@ const CustomerService = {
     const { order_id } = req.params;
     let order = await OrderQuery.getOrderJoinedById(order_id);
     order = order[0];
-    console.log(req.user);
+  
     if (!order) throw new NotFoundError('Failed, order not found');
     if (order.c_id != req.user.id)
       throw new AuthorizationError('Failed, order is not yours');
