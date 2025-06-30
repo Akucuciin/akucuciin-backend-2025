@@ -90,6 +90,7 @@ export const formatOrderFromDb = function (row) {
       name: row.p_name,
       price_text: row.p_price_text,
       description: row.p_description,
+      features: row.p_features,
     },
     driver: {
       id: row.d_id,
