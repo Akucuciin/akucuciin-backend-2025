@@ -51,6 +51,12 @@ export const formatOrdersFromDb = function (orders) {
 };
 
 export const formatOrderFromDb = function (row) {
+  const featuresString = row.p_features || '';
+
+  const featuresArray = featuresString
+    .split(',')
+    .map((feature) => feature.trim());
+
   return {
     id: row.id,
     content: row.content,
@@ -90,6 +96,7 @@ export const formatOrderFromDb = function (row) {
       name: row.p_name,
       price_text: row.p_price_text,
       description: row.p_description,
+      features: featuresArray,
     },
     driver: {
       id: row.d_id,
