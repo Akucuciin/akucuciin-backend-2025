@@ -282,13 +282,31 @@ const AdminService = {
     const workbook = new ExcelJs.Workbook();
     const worksheet = workbook.addWorksheet('Orders');
 
-    worksheet.columns = Object.keys(orders[0]).map((key) => ({
-      header: key.toUpperCase(),
-      key: key,
-      width: 25,
+    worksheet.columns = Object.keys(orders[0]).map((key) => {
+      const upperKey = key.toUpperCase();
+      let column = {
+        header: upperKey,
+        key: key,
+        width: 25,
+      };
+
+      if (upperKey === 'WEIGHT') {
+        column.style = { numFmt: '0.00' }; 
+      } else if (upperKey === 'PRICE' || upperKey === 'PRICE_AFTER') {
+        column.style = { numFmt: '0' };
+      }
+
+      return column;
+    });
+
+    const formattedOrders = orders.map((order) => ({
+      ...order,
+      weight: parseFloat(order.weight),
+      price: parseInt(order.price),
+      price_after: parseInt(order.price_after),
     }));
 
-    worksheet.addRows(orders);
+    worksheet.addRows(formattedOrders);
 
     return workbook;
   },
