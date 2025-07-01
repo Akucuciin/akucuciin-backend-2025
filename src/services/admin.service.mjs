@@ -282,6 +282,7 @@ const AdminService = {
     const workbook = new ExcelJs.Workbook();
     const worksheet = workbook.addWorksheet('Orders');
 
+    // Set the title row columns
     worksheet.columns = Object.keys(orders[0]).map((key) => {
       const upperKey = key.toUpperCase();
       let column = {
@@ -291,7 +292,7 @@ const AdminService = {
       };
 
       if (upperKey === 'WEIGHT') {
-        column.style = { numFmt: '0.00' }; 
+        column.style = { numFmt: '0.00' };
       } else if (upperKey === 'PRICE' || upperKey === 'PRICE_AFTER') {
         column.style = { numFmt: '0' };
       }
@@ -307,6 +308,20 @@ const AdminService = {
     }));
 
     worksheet.addRows(formattedOrders);
+
+    // Adjust column widths based on content
+    worksheet.columns.forEach((column) => {
+      let maxLength = column.header.length;
+
+      column.eachCell({ includeEmpty: true }, (cell) => {
+        const value = cell.value?.toString() || '';
+        if (value.length > maxLength) {
+          maxLength = value.length;
+        }
+      });
+
+      column.width = maxLength + 2;
+    });
 
     return workbook;
   },
