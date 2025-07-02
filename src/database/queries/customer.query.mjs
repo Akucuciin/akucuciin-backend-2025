@@ -34,8 +34,8 @@ const CustomerQuery = {
     ]);
     return results;
   },
-  decreaseReferralCodeUntilNextReward: async function (email) {
-    const [results] = await db.query(
+  decreaseReferralCodeUntilNextReward: async function (email, conn = db) {
+    const [results] = await conn.query(
       `
         UPDATE customers
         SET referral_code_until_next_reward = referral_code_until_next_reward - 1
@@ -89,16 +89,16 @@ const CustomerQuery = {
     );
     return results[0];
   },
-  getCustomerByReferralCode: async function (referral_code) {
-    const [results] = await db.query(
+  getCustomerByReferralCode: async function (referral_code, conn = db) {
+    const [results] = await conn.query(
       `SELECT * FROM customers WHERE referral_code = ?
       `,
       [referral_code]
     );
     return results[0];
   },
-  increaseReferralCodeSuccessfulCount: async function (email) {
-    const [results] = await db.query(
+  increaseReferralCodeSuccessfulCount: async function (email, conn = db) {
+    const [results] = await conn.query(
       `
         UPDATE customers
         SET referral_code_success_count = referral_code_success_count + 1
@@ -152,8 +152,8 @@ const CustomerQuery = {
       [id, email, password, name, address, telephone]
     );
   },
-  resetReferralCodeUntilNextReward: async function (email) {
-    const [results] = await db.query(
+  resetReferralCodeUntilNextReward: async function (email, conn = db) {
+    const [results] = await conn.query(
       `
         UPDATE customers
         SET referral_code_until_next_reward = 3
