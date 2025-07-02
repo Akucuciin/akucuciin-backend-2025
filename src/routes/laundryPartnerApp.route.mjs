@@ -4,6 +4,14 @@ import authorize from '../middlewares/auth.middleware.mjs';
 
 const LaundryPartnerAppRouter = Router();
 
+LaundryPartnerAppRouter.put(
+  '/api/laundry_partner/app/toggle-open-close',
+  authorize('laundry-partner-jwt'),
+  async (req, res, next) => {
+    LaundryPartnerAppController.toggleOpenClose(req, res, next);
+  }
+);
+
 LaundryPartnerAppRouter.get(
   '/api/laundry_partner/app/profile',
   authorize('laundry-partner-jwt'),
