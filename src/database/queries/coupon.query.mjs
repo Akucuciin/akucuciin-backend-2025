@@ -10,9 +10,10 @@ const CouponQuery = {
     expired_at,
     min_weight = 0,
     max_discount,
-    customer_id
+    customer_id,
+    conn = db
   ) {
-    const [results] = await db.query(
+    const [results] = await conn.query(
       `
         INSERT INTO coupons(name, multiplier, description, is_used, is_active, expired_at, min_weight, max_discount, customer_id)
         VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)

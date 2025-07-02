@@ -12,6 +12,7 @@ import {
   NotFoundError,
   TokenInvalidError,
 } from '../errors/customErrors.mjs';
+import { withTransaction } from '../utils/db.utils.mjs';
 import {
   formatOrderFromDb,
   formatOrdersFromDb,
@@ -165,7 +166,7 @@ const CustomerService = {
       throw new AuthorizationError('Failed, order is not yours');
 
     const formattedOrder = formatOrderFromDb(order);
-    
+
     return formattedOrder;
   },
   payOrder: async (req) => {
@@ -220,31 +221,33 @@ const CustomerService = {
     // END CHECK TRANSACTION STATUS - IF EXPIRED GENERATE AGAIN
   },
   giveRatingAndReview: async (req) => {
-    const { rating, review } = validate(
-      OrderSchema.giveRatingAndReview,
-      req.body
-    );
-    const { order_id } = req.params;
-    const order = await OrderQuery.getOrderById(order_id);
-    if (!order) throw new NotFoundError('Failed, order not found');
-    if (order.customer_id != req.user.id)
-      throw new AuthorizationError('Failed, order is not yours');
-    if (order.status === 'kesalahan' || order.status === 'batal')
-      throw new BadRequestError(
-        `Failed, order status is already [${order.status}]`
+    return await withTransaction(async (trx) => {
+      const { rating, review } = validate(
+        OrderSchema.giveRatingAndReview,
+        req.body
       );
-    if (order.status !== 'selesai') {
-      throw new BadRequestError(
-        'Failed, order not yet eligible to be reviewed'
-      );
-    }
-    if (order.rating !== 0 && order.review) {
-      throw new BadRequestError('Failed, order already reviewed');
-    }
+      const { order_id } = req.params;
+      const order = await OrderQuery.getOrderById(order_id, trx);
+      if (!order) throw new NotFoundError('Failed, order not found');
+      if (order.customer_id != req.user.id)
+        throw new AuthorizationError('Failed, order is not yours');
+      if (order.status === 'kesalahan' || order.status === 'batal')
+        throw new BadRequestError(
+          `Failed, order status is already [${order.status}]`
+        );
+      if (order.status !== 'selesai') {
+        throw new BadRequestError(
+          'Failed, order not yet eligible to be reviewed'
+        );
+      }
+      if (order.rating !== 0 && order.review) {
+        throw new BadRequestError('Failed, order already reviewed');
+      }
 
-    await OrderQuery.giveRatingAndReview(order_id, rating, review);
+      await OrderQuery.giveRatingAndReview(order_id, rating, review, trx);
 
-    return 'Successfully give rating and review';
+      return 'Successfully give rating and review';
+    });
   },
   cancelOrder: async (req) => {
     const { order_id } = req.params;

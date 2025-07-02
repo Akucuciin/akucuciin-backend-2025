@@ -1,3 +1,4 @@
+import db from '../database/connection.mjs';
 import CouponQuery from '../database/queries/coupon.query.mjs';
 import CustomerQuery from '../database/queries/customer.query.mjs';
 import { generateCouponName } from '../utils/utils.mjs';
@@ -9,19 +10,23 @@ import {
 const CustomerStaticService = {
   performSuccesfullReferralCodePipeline: async function (
     email,
-    referredCustomer
+    referredCustomer,
+    trx = db
   ) {
     await CustomerQuery.increaseReferralCodeSuccessfulCount(
-      referredCustomer.email
+      referredCustomer.email,
+      trx
     );
 
     await CustomerQuery.decreaseReferralCodeUntilNextReward(
-      referredCustomer.email
+      referredCustomer.email,
+      trx
     );
 
     const updatedReferredCustomer =
       await CustomerQuery.getCustomerByReferralCode(
-        referredCustomer.referral_code
+        referredCustomer.referral_code,
+        trx
       );
 
     if (updatedReferredCustomer.referral_code_until_next_reward == 0) {
@@ -43,15 +48,18 @@ const CustomerStaticService = {
         null,
         0,
         null,
-        referredCustomer.id
+        referredCustomer.id,
+        trx
       );
 
       await CustomerQuery.resetReferralCodeUntilNextReward(
-        referredCustomer.email
+        referredCustomer.email,
+        trx
       );
       const updatedReferredCustomer =
         await CustomerQuery.getCustomerByReferralCode(
-          referredCustomer.referral_code
+          referredCustomer.referral_code,
+          trx
         );
       await sendReferralCodeSuccessfullyUsedToReferredCustomerWithReward(
         updatedReferredCustomer,
@@ -62,7 +70,8 @@ const CustomerStaticService = {
       // customer not yet eligible for referral code voucher
       const updatedReferredCustomer =
         await CustomerQuery.getCustomerByReferralCode(
-          referredCustomer.referral_code
+          referredCustomer.referral_code,
+          trx
         );
       await sendReferralCodeSuccessfullyUsedToReferredCustomer(
         updatedReferredCustomer

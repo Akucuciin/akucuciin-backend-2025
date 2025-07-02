@@ -12,8 +12,8 @@ const OrderQuery = {
     );
     return results;
   },
-  getOrderById: async function (order_id) {
-    const [results] = await db.query(`SELECT * FROM orders WHERE id = ?`, [
+  getOrderById: async function (order_id, conn = db) {
+    const [results] = await conn.query(`SELECT * FROM orders WHERE id = ?`, [
       order_id,
     ]);
     return results[0];
@@ -402,8 +402,8 @@ const OrderQuery = {
     );
     return results;
   },
-  giveRatingAndReview: async function (order_id, rating, review) {
-    const [results] = await db.query(
+  giveRatingAndReview: async function (order_id, rating, review, conn = db) {
+    const [results] = await conn.query(
       `
       UPDATE orders
       SET rating = ?, review = ?
