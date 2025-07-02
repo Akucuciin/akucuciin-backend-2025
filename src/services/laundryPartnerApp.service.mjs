@@ -2,7 +2,7 @@ import AppConfig from '../configs/app.config.mjs';
 import CustomerQuery from '../database/queries/customer.query.mjs';
 import LaundryPartnerAppQuery from '../database/queries/laundryPartnerApp.query.mjs';
 import OrderQuery from '../database/queries/order.query.mjs';
-import { BadRequestError } from '../errors/customErrors.mjs';
+import { BadRequestError, NotFoundError } from '../errors/customErrors.mjs';
 import { withTransaction } from '../utils/db.utils.mjs';
 import {
   formatOrderFromDb,
@@ -30,6 +30,10 @@ const LaundryPartnerAppService = {
     const { id: order_id } = req.params;
     const orderById = await LaundryPartnerAppQuery.getOrderById(order_id);
 
+    if (!orderById) {
+      throw new NotFoundError('Gagal, order tidak ditemukan');
+    }
+
     if (orderById.lp_id !== req.user.id) {
       throw new BadRequestError('Access denied. This order is not yours.');
     }
@@ -52,6 +56,10 @@ const LaundryPartnerAppService = {
     const updated = validate(LaundryPartnerAppSchema.updateStatus, req.body);
 
     const order = await LaundryPartnerAppQuery.getOrderById(order_id);
+
+    if (!order) {
+      throw new NotFoundError('Gagal, order tidak ditemukan');
+    }
 
     if (order.lp_id !== req.user.id) {
       throw new BadRequestError('Access denied. This order is not yours.');
@@ -112,6 +120,10 @@ const LaundryPartnerAppService = {
       const updated = validate(LaundryPartnerAppSchema.updatePrice, req.body);
 
       const order = await LaundryPartnerAppQuery.getOrderById(order_id, trx);
+
+      if (!order) {
+        throw new NotFoundError('Gagal, order tidak ditemukan');
+      }
 
       if (order.lp_id !== req.user.id) {
         throw new BadRequestError('Access denied. This order is not yours.');
