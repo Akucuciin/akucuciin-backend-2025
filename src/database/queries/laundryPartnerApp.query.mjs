@@ -111,8 +111,8 @@ const LaundryPartnerAppQuery = {
     );
     return results;
   },
-  updateStatusOrder: async function (order_id, status, weight) {
-    const [results] = await db.query(
+  updateStatusOrder: async function (order_id, status, weight, conn = db) {
+    const [results] = await conn.query(
       `
       UPDATE orders
       SET status = ?, weight = ?
