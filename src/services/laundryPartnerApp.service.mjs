@@ -1,5 +1,6 @@
 import AppConfig from '../configs/app.config.mjs';
 import CustomerQuery from '../database/queries/customer.query.mjs';
+import LaundryPartnerQuery from '../database/queries/laundryPartner.query.mjs';
 import LaundryPartnerAppQuery from '../database/queries/laundryPartnerApp.query.mjs';
 import OrderQuery from '../database/queries/order.query.mjs';
 import { BadRequestError, NotFoundError } from '../errors/customErrors.mjs';
@@ -18,6 +19,28 @@ import {
 } from './whatsapp.service.mjs';
 
 const LaundryPartnerAppService = {
+  // Toggle Open Close
+  toggleOpenClose: async (req) => {
+    const laundryPartnerId = req.user.id;
+    const laundryPartner = await LaundryPartnerQuery.getById(laundryPartnerId);
+
+    const isOpen = !laundryPartner.is_open;
+
+    const result = await LaundryPartnerAppQuery.toogleOpenClose(
+      laundryPartnerId,
+      isOpen
+    );
+
+    if (!result.affectedRows) {
+      throw new BadRequestError(
+        'Failed to update open/close, please try again'
+      );
+    }
+
+    const message = isOpen ? 'Now open' : 'Now close';
+
+    return { is_open: isOpen, message: message };
+  },
   //Profile Create
   getProfile: async (req) => {
     const email = req.user.email;

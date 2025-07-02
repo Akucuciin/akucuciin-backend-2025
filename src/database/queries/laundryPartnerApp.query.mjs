@@ -1,6 +1,17 @@
 import db from '../connection.mjs';
 
 const LaundryPartnerAppQuery = {
+  toogleOpenClose: async function (laundryPartnerId, isOpen) {
+    const [results] = await db.query(
+      `
+      UPDATE laundry_partners
+      SET is_open = ?
+      WHERE id = ?
+      `,
+      [isOpen, laundryPartnerId]
+    );
+    return results;
+  },
   //Profile Read
   getProfile: async function (email) {
     const [results] = await db.query(

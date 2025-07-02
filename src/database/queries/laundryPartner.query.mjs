@@ -27,7 +27,8 @@ const LaundryPartnerQuery = {
       longitude,
       created_at,
       updated_at,
-      is_active
+      is_active,
+      is_open
     FROM laundry_partners
     WHERE id = ?
     AND is_active = 1
@@ -118,7 +119,8 @@ const LaundryPartnerQuery = {
       latitude, 
       longitude,
       created_at,
-      updated_at
+      updated_at,
+      is_open
     FROM laundry_partners
     WHERE city = ? AND is_active = 1
   `,
@@ -129,7 +131,7 @@ const LaundryPartnerQuery = {
   getPartnersLocations: async function () {
     const [results] = await db.query(`
     SELECT city, area FROM laundry_partners
-    WHERE is_active = 1
+    WHERE is_active = 1 AND deleted_at IS NULL
     ORDER BY city, area
     `);
     return results;
