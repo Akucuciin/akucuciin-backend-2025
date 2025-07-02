@@ -53,7 +53,7 @@ const LaundryPartnerAppService = {
   },
   updateStatusOrder: async (req) => {
     const { id: order_id } = req.params;
-    
+
     return await withTransaction(async (trx) => {
       const updated = validate(LaundryPartnerAppSchema.updateStatus, req.body);
 
@@ -117,7 +117,8 @@ const LaundryPartnerAppService = {
         trx
       );
 
-      if (!result.affectedRows) throw new BadRequestError('Failed to update please try again');
+      if (!result.affectedRows)
+        throw new BadRequestError('Failed to update please try again');
 
       return values;
     });

@@ -165,7 +165,7 @@ const CustomerService = {
       throw new AuthorizationError('Failed, order is not yours');
 
     const formattedOrder = formatOrderFromDb(order);
-    
+
     return formattedOrder;
   },
   payOrder: async (req) => {
