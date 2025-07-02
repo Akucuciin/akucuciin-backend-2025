@@ -1,19 +1,19 @@
-import pkg from "jsonwebtoken";
+import pkg from 'jsonwebtoken';
 const { JsonWebTokenError, TokenExpiredError } = pkg;
 
-import { MulterError } from "multer";
+import { MulterError } from 'multer';
 import {
   AuthenticationError,
   AuthorizationError,
   BadRequestError,
   NotFoundError,
-} from "../errors/customErrors.mjs";
+} from '../errors/customErrors.mjs';
 
 const errorHandler = function (error, req, res, next) {
-  console.error(">>>------------------------------------------------");
+  console.error('>>>------------------------------------------------');
   console.error(`ERROR! ${new Date()} => ${req.method} ${req.url}`);
   console.error(error);
-  console.error("----------------------------------------------END");
+  console.error('----------------------------------------------END');
 
   if (
     error instanceof NotFoundError ||
@@ -28,13 +28,13 @@ const errorHandler = function (error, req, res, next) {
   } else if (error instanceof MulterError) {
     return res.status(400).send({ success: false, errors: error.message });
   } else if (error instanceof JsonWebTokenError) {
-    return res.status(401).send({ success: false, errors: "Invalid payload" });
+    return res.status(401).send({ success: false, errors: 'Invalid payload' });
   } else if (error instanceof TokenExpiredError) {
-    return res.status(401).send({ success: false, errors: "Expired" });
+    return res.status(401).send({ success: false, errors: 'Expired' });
   } else {
     return res.status(500).send({
       success: false,
-      errors: "An internal server occured",
+      errors: 'An internal server occured',
     });
   }
 };

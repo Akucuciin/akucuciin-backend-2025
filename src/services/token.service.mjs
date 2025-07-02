@@ -1,23 +1,25 @@
-import jwt from "jsonwebtoken";
-import { v7 as uuidV7 } from "uuid";
-import AppConfig from "../configs/app.config.mjs";
+import jwt from 'jsonwebtoken';
+import { v7 as uuidV7 } from 'uuid';
+import AppConfig from '../configs/app.config.mjs';
 
 const TokenService = {
-  generateAccessToken: (id, email) =>
+  generateAccessToken: (id, email, role) =>
     jwt.sign(
       {
         id,
         email,
         unique: uuidV7(),
+        role,
         exp: Math.floor(Date.now() / 1000) + AppConfig.JWT.accessTokenMaxAge,
       },
       AppConfig.JWT.accessTokenSecret
     ),
-  generateRefreshToken: (id, email) =>
+  generateRefreshToken: (id, email, role) =>
     jwt.sign(
       {
         id,
         email,
+        role,
         unique: uuidV7(),
       },
       AppConfig.JWT.refreshTokenSecret

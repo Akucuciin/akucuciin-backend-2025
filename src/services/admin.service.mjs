@@ -1,35 +1,44 @@
-import bcrypt from "bcrypt";
-import ExcelJs from "exceljs";
-import fs from "fs";
-import AdminQuery from "../database/queries/admin.query.mjs";
+import bcrypt from 'bcrypt';
+import ExcelJs from 'exceljs';
+import fs from 'fs';
+import AdminQuery from '../database/queries/admin.query.mjs';
 
-import CustomerQuery from "../database/queries/customer.query.mjs";
-import DriverQuery from "../database/queries/driver.query.mjs";
-import LaundryPartnerQuery from "../database/queries/laundryPartner.query.mjs";
-import LaundryPartnerImageQuery from "../database/queries/laundryPartnerImage.query.mjs";
-import OrderQuery from "../database/queries/order.query.mjs";
+import CustomerQuery from '../database/queries/customer.query.mjs';
+import DriverQuery from '../database/queries/driver.query.mjs';
+import LaundryPartnerQuery from '../database/queries/laundryPartner.query.mjs';
+import LaundryPartnerImageQuery from '../database/queries/laundryPartnerImage.query.mjs';
+import OrderQuery from '../database/queries/order.query.mjs';
 import {
   BadRequestError,
   NotFoundError,
   ServerError,
-} from "../errors/customErrors.mjs";
-import { formatOrderFromDb, formatOrdersFromDb } from "../utils/order.utils.mjs";
+} from '../errors/customErrors.mjs';
+import {
+  formatOrderFromDb,
+  formatOrdersFromDb,
+} from '../utils/order.utils.mjs';
 import {
   generateNanoidWithPrefix,
   lowerAndCapitalizeFirstLetter,
-} from "../utils/utils.mjs";
-import DriverSchema from "../validators/driver.schema.mjs";
-import LaundryPartnerSchema from "../validators/laundryPartner.schema.mjs";
-import OrderSchema from "../validators/order.schema.mjs";
-import validate from "../validators/validator.mjs";
-import CustomerStaticService from "./customer.static-service.mjs";
+  transformPhoneNumber,
+} from '../utils/utils.mjs';
+import DriverSchema from '../validators/driver.schema.mjs';
+import LaundryPartnerSchema from '../validators/laundryPartner.schema.mjs';
+import OrderSchema from '../validators/order.schema.mjs';
+import validate from '../validators/validator.mjs';
+import CustomerStaticService from './customer.static-service.mjs';
 import {
   sendOrderAssignedPengantaranToDriver,
   sendOrderAssignedToDriver,
   sendOrderCompletedConfirmationToCustomer,
-} from "./whatsapp.service.mjs";
+} from './whatsapp.service.mjs';
 
 const AdminService = {
+  getProfile: async (req) => {
+    const admin = await AdminQuery.getAdminProfileByEmail(req.user.email);
+    // admin is guaranteed to be found if authenticated
+    return admin;
+  },
   getCustomers: async (req) => {
     const customers = await AdminQuery.getCustomers();
     return customers;
@@ -37,9 +46,8 @@ const AdminService = {
   getCustomerOrders: async (req) => {
     const { id: customer_id } = req.params;
 
-    const customerOrders = await OrderQuery.getOrdersJoinedByCustomer(
-      customer_id
-    );
+    const customerOrders =
+      await OrderQuery.getOrdersJoinedByCustomer(customer_id);
 
     const customerOrdersFormatted = formatOrdersFromDb(customerOrders);
     return customerOrdersFormatted;
@@ -54,12 +62,13 @@ const AdminService = {
     const isEmailExists = await LaundryPartnerQuery.isEmailExists(
       laundryPartner.email
     );
-    if (isEmailExists) throw new BadRequestError("Email sudah terdaftar");
+    if (isEmailExists) throw new BadRequestError('Email sudah terdaftar');
 
-    laundryPartner.id = generateNanoidWithPrefix("LP");
+    laundryPartner.id = generateNanoidWithPrefix('LP');
     laundryPartner.password = await bcrypt.hash(laundryPartner.password, 12);
     laundryPartner.city = lowerAndCapitalizeFirstLetter(laundryPartner.city);
     laundryPartner.area = lowerAndCapitalizeFirstLetter(laundryPartner.area);
+    laundryPartner.telephone = transformPhoneNumber(laundryPartner.telephone);
 
     await LaundryPartnerQuery.register(
       laundryPartner.id,
@@ -94,7 +103,7 @@ const AdminService = {
     const result = await LaundryPartnerQuery.delete(id);
 
     if (!result.affectedRows)
-      throw new NotFoundError("Failed delete laundry, not found");
+      throw new NotFoundError('Failed delete laundry, not found');
     return `Laundry partner with id : ${id}, succesfully deleted`;
   },
   updateLaundryPartner: async (req) => {
@@ -108,11 +117,11 @@ const AdminService = {
       const isEmailExists = await LaundryPartnerQuery.isEmailExists(
         updatedLaundryPartner.email
       );
-      if (isEmailExists) throw new BadRequestError("Email sudah terdaftar");
+      if (isEmailExists) throw new BadRequestError('Email sudah terdaftar');
     }
 
     const laundryPartner = await LaundryPartnerQuery.getById(id);
-    if (!laundryPartner) throw new NotFoundError("Failed laundry not found");
+    if (!laundryPartner) throw new NotFoundError('Failed laundry not found');
 
     const values = {
       id,
@@ -131,6 +140,7 @@ const AdminService = {
     };
     values.city = lowerAndCapitalizeFirstLetter(values.city);
     values.area = lowerAndCapitalizeFirstLetter(values.area);
+    values.telephone = transformPhoneNumber(values.telephone);
 
     await LaundryPartnerQuery.update(
       values.email,
@@ -152,7 +162,7 @@ const AdminService = {
     const { id: laundry_partner_id } = req.params;
     const npackage = validate(LaundryPartnerSchema.addPackage, req.body);
 
-    npackage.id = generateNanoidWithPrefix("LPPACKAGES");
+    npackage.id = generateNanoidWithPrefix('LPPACKAGES');
     npackage.laundry_partner_id = laundry_partner_id;
 
     const result = await AdminQuery.addLaundryPartnerPackage(
@@ -165,7 +175,7 @@ const AdminService = {
     );
 
     if (!result.affectedRows)
-      throw new BadRequestError("Failed, cant add laundry packages");
+      throw new BadRequestError('Failed, cant add laundry packages');
 
     return npackage;
   },
@@ -176,7 +186,7 @@ const AdminService = {
       package_id
     );
 
-    if (!npackage) throw new NotFoundError("Failed package not found");
+    if (!npackage) throw new NotFoundError('Failed package not found');
 
     return npackage;
   },
@@ -189,7 +199,7 @@ const AdminService = {
     );
 
     if (!result.affectedRows)
-      throw new BadRequestError("Failed delete package");
+      throw new BadRequestError('Failed delete package');
 
     return `${package_id} successfully deleted`;
   },
@@ -206,7 +216,7 @@ const AdminService = {
       package_id
     );
     if (!npackage)
-      throw new NotFoundError("Failed, package of laundry not found");
+      throw new NotFoundError('Failed, package of laundry not found');
 
     const values = {
       id: package_id,
@@ -224,13 +234,13 @@ const AdminService = {
       values.price_text
     );
 
-    if (!result.affectedRows) throw new BadRequestError("Failed to update");
+    if (!result.affectedRows) throw new BadRequestError('Failed to update');
 
     return values;
   },
   addLaundryPartnerImage: async (req) => {
     const { id: laundry_partner_id } = req.params;
-    const id = generateNanoidWithPrefix("img");
+    const id = generateNanoidWithPrefix('img');
 
     await LaundryPartnerImageQuery.addImage(
       id,
@@ -247,19 +257,19 @@ const AdminService = {
 
     fs.unlink(`storage/${image.filepath}`, (err) => {
       if (err) {
-        throw new ServerError("Failed delete image");
+        throw new ServerError('Failed delete image');
       }
     });
     await LaundryPartnerImageQuery.deleteImageById(image_id);
 
-    return "File succesfully deleted";
+    return 'File succesfully deleted';
   },
   exportOrderToExcel: async (req) => {
     let { startDate, endDate } = req.query;
     if (startDate && endDate) {
       const isValidDate = (dateStr) => /^\d{4}-\d{2}-\d{2}$/.test(dateStr);
       if (!isValidDate(startDate) || !isValidDate(endDate)) {
-        throw new BadRequestError("Invalid Query Parameter");
+        throw new BadRequestError('Invalid Query Parameter');
       }
       const parsedEnd = new Date(endDate);
       const endPlusOne = new Date(parsedEnd);
@@ -270,29 +280,67 @@ const AdminService = {
     const orders = await OrderQuery.getOrdersForReport(startDate, endDate);
 
     const workbook = new ExcelJs.Workbook();
-    const worksheet = workbook.addWorksheet("Orders");
+    const worksheet = workbook.addWorksheet('Orders');
 
-    worksheet.columns = Object.keys(orders[0]).map((key) => ({
-      header: key.toUpperCase(),
-      key: key,
-      width: 25,
+    // Set the title row columns
+    worksheet.columns = Object.keys(orders[0]).map((key) => {
+      const upperKey = key.toUpperCase();
+      let column = {
+        header: upperKey,
+        key: key,
+        width: 25,
+      };
+
+      if (upperKey === 'WEIGHT') {
+        column.style = { numFmt: '0.00' };
+      } else if (upperKey === 'PRICE' || upperKey === 'PRICE_AFTER') {
+        column.style = { numFmt: '0' };
+      }
+
+      return column;
+    });
+
+    const formattedOrders = orders.map((order) => ({
+      ...order,
+      weight: parseFloat(order.weight),
+      price: parseInt(order.price),
+      price_after: parseInt(order.price_after),
     }));
 
-    worksheet.addRows(orders);
+    worksheet.addRows(formattedOrders);
+
+    // Adjust column widths based on content
+    worksheet.columns.forEach((column) => {
+      let maxLength = column.header.length;
+
+      column.eachCell({ includeEmpty: true }, (cell) => {
+        const value = cell.value?.toString() || '';
+        if (value.length > maxLength) {
+          maxLength = value.length;
+        }
+      });
+
+      column.width = maxLength + 2;
+    });
 
     return workbook;
   },
   getOrdersJoined: async (req) => {
     let { startDate, endDate } = req.query;
+
     if (startDate && endDate) {
       const isValidDate = (dateStr) => /^\d{4}-\d{2}-\d{2}$/.test(dateStr);
       if (!isValidDate(startDate) || !isValidDate(endDate)) {
-        throw new BadRequestError("Invalid Query Parameter");
+        throw new BadRequestError(
+          'Invalid Query Parameter, should be YYYY-MM-DD'
+        );
       }
+
+      startDate = new Date(startDate).toISOString();
       const parsedEnd = new Date(endDate);
-      const endPlusOne = new Date(parsedEnd);
-      endPlusOne.setDate(endPlusOne.getDate() + 1);
-      endDate = endPlusOne.toISOString().slice(0, 10);
+      parsedEnd.setDate(parsedEnd.getDate() + 1);
+      endDate = parsedEnd.toISOString();
+      console.log('startDate', startDate, 'endDate', endDate);
     }
 
     const orders = await OrderQuery.getOrdersJoined(startDate, endDate);
@@ -306,7 +354,7 @@ const AdminService = {
     const updated = validate(OrderSchema.updateStatus, req.body);
 
     const order = await OrderQuery.getOrderById(order_id);
-    if (order.status === "batal")
+    if (order.status === 'batal')
       throw new BadRequestError(
         `Failed, order status is already [${order.status}]`
       );
@@ -320,22 +368,31 @@ const AdminService = {
     };
 
     // Order status changed to selesai then ...
-    if (updated.status && updated.status === "selesai") {
+    if (updated.status && updated.status === 'selesai') {
       if (order.weight == 0)
-        throw new BadRequestError("Gagal, update berat terlebih dahulu");
+        throw new BadRequestError('Gagal, update berat terlebih dahulu');
       if (order.price_after == 0)
-        throw new BadRequestError("Gagal, mitra belum mengupdate harga");
-      if (order.status_payment === "belum bayar")
-        throw new BadRequestError("Gagal, customer belum membayar pesanan ini");
+        throw new BadRequestError('Gagal, mitra belum mengupdate harga');
+      if (order.status_payment === 'belum bayar')
+        throw new BadRequestError('Gagal, customer belum membayar pesanan ini');
 
       const ordersJoined = await OrderQuery.getOrderJoinedById(order_id);
       const orderJoined = ordersJoined[0];
-      await sendOrderCompletedConfirmationToCustomer(orderJoined.c_telephone, orderJoined.c_name, order_id);
+      await sendOrderCompletedConfirmationToCustomer(
+        orderJoined.c_telephone,
+        orderJoined.c_name,
+        order_id
+      );
 
       if (orderJoined.referral_code) {
         const orderJoinedFormatted = formatOrderFromDb(orderJoined);
-        const referredCustomer = await CustomerQuery.getCustomerByReferralCode(orderJoined.referral_code);
-        await CustomerStaticService.performSuccesfullReferralCodePipeline(orderJoinedFormatted.customer.email, referredCustomer);
+        const referredCustomer = await CustomerQuery.getCustomerByReferralCode(
+          orderJoined.referral_code
+        );
+        await CustomerStaticService.performSuccesfullReferralCodePipeline(
+          orderJoinedFormatted.customer.email,
+          referredCustomer
+        );
       }
     }
 
@@ -347,7 +404,7 @@ const AdminService = {
       values.status_payment
     );
 
-    if (updated.status && updated.status === "pengantaran") {
+    if (updated.status && updated.status === 'pengantaran') {
       // status is updated, and the updated is 'pengantaran'
       const _orders = await OrderQuery.getOrderJoinedById(order_id);
       const _order = _orders[0];
@@ -357,7 +414,7 @@ const AdminService = {
       }
     }
 
-    if (!result.affectedRows) throw new BadRequestError("Failed to update");
+    if (!result.affectedRows) throw new BadRequestError('Failed to update');
 
     return values;
   },
@@ -365,18 +422,18 @@ const AdminService = {
     const { driver_id, order_id } = req.params;
 
     const driver = await DriverQuery.getById(driver_id);
-    if (!driver) throw new NotFoundError("Failed, driver not found");
+    if (!driver) throw new NotFoundError('Failed, driver not found');
     delete driver.password;
 
     const orders = await OrderQuery.getOrderJoinedById(order_id);
     const order = orders[0];
 
-    if (!order) throw new NotFoundError("Failed, order not found");
+    if (!order) throw new NotFoundError('Failed, order not found');
     if (
-      order.status === "selesai" ||
-      order.status === "penjemputan" ||
-      order.status === "pencucian" ||
-      order.status === "batal"
+      order.status === 'selesai' ||
+      order.status === 'penjemputan' ||
+      order.status === 'pencucian' ||
+      order.status === 'batal'
     )
       throw new BadRequestError(
         `Failed, order status is already [${order.status}]`
@@ -392,8 +449,8 @@ const AdminService = {
   cancelAssignedDriverOfOrder: async (req) => {
     const { order_id } = req.params;
     const order = await OrderQuery.getOrderById(order_id);
-    if (!order) throw new NotFoundError("Failed, order not found");
-    if (order.status === "selesai")
+    if (!order) throw new NotFoundError('Failed, order not found');
+    if (order.status === 'selesai')
       throw new BadRequestError(
         `Failed, order status is already [${order.status}]`
       );
@@ -406,9 +463,9 @@ const AdminService = {
     const driver = validate(DriverSchema.register, req.body);
 
     const isEmailExists = await DriverQuery.isEmailExists(driver.email);
-    if (isEmailExists) throw new BadRequestError("Email sudah terdaftar");
+    if (isEmailExists) throw new BadRequestError('Email sudah terdaftar');
 
-    driver.id = generateNanoidWithPrefix("DRIVER");
+    driver.id = generateNanoidWithPrefix('DRIVER');
     driver.password = await bcrypt.hash(driver.password, 14);
     driver.city = lowerAndCapitalizeFirstLetter(driver.city);
 
@@ -435,11 +492,11 @@ const AdminService = {
       const isEmailExists = await DriverQuery.isEmailExists(
         updatedDriver.email
       );
-      if (isEmailExists) throw new BadRequestError("Email sudah terdaftar");
+      if (isEmailExists) throw new BadRequestError('Email sudah terdaftar');
     }
 
     const driver = await DriverQuery.getById(driver_id);
-    if (!driver) throw new NotFoundError("Failed, driver not found");
+    if (!driver) throw new NotFoundError('Failed, driver not found');
 
     const values = {
       name: updatedDriver.name || driver.name,
@@ -474,7 +531,7 @@ const AdminService = {
     const { id: driver_id } = req.params;
 
     const driver = await DriverQuery.getById(driver_id);
-    if (!driver) throw new NotFoundError("Failed, driver not found");
+    if (!driver) throw new NotFoundError('Failed, driver not found');
 
     await DriverQuery.deleteById(driver_id);
 

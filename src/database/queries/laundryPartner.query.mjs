@@ -1,4 +1,4 @@
-import db from "../connection.mjs";
+import db from '../connection.mjs';
 
 const LaundryPartnerQuery = {
   delete: async function (id) {
@@ -10,8 +10,8 @@ const LaundryPartnerQuery = {
     );
     return results;
   },
-  getById: async function (id) {
-    const [results] = await db.query(
+  getById: async function (id, conn = db) {
+    const [results] = await conn.query(
       `
     SELECT 
       id, 
@@ -82,8 +82,8 @@ const LaundryPartnerQuery = {
     );
     return results;
   },
-  getPackageOfPartnerById: async function (laundry_partner_id, id) {
-    const [results] = await db.query(
+  getPackageOfPartnerById: async function (laundry_partner_id, id, conn = db) {
+    const [results] = await conn.query(
       `
       SELECT id, name, description, features, price_text FROM laundry_partners_packages
       WHERE laundry_partner_id = ? AND id = ? AND deleted_at IS NULL

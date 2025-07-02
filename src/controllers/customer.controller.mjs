@@ -1,12 +1,12 @@
-import pkg from "jsonwebtoken";
-import AppConfig from "../configs/app.config.mjs";
-import CustomerQuery from "../database/queries/customer.query.mjs";
+import pkg from 'jsonwebtoken';
+import AppConfig from '../configs/app.config.mjs';
+import CustomerQuery from '../database/queries/customer.query.mjs';
 import {
   AuthenticationError,
   TokenInvalidError,
-} from "../errors/customErrors.mjs";
-import AuthService from "../services/auth.service.mjs";
-import CustomerService from "../services/customer.service.mjs";
+} from '../errors/customErrors.mjs';
+import AuthService from '../services/auth.service.mjs';
+import CustomerService from '../services/customer.service.mjs';
 
 const { TokenExpiredError } = pkg;
 
@@ -30,6 +30,14 @@ const CustomerController = {
   createReferralCode: async (req, res, next) => {
     try {
       const result = await CustomerService.createReferralCode(req);
+      return res.status(200).json({ success: true, data: result });
+    } catch (error) {
+      next(error);
+    }
+  },
+  checkReferralCode: async (req, res, next) => {
+    try {
+      const result = await CustomerService.checkReferralCode(req);
       return res.status(200).json({ success: true, data: result });
     } catch (error) {
       next(error);

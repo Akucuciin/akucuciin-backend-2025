@@ -1,4 +1,4 @@
-import { customAlphabet } from "nanoid";
+import { customAlphabet } from 'nanoid';
 
 export const formatOrdersFromDb = function (orders) {
   return orders.map((row) => ({
@@ -52,6 +52,12 @@ export const formatOrdersFromDb = function (orders) {
 };
 
 export const formatOrderFromDb = function (row) {
+  const featuresString = row.p_features || '';
+
+  const featuresArray = featuresString
+    .split(',')
+    .map((feature) => feature.trim());
+
   return {
     id: row.id,
     content: row.content,
@@ -92,6 +98,7 @@ export const formatOrderFromDb = function (row) {
       name: row.p_name,
       price_text: row.p_price_text,
       description: row.p_description,
+      features: featuresArray,
     },
     driver: {
       id: row.d_id,
@@ -105,8 +112,8 @@ export const formatOrderFromDb = function (row) {
 // this will be invoice_number for doku payment
 export const generateInvoiceNumberForPayment = (partnerName, id) => {
   const nanoid = customAlphabet(
-    "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
+    '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
     6
   );
-  return `${partnerName.replace(/[^a-zA-Z0-9]/g, "")}::${id}::${nanoid()}`;
+  return `${partnerName.replace(/[^a-zA-Z0-9]/g, '')}::${id}::${nanoid()}`;
 };

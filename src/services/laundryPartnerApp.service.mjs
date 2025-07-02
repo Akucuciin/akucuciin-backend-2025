@@ -1,29 +1,28 @@
-import AppConfig from "../configs/app.config.mjs";
-import CustomerQuery from "../database/queries/customer.query.mjs";
-import LaundryPartnerAppQuery from "../database/queries/laundryPartnerApp.query.mjs";
-import OrderQuery from "../database/queries/order.query.mjs";
-import { BadRequestError } from "../errors/customErrors.mjs";
-import { withTransaction } from "../utils/db.utils.mjs";
+import AppConfig from '../configs/app.config.mjs';
+import CustomerQuery from '../database/queries/customer.query.mjs';
+import LaundryPartnerAppQuery from '../database/queries/laundryPartnerApp.query.mjs';
+import OrderQuery from '../database/queries/order.query.mjs';
+import { BadRequestError } from '../errors/customErrors.mjs';
+import { withTransaction } from '../utils/db.utils.mjs';
 import {
   formatOrderFromDb,
   formatOrdersFromDb,
-} from "../utils/order.utils.mjs";
-import LaundryPartnerAppSchema from "../validators/laundryPartnerApp.schema.mjs";
-import validate from "../validators/validator.mjs";
-import CustomerStaticService from "./customer.static-service.mjs";
-import PaymentService from "./payment.service.mjs";
+} from '../utils/order.utils.mjs';
+import LaundryPartnerAppSchema from '../validators/laundryPartnerApp.schema.mjs';
+import validate from '../validators/validator.mjs';
+import CustomerStaticService from './customer.static-service.mjs';
+import PaymentService from './payment.service.mjs';
 import {
   sendOrderCompletedConfirmationToCustomer,
   sendOrderPaymentToCustomer,
-} from "./whatsapp.service.mjs";
+} from './whatsapp.service.mjs';
 
 const LaundryPartnerAppService = {
   //Profile Create
   getProfile: async (req) => {
     const email = req.user.email;
-    const profileLaundryPartner = await LaundryPartnerAppQuery.getProfile(
-      email
-    );
+    const profileLaundryPartner =
+      await LaundryPartnerAppQuery.getProfile(email);
     return profileLaundryPartner;
   },
   //Get and Edit Order
@@ -32,7 +31,7 @@ const LaundryPartnerAppService = {
     const orderById = await LaundryPartnerAppQuery.getOrderById(order_id);
 
     if (orderById.lp_id !== req.user.id) {
-      throw new BadRequestError("Access denied. This order is not yours.");
+      throw new BadRequestError('Access denied. This order is not yours.');
     }
 
     const orderByIdFormated = formatOrderFromDb(orderById);
@@ -40,9 +39,10 @@ const LaundryPartnerAppService = {
   },
   getOrdersByLaundryPartnerId: async (req) => {
     const laundry_partner_id = req.user.id;
-    const orders = await LaundryPartnerAppQuery.getOrdersByLaundryPartnerId(
-      laundry_partner_id
-    );
+    const orders =
+      await LaundryPartnerAppQuery.getOrdersByLaundryPartnerId(
+        laundry_partner_id
+      );
 
     const ordersFormatted = formatOrdersFromDb(orders);
     return ordersFormatted;
@@ -54,22 +54,22 @@ const LaundryPartnerAppService = {
     const order = await LaundryPartnerAppQuery.getOrderById(order_id);
 
     if (order.lp_id !== req.user.id) {
-      throw new BadRequestError("Access denied. This order is not yours.");
+      throw new BadRequestError('Access denied. This order is not yours.');
     }
 
-    if (order.status === "batal" || order.status === "selesai")
+    if (order.status === 'batal' || order.status === 'selesai')
       throw new BadRequestError(
         `Failed, order status is already [${order.status}]`
       );
 
     // Order status changed to selesai then ...
-    if (updated.status && updated.status === "selesai") {
+    if (updated.status && updated.status === 'selesai') {
       if (order.weight == 0)
-        throw new BadRequestError("Gagal, update berat terlebih dahulu");
+        throw new BadRequestError('Gagal, update berat terlebih dahulu');
       if (order.price_after == 0)
-        throw new BadRequestError("Gagal, update harga terlebih dahulu");
-      if (order.status_payment === "belum bayar")
-        throw new BadRequestError("Gagal, customer belum membayar pesanan ini");
+        throw new BadRequestError('Gagal, update harga terlebih dahulu');
+      if (order.status_payment === 'belum bayar')
+        throw new BadRequestError('Gagal, customer belum membayar pesanan ini');
 
       await sendOrderCompletedConfirmationToCustomer(
         order.c_telephone,
@@ -77,10 +77,15 @@ const LaundryPartnerAppService = {
         order_id
       );
 
-      if (order.referral_code){
+      if (order.referral_code) {
         const orderJoinedFormatted = formatOrderFromDb(order);
-        const referredCustomer = await CustomerQuery.getCustomerByReferralCode(order.referral_code);
-        await CustomerStaticService.performSuccesfullReferralCodePipeline(orderJoinedFormatted.customer.email, referredCustomer);
+        const referredCustomer = await CustomerQuery.getCustomerByReferralCode(
+          order.referral_code
+        );
+        await CustomerStaticService.performSuccesfullReferralCodePipeline(
+          orderJoinedFormatted.customer.email,
+          referredCustomer
+        );
       }
     }
 
@@ -96,7 +101,7 @@ const LaundryPartnerAppService = {
       values.weight
     );
 
-    if (!result.affectedRows) throw new BadRequestError("Failed to update");
+    if (!result.affectedRows) throw new BadRequestError('Failed to update');
 
     return values;
   },
@@ -109,18 +114,22 @@ const LaundryPartnerAppService = {
       const order = await LaundryPartnerAppQuery.getOrderById(order_id, trx);
 
       if (order.lp_id !== req.user.id) {
-        throw new BadRequestError("Access denied. This order is not yours.");
+        throw new BadRequestError('Access denied. This order is not yours.');
       }
 
       if (order.weight == 0) {
-        throw new BadRequestError("Gagal, update berat terlebih dahulu");
+        throw new BadRequestError('Gagal, update berat terlebih dahulu');
       }
 
       if (order.price_after != 0) {
-        throw new BadRequestError("Gagal, harga tidak dapat dirubah kembali");
+        throw new BadRequestError('Gagal, harga tidak dapat dirubah kembali');
       }
 
-      if (order.status === "batal" || order.status === "selesai")
+      if (order.status_payment === 'sudah bayar') {
+        throw new BadRequestError('Gagal, customer sudah membayar pesanan ini');
+      }
+
+      if (order.status === 'batal' || order.status === 'selesai')
         throw new BadRequestError(
           `Failed, order status is already [${order.status}]`
         );
@@ -136,7 +145,7 @@ const LaundryPartnerAppService = {
         trx
       );
 
-      if (!result.affectedRows) throw new BadRequestError("Failed to update");
+      if (!result.affectedRows) throw new BadRequestError('Failed to update');
 
       const ordersJoined = await OrderQuery.getOrderJoinedById(order_id, trx);
       const orderJoined = ordersJoined[0];

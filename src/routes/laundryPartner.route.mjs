@@ -1,57 +1,57 @@
-import { Router } from "express";
-import LaundryPartnerController from "../controllers/laundryPartner.controller.mjs";
+import { Router } from 'express';
+import LaundryPartnerController from '../controllers/laundryPartner.controller.mjs';
 
 const LaundryPartnerRouter = Router();
 
 // AUTH
 LaundryPartnerRouter.post(
-  "/api/laundry_partner/app/login",
+  '/api/laundry_partner/app/login',
   async (req, res, next) => {
     LaundryPartnerController.login(req, res, next);
   }
 );
 LaundryPartnerRouter.post(
-  "/api/laundry_partner/app/logout",
+  '/api/laundry_partner/app/logout',
   async (req, res, next) => {
     LaundryPartnerController.logout(req, res, next);
   }
 );
 
-LaundryPartnerRouter.get("/api/laundry_partner/:id", async (req, res, next) =>
+LaundryPartnerRouter.get('/api/laundry_partner/:id', async (req, res, next) =>
   LaundryPartnerController.getPartnerByIdWithPackages(req, res, next)
 );
 LaundryPartnerRouter.get(
-  "/api/laundry_partner/:id/top-picks",
+  '/api/laundry_partner/:id/top-picks',
   async (req, res, next) =>
     LaundryPartnerController.getPartnerPackagesTopPicks(req, res, next)
 );
 
 LaundryPartnerRouter.get(
-  "/api/laundry_partner/:id/images",
+  '/api/laundry_partner/:id/images',
   async (req, res, next) =>
     LaundryPartnerController.getPartnerImages(req, res, next)
 );
 
 LaundryPartnerRouter.get(
-  "/api/laundry_partner/:id/rating",
+  '/api/laundry_partner/:id/rating',
   async (req, res, next) =>
     LaundryPartnerController.getPartnerAverageRating(req, res, next)
 );
 
 LaundryPartnerRouter.get(
-  "/api/laundry_partner/:id/reviews",
+  '/api/laundry_partner/:id/reviews',
   async (req, res, next) =>
     LaundryPartnerController.getPartnerReviews(req, res, next)
 );
 
 LaundryPartnerRouter.get(
-  "/api/laundry_partners/locations",
+  '/api/laundry_partners/locations',
   async (req, res, next) => {
     LaundryPartnerController.getPartnersLocations(req, res, next);
   }
 );
 LaundryPartnerRouter.get(
-  "/api/laundry_partners/locations/:city",
+  '/api/laundry_partners/locations/:city',
   async (req, res, next) =>
     LaundryPartnerController.getPartnersByCity(req, res, next)
 );

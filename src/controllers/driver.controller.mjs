@@ -1,5 +1,5 @@
-import AuthService from "../services/auth.service.mjs";
-import DriverService from "../services/driver.service.mjs";
+import AuthService from '../services/auth.service.mjs';
+import DriverService from '../services/driver.service.mjs';
 
 const DriverController = {
   login: async (req, res, next) => {

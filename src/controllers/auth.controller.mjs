@@ -1,4 +1,4 @@
-import AuthService from "../services/auth.service.mjs";
+import AuthService from '../services/auth.service.mjs';
 
 const AuthController = {
   refresh: async (req, res, next) => {

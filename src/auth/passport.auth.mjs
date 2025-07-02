@@ -1,12 +1,9 @@
-import passport from "passport";
-import { Strategy as GoogleStrategy } from "passport-google-oauth20";
-import { ExtractJwt, Strategy as JwtStrategy } from "passport-jwt";
-import AppConfig from "../configs/app.config.mjs";
-import AdminQuery from "../database/queries/admin.query.mjs";
-import CustomerQuery from "../database/queries/customer.query.mjs";
-import DriverQuery from "../database/queries/driver.query.mjs";
-import LaundryPartnerQuery from "../database/queries/laundryPartner.query.mjs";
-import { generateNanoidWithPrefix } from "../utils/utils.mjs";
+import passport from 'passport';
+import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
+import { ExtractJwt, Strategy as JwtStrategy } from 'passport-jwt';
+import AppConfig from '../configs/app.config.mjs';
+import CustomerQuery from '../database/queries/customer.query.mjs';
+import { generateNanoidWithPrefix } from '../utils/utils.mjs';
 
 var opts = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -19,7 +16,7 @@ passport.serializeUser(function (user, done) {
 
 // Google Auth(s)
 passport.use(
-  "customer-google-auth",
+  'customer-google-auth',
   new GoogleStrategy(
     {
       clientID: AppConfig.GOOGLE.clientId,
@@ -34,9 +31,8 @@ passport.use(
 
       if (isEmailExists) {
         console.error(`${new Date()} ${emailFromOAuth} ALREADY REGISTERED`);
-        const customer = await CustomerQuery.getCustomerProfileByEmail(
-          emailFromOAuth
-        );
+        const customer =
+          await CustomerQuery.getCustomerProfileByEmail(emailFromOAuth);
 
         if (!customer.isActive) {
           await CustomerQuery.activateCustomer(emailFromOAuth);
@@ -45,11 +41,12 @@ passport.use(
         return done(null, {
           id: customer.id,
           email: customer.email,
+          role: 'customer',
         });
       } else {
         console.error(`${new Date()} ${emailFromOAuth} DIDNT YET REGISTERED`);
         // if not exists then register it
-        const newCustomerId = generateNanoidWithPrefix("GOOGLE-CUST");
+        const newCustomerId = generateNanoidWithPrefix('GOOGLE-CUST');
         await CustomerQuery.registerCustomer(
           newCustomerId,
           emailFromOAuth,
@@ -63,6 +60,7 @@ passport.use(
         return done(null, {
           id: newCustomerId,
           email: emailFromOAuth,
+          role: 'customer',
         });
       }
     }
@@ -71,56 +69,56 @@ passport.use(
 
 // Regular Auth(s)
 passport.use(
-  "customer-jwt",
+  'customer-jwt',
   new JwtStrategy(opts, async function (jwtPayload, done) {
     var expDate = new Date(jwtPayload.exp * 1000);
     if (expDate < new Date()) {
       return done(null, false);
     }
     var user = jwtPayload;
-    const isValidCustomer = await CustomerQuery.isValidCustomer(user.id);
+    const isValidCustomer = user.role === 'customer';
     if (isValidCustomer) return done(null, user);
     else return done(null, false);
   })
 );
 
 passport.use(
-  "admin-jwt",
+  'admin-jwt',
   new JwtStrategy(opts, async function (jwtPayload, done) {
     var expDate = new Date(jwtPayload.exp * 1000);
     if (expDate < new Date()) {
       return done(null, false);
     }
     var user = jwtPayload;
-    const isValidAdmin = await AdminQuery.isValidAdmin(user.id);
+    const isValidAdmin = user.role === 'admin';
     if (isValidAdmin) return done(null, user);
     else return done(null, false);
   })
 );
 
 passport.use(
-  "driver-jwt",
+  'driver-jwt',
   new JwtStrategy(opts, async function (jwtPayload, done) {
     var expDate = new Date(jwtPayload.exp * 1000);
     if (expDate < new Date()) {
       return done(null, false);
     }
     var user = jwtPayload;
-    const isValidDriver = await DriverQuery.isValidDriver(user.id);
+    const isValidDriver = user.role === 'driver';
     if (isValidDriver) return done(null, user);
     else return done(null, false);
   })
 );
 
 passport.use(
-  "laundry-partner-jwt",
+  'laundry-partner-jwt',
   new JwtStrategy(opts, async function (jwtPayload, done) {
     var expDate = new Date(jwtPayload.exp * 1000);
     if (expDate < new Date()) {
       return done(null, false);
     }
     var user = jwtPayload;
-    const isValidPartner = await LaundryPartnerQuery.isValidPartner(user.id);
+    const isValidPartner = user.role === 'laundry-partner';
     if (isValidPartner) return done(null, user);
     else return done(null, false);
   })

@@ -1,4 +1,4 @@
-import db from "../connection.mjs";
+import db from '../connection.mjs';
 
 const OrderQuery = {
   assignDriver: async function (order_id, driver_id) {
@@ -263,6 +263,7 @@ const OrderQuery = {
         lpp.name AS p_name,
         lpp.price_text AS p_price_text,
         lpp.description AS p_description ,
+        lpp.features AS p_features,
         o.driver_id AS d_id,
         d.name AS d_name,
         d.email AS d_email,
@@ -364,9 +365,10 @@ const OrderQuery = {
     coupon_code,
     note,
     pickup_date,
-    referral_code
+    referral_code,
+    conn = db
   ) {
-    const [results] = await db.query(
+    const [results] = await conn.query(
       `
         INSERT INTO orders
         (id, customer_id, laundry_partner_id, package_id, content, status, maps_pinpoint, weight, price, coupon_code, note, pickup_date, referral_code)

@@ -1,4 +1,4 @@
-import db from "../connection.mjs";
+import db from '../connection.mjs';
 
 const AdminQuery = {
   addLaundryPartnerPackage: async function (
@@ -31,6 +31,13 @@ const AdminQuery = {
     const [results] = await db.query(`SELECT * FROM admins WHERE email = ?`, [
       email,
     ]);
+    return results[0];
+  },
+  getAdminProfileByEmail: async function (email) {
+    const [results] = await db.query(
+      `SELECT id, email FROM admins WHERE email = ?`,
+      [email]
+    );
     return results[0];
   },
   getCustomers: async function () {

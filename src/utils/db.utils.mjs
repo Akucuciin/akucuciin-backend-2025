@@ -1,4 +1,4 @@
-import db from "../database/connection.mjs";
+import db from '../database/connection.mjs';
 
 export async function withTransaction(callback) {
   const connection = await db.getConnection();
