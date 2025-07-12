@@ -89,8 +89,11 @@ CustomerRouter.get(
   }
 );
 
-CustomerRouter.post('/request-reset-password', async (req, res, next) =>
-  CustomerController.requestResetPassword(req, res, next)
+CustomerRouter.post(
+  '/request-reset-password',
+  useRateLimiter(2, 1, 'Too many request, please try again next time'),
+  async (req, res, next) =>
+    CustomerController.requestResetPassword(req, res, next)
 );
 CustomerRouter.post(
   '/resend-verification-email',
