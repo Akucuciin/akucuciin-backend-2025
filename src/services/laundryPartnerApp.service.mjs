@@ -149,7 +149,10 @@ const LaundryPartnerAppService = {
   updatePriceOrder: async (req) => {
     const { id: order_id } = req.params;
 
-    return await withTransaction(async (trx) => {
+    let orderToSend;
+    let paymentLink;
+
+    await withTransaction(async (trx) => {
       const updated = validate(LaundryPartnerAppSchema.updatePrice, req.body);
 
       const order = await LaundryPartnerAppQuery.getOrderById(order_id, trx);
@@ -195,13 +198,14 @@ const LaundryPartnerAppService = {
       const ordersJoined = await OrderQuery.getOrderJoinedById(order_id, trx);
       const orderJoined = ordersJoined[0];
       const _order = formatOrderFromDb(orderJoined);
+      orderToSend = _order;
 
       // ====== DONE UPDATE PRICE, NOW PERFORM PAYMENT !!!! //
       const expiredAt = new Date(
         Date.now() + AppConfig.PAYMENT.DOKU.expiredTime * 60 * 1000
       );
 
-      const paymentLink = await PaymentService.Doku.generateOrderPaymentLink(
+      paymentLink = await PaymentService.Doku.generateOrderPaymentLink(
         order_id,
         _order,
         trx
@@ -213,12 +217,16 @@ const LaundryPartnerAppService = {
         expiredAt,
         trx
       );
-      await sendOrderPaymentToCustomer(_order, paymentLink);
-
-      return { url: paymentLink };
-
       // ====== END PAYMENT //
     });
+
+    try {
+      await sendOrderPaymentToCustomer(orderToSend, paymentLink);
+    } catch (error) {
+      console.error('Failed to send WhatsApp message:', error);
+    }
+
+    return { url: paymentLink };
   },
 };
 
