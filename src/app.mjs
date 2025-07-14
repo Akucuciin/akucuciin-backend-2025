@@ -16,6 +16,7 @@ import DriverRouter from './routes/driver.route.mjs';
 import LaundryPartnerRouter from './routes/laundryPartner.route.mjs';
 import LaundryPartnerAppRouter from './routes/laundryPartnerApp.route.mjs';
 import OrderRouter from './routes/order.route.mjs';
+import VersionRouter from './routes/version.route.mjs';
 import WebhookRouter from './routes/webhook.route.mjs';
 
 const app = express();
@@ -50,6 +51,7 @@ app.use(LaundryPartnerAppRouter);
 app.use(OrderRouter);
 app.use(CouponRouter);
 app.use(WebhookRouter);
+app.use(VersionRouter);
 
 app.use(errorHandler);
 
