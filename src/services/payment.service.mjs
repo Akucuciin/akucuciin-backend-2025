@@ -155,6 +155,7 @@ const PaymentService = {
             // not meet minimum kg,  set coupon to be used again
             console.error('not meet minimum kg');
             if (coupon.is_used == -1) {
+              // coupon is indefinitely used, so no change
             }
             if (coupon.is_used == 1)
               await CouponQuery.setNotUsed(coupon.name, trx);
