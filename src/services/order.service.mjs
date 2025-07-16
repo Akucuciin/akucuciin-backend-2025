@@ -68,6 +68,10 @@ const OrderService = {
         order.laundry_partner_id,
         trx
       );
+      if (!laundry) {
+        throw new BadRequestError('Gagal, laundry tidak ditemukan');
+      }
+
       if (!laundry.is_open) {
         throw new BadRequestError(
           'Gagal, laundry ini sedang tutup, silahkan pilih laundry lain'
