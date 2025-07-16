@@ -5,7 +5,7 @@ const VersionRouter = Router();
 
 VersionRouter.get('/api/version', useRateLimiter(5, 1), (req, res) => {
   res.json({
-    version: '15.07.2025.12-16',
+    version: '16.07.2025.23-09',
     status: 'stable[main-bump-packages]',
   });
 });
