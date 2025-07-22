@@ -35,6 +35,11 @@ const AppConfig = {
     email: process.env.MAILER_EMAIL,
     password: process.env.MAILER_PASSWORD,
   },
+  OPENAI: {
+    deepseekApiKey: process.env.DEEPSEEK_API_KEY,
+    deepseekBaseUrl: process.env.DEEPSEEK_BASE_URL,
+    deepseekModel: process.env.DEEPSEEK_MODEL,
+  },
   PAYMENT: {
     DOKU: {
       clientId: process.env.DOKU_CLIENT_ID,

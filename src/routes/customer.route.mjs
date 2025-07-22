@@ -20,6 +20,11 @@ CustomerRouter.put(
 CustomerRouter.post(
   '/api/customer/referral_code',
   authorize('customer-jwt'),
+  useRateLimiter(
+    2,
+    2,
+    'Too many request to create referral code, please try again in 2 minutes'
+  ),
   async (req, res, next) =>
     CustomerController.createReferralCode(req, res, next)
 );

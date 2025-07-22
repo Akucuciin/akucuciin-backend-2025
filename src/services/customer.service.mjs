@@ -25,6 +25,7 @@ import CustomerSchema from '../validators/customer.schema.mjs';
 import OrderSchema from '../validators/order.schema.mjs';
 import validate from '../validators/validator.mjs';
 import MailService from './mail.service.mjs';
+import { OpenAIService } from './openai.static-service.mjs';
 import PaymentService from './payment.service.mjs';
 import TokenService from './token.service.mjs';
 import {
@@ -86,6 +87,8 @@ const CustomerService = {
       throw new BadRequestError(
         'Gagal, referral code sudah dipakai orang lain'
       );
+
+    await OpenAIService.isReferralCodeSafeOrThrow(referral_code);
 
     await CustomerQuery.createReferralCode(referral_code, req.user.id);
 
