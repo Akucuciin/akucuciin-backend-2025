@@ -395,7 +395,7 @@ const OrderQuery = {
     const [results] = await db.query(
       `
       UPDATE orders
-      SET status = "batal", coupon_code = "", cancel_reason = ?
+      SET status = "batal", cancel_reason = ?
       WHERE id = ?
       `,
       [cancel_reason, order_id]
