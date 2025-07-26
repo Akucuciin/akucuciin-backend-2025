@@ -33,9 +33,10 @@ const CouponQuery = {
     return results;
   },
   get: async function (coupon_code_name, conn = db) {
-    const [results] = await conn.query(`SELECT * FROM coupons WHERE name = ?`, [
-      coupon_code_name,
-    ]);
+    const [results] = await conn.query(
+      `SELECT * FROM coupons WHERE BINARY name = ?`,
+      [coupon_code_name]
+    );
     return results[0];
   },
   getPackages: async function (coupon_code_name, conn = db) {
