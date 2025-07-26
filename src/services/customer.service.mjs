@@ -170,6 +170,10 @@ const CustomerService = {
 
     const formattedOrder = formatOrderFromDb(order);
 
+    const coupon = await CouponQuery.get(formattedOrder.coupon_code);
+
+    formattedOrder.coupon = coupon;
+
     return formattedOrder;
   },
   payOrder: async (req) => {
