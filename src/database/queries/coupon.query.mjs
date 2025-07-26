@@ -32,6 +32,13 @@ const CouponQuery = {
     );
     return results;
   },
+  delete: async function (coupon_code_name, conn = db) {
+    const [results] = await conn.query(
+      `DELETE FROM coupons WHERE BINARY name = ?`,
+      [coupon_code_name]
+    );
+    return results;
+  },
   get: async function (coupon_code_name, conn = db) {
     const [results] = await conn.query(
       `SELECT * FROM coupons WHERE BINARY name = ?`,

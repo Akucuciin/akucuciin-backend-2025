@@ -274,11 +274,15 @@ const CustomerService = {
 
     await OrderQuery.cancelOrder(order_id, cancel_reason);
     if (order[0].coupon_code) {
-      const coupon = await CouponQuery.get(order[0].coupon_code);
-      if (coupon.is_used === -1) {
-        // coupon is infinitely used
+      if (order[0].coupon_code.startsWith('AKUMABA-')) {
+        await CouponQuery.delete(order[0].coupon_code);
       } else {
-        await CouponQuery.setNotUsed(order[0].coupon_code);
+        const coupon = await CouponQuery.get(order[0].coupon_code);
+        if (coupon.is_used === -1) {
+          // coupon is infinitely used
+        } else {
+          await CouponQuery.setNotUsed(order[0].coupon_code);
+        }
       }
     }
 
