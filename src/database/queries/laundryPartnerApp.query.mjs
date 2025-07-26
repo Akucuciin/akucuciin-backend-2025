@@ -15,7 +15,7 @@ const LaundryPartnerAppQuery = {
   //Profile Read
   getProfile: async function (email) {
     const [results] = await db.query(
-      `SELECT id, name, email, description, telephone, address, maps_pinpoint, city, area, latitude, longitude, created_at, updated_at FROM laundry_partners WHERE email = ?`,
+      `SELECT id, name, email, description, telephone, address, maps_pinpoint, city, area, is_open, latitude, longitude, created_at, updated_at FROM laundry_partners WHERE email = ?`,
       [email]
     );
     return results[0];
