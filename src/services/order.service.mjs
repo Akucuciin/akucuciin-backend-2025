@@ -1,3 +1,4 @@
+import CouponQuery from '../database/queries/coupon.query.mjs';
 import CustomerQuery from '../database/queries/customer.query.mjs';
 import LaundryPartnerQuery from '../database/queries/laundryPartner.query.mjs';
 import OrderQuery from '../database/queries/order.query.mjs';
@@ -7,7 +8,10 @@ import {
 } from '../errors/customErrors.mjs';
 import { withTransaction } from '../utils/db.utils.mjs';
 import { formatOrdersFromDb } from '../utils/order.utils.mjs';
-import { generateNanoidWithPrefix } from '../utils/utils.mjs';
+import {
+  generateCouponName,
+  generateNanoidWithPrefix,
+} from '../utils/utils.mjs';
 import OrderSchema from '../validators/order.schema.mjs';
 import validate from '../validators/validator.mjs';
 import CouponStaticService from './coupon.static-service.mjs';
@@ -35,7 +39,7 @@ const OrderService = {
         );
       }
 
-      const order = validate(OrderSchema.create, req.body);
+      let order = validate(OrderSchema.create, req.body);
 
       order.id = generateNanoidWithPrefix('ORDER');
       order.customer_id = req.user.id;
@@ -57,11 +61,124 @@ const OrderService = {
 
       // COUPON APPLIED
       if (order.coupon_code) {
-        await CouponStaticService.validateCouponCodeForOrder(
+        const coupon = await CouponStaticService.validateCouponCodeForOrder(
           order,
           req.user.id,
           trx
         );
+
+        // Gacha voucher, generate new voucher from base coupon code
+        if (coupon.name === 'AKUMABA') {
+          const COUPON_GACHA_RULES = [
+            { discount: 62, quota: 40 },
+            { discount: 16, quota: 400 },
+            { discount: 10, quota: 3000 },
+            { discount: 6, quota: 1560 },
+          ];
+
+          const TOTAL_CHANCE = 5000;
+
+          // global mutex to prevent concurrent gacha attempts
+          const [lockResult] = await trx.query(
+            `SELECT GET_LOCK('gacha_coupon_lock', 3) AS locked`
+          ); // 3 sec timeout
+          const gotLock = lockResult[0].locked;
+          console.log(lockResult);
+          if (!gotLock) {
+            throw new BadRequestError(
+              'Gagal memproses kupon gacha. Silakan coba lagi beberapa saat.'
+            );
+          }
+
+          try {
+            /* const [thisUserOrderWithAkuMaba] = await trx.query(
+              `SELECT * FROM orders WHERE coupon_code LIKE 'AKUMABA-%' AND customer_id = ?`,
+              [req.user.id]
+            );
+            if (thisUserOrderWithAkuMaba.length > 0) {
+              throw new BadRequestError(
+                'Gagal, Anda sudah pernah menggunakan voucher gacha Akumaba sebelumnya'
+              );
+            } */
+
+            const [akuMabaCoupons] = await trx.query(
+              `SELECT COUNT(*) AS count FROM coupons WHERE name LIKE 'AKUMABA-%'`
+            );
+            if (akuMabaCoupons[0].count >= TOTAL_CHANCE) {
+              throw new BadRequestError(
+                `Gagal, Kuota kupon gacha Akumaba (${TOTAL_CHANCE} kuota) sudah habis :(`
+              );
+            }
+
+            async function getRemainingQuotaOfDiscount(discount, trx) {
+              const [rows] = await trx.query(
+                `SELECT COUNT(*) AS count FROM coupons WHERE name LIKE 'AKUMABA-%' AND multiplier = ?`,
+                [discount]
+              );
+              return rows[0].count;
+            }
+
+            function weightedRandomSelect() {
+              const roll = Math.floor(Math.random() * TOTAL_CHANCE);
+              let cumulative = 0;
+
+              for (const rule of COUPON_GACHA_RULES) {
+                cumulative += rule.quota;
+                if (roll < cumulative) return rule.discount;
+              }
+
+              return 6; // fallback to lowest
+            }
+
+            const MAX_TRIES = 10;
+            let tries = 0;
+            let generatedCoupon = null;
+
+            while (tries++ < MAX_TRIES) {
+              const discount = weightedRandomSelect();
+              const used = await getRemainingQuotaOfDiscount(discount, trx);
+              const rule = COUPON_GACHA_RULES.find(
+                (r) => r.discount === discount
+              );
+
+              if (used < rule.quota) {
+                const generatedName = generateCouponName(
+                  'AKUMABA',
+                  15,
+                  req.user.email,
+                  true
+                );
+
+                await CouponQuery.create(
+                  generatedName,
+                  discount,
+                  `Kupon Gacha Akumaba - Diskon ${discount}% untuk ${req.user.email}`,
+                  1,
+                  1,
+                  null,
+                  0,
+                  0,
+                  req.user.id,
+                  trx
+                );
+
+                generatedCoupon = await CouponQuery.get(generatedName, trx);
+                console.log(
+                  `Generated coupon: ${generatedCoupon.name} with discount ${discount}%`
+                );
+                order.coupon_code = generatedCoupon.name;
+                break;
+              }
+            }
+            if (!generatedCoupon) {
+              throw new BadRequestError(
+                'Gagal, tidak bisa menghasilkan kupon gacha Akumaba, silahkan coba lagi'
+              );
+            }
+          } finally {
+            await trx.query(`SELECT RELEASE_LOCK('gacha_coupon_lock')`);
+          }
+        }
       }
 
       const laundry = await LaundryPartnerQuery.getById(
