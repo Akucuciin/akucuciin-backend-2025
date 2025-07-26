@@ -144,7 +144,7 @@ const OrderService = {
               if (used < rule.quota) {
                 const generatedName = generateCouponName(
                   'AKUMABA',
-                  15,
+                  5,
                   req.user.email,
                   true
                 );
