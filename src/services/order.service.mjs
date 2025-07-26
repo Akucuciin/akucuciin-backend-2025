@@ -91,7 +91,7 @@ const OrderService = {
           }
 
           try {
-            /* const [thisUserOrderWithAkuMaba] = await trx.query(
+            const [thisUserOrderWithAkuMaba] = await trx.query(
               `SELECT * FROM orders WHERE coupon_code LIKE 'AKUMABA-%' AND customer_id = ?`,
               [req.user.id]
             );
@@ -99,7 +99,7 @@ const OrderService = {
               throw new BadRequestError(
                 'Gagal, Anda sudah pernah menggunakan voucher gacha Akumaba sebelumnya'
               );
-            } */
+            }
 
             const [akuMabaCoupons] = await trx.query(
               `SELECT COUNT(*) AS count FROM coupons WHERE name LIKE 'AKUMABA-%'`
