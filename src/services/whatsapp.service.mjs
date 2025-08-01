@@ -176,6 +176,15 @@ export const sendOrderPaymentCompletedToCustomer = async (
   await sendWhatsappMessageHelper(payload);
 };
 
+export const sendOrderPaymentReminderToCustomer = async (ord) => {
+  const payload = {
+    jid: `${ord.customer.telephone}@s.whatsapp.net`,
+    content: `*⏰ [PENGINGAT PEMBAYARAN]*\n\nHalo ${ord.customer.name}!\n\nKami ingin mengingatkan untuk segera melakukan pembayaran untuk order kamu dengan ID:\n*_${ord.id}_*.\n\nSilakan selesaikan pembayaran melalui link berikut:\n🔗${ord.payment_link}\n\n*Abaikan pesan ini jika kamu sudah melakukan pembayaran untuk order tersebut*\n\nSetelah pembayaran beres, mitra kami akan langsung memproses cucian kamu dan mengantar langsung ketika selesai lohhh.\n\nTerima kasih banyak sudah memercayakan kebersihan cucianmu pada AkuCuciin!\n\nKamu juga bisa melihat status dan melakukan pembayaran ulang (jika link kadaluarsa) melalui dashboard:\n🌐 https://akucuciin.com/order\n\n📌 Jika link sudah tidak aktif, silakan buka dashboard dan klik tombol "Pay" / "Bayar" untuk mendapatkan link baru.\n\n====================\n_Pesan ini dikirim otomatis oleh sistem AkuCuciin._`,
+  };
+
+  await sendWhatsappMessageHelper(payload);
+};
+
 export const sendReferralCodeSuccessfullyUsedToReferredCustomer = async (
   referredCustomer
 ) => {

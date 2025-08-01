@@ -3,6 +3,7 @@ import passport from '../auth/passport.auth.mjs';
 import useRateLimiter from '../configs/rateLimiter.config.mjs';
 import CustomerController from '../controllers/customer.controller.mjs';
 import authorize from '../middlewares/auth.middleware.mjs';
+import multiAuthorize from '../middlewares/multiAuth.middleware.mjs';
 
 const CustomerRouter = Router();
 
@@ -84,6 +85,17 @@ CustomerRouter.delete(
   '/api/customer/order/:order_id',
   authorize('customer-jwt'),
   async (req, res, next) => CustomerController.cancelOrder(req, res, next)
+);
+CustomerRouter.post(
+  '/api/customer/order/:order_id/reminders/payment',
+  multiAuthorize('admin|laundry-partner'),
+  useRateLimiter(
+    1,
+    5,
+    'Gagal, reminder sudah dikirimkan sebelumnya, silakan coba lagi dalam 5 menit'
+  ),
+  async (req, res, next) =>
+    CustomerController.sendPaymentReminder(req, res, next)
 );
 // === END ORDER
 
