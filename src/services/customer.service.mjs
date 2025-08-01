@@ -32,6 +32,7 @@ import {
   sendNewOrderPaymentToCustomer,
   sendOrderCancellationConfirmationToCustomer,
   sendOrderCancellationConfirmationToLaundry,
+  sendOrderPaymentReminderToCustomer,
 } from './whatsapp.service.mjs';
 
 const CustomerService = {
@@ -296,6 +297,37 @@ const CustomerService = {
     await sendOrderCancellationConfirmationToLaundry(ord);
 
     return `Order ${order_id} cancelled.`;
+  },
+  sendPaymentReminder: async (req) => {
+    const { order_id } = req.params;
+    const order = await OrderQuery.getOrderJoinedById(order_id);
+    if (!order[0]) throw new NotFoundError('Failed, order not found');
+    if (
+      order[0].status === 'batal' ||
+      order[0].status === 'kesalahan' ||
+      order[0].status === 'selesai'
+    ) {
+      throw new BadRequestError(
+        `Gagal, status order ini adalah [${order[0].status}], tidak bisa mengirim pengingat`
+      );
+    }
+    if (order[0].status_payment === 'sudah bayar') {
+      throw new BadRequestError(
+        'Gagal, order sudah dibayar, tidak bisa mengirim pengingat'
+      );
+    }
+
+    if (!order[0].payment_link) {
+      throw new BadRequestError(
+        'Gagal, order belum memiliki link pembayaran, tidak bisa mengirim pengingat'
+      );
+    }
+
+    // send payment reminder
+    const _order = formatOrderFromDb(order[0]);
+    await sendOrderPaymentReminderToCustomer(_order);
+
+    return `Payment reminder sent to customer ${_order.customer.name} for order id :${order_id}`;
   },
   verify: async (req) => {
     const { register_token, email: emailParams } = req.params;
