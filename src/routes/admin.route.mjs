@@ -104,6 +104,12 @@ AdminRouter.get(
 );
 
 AdminRouter.get(
+  '/api/admin/order/:id',
+  authorize('admin-jwt'),
+  async (req, res, next) => AdminController.getOrderById(req, res, next)
+);
+
+AdminRouter.get(
   '/api/admin/orders',
   authorize('admin-jwt'),
   async (req, res, next) => AdminController.getOrdersJoined(req, res, next)
