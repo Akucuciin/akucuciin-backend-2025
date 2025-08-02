@@ -13,6 +13,7 @@ import {
   NotFoundError,
   ServerError,
 } from '../errors/customErrors.mjs';
+import { withTransaction } from '../utils/db.utils.mjs';
 import {
   formatOrderFromDb,
   formatOrdersFromDb,
@@ -422,6 +423,8 @@ const AdminService = {
     const { driver_id, order_id } = req.params;
 
     const driver = await DriverQuery.getById(driver_id);
+    delete driver.password;
+
     if (!driver) throw new NotFoundError('Failed, driver not found');
     delete driver.password;
 
@@ -439,10 +442,12 @@ const AdminService = {
         `Failed, order status is already [${order.status}]`
       );
 
-    await OrderQuery.assignDriver(order_id, driver_id);
+    withTransaction(async (trx) => {
+      await OrderQuery.assignDriver(order_id, driver_id, trx);
 
-    const ord = formatOrdersFromDb(orders)[0];
-    await sendOrderAssignedToDriver(ord);
+      const ord = formatOrdersFromDb(orders)[0];
+      await sendOrderAssignedToDriver(ord, driver);
+    });
 
     return `Assigned ${order_id} to driver ${driver_id}`;
   },
