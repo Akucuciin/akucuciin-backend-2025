@@ -444,7 +444,7 @@ const AdminService = {
 
     withTransaction(async (trx) => {
       await OrderQuery.assignDriver(order_id, driver_id, trx);
-
+      
       const ord = formatOrdersFromDb(orders)[0];
       await sendOrderAssignedToDriver(ord, driver);
     });
