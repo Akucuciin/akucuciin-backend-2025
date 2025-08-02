@@ -23,10 +23,10 @@ const sendWhatsappMessageHelper = async (payload) => {
   });
 };
 
-export const sendOrderAssignedToDriver = async (ord) => {
+export const sendOrderAssignedToDriver = async (ord, driver) => {
   const payload = {
-    jid: `${ord.driver.telephone}@s.whatsapp.net`,
-    content: `*[Assigned]*\n\nHalo ${ord.driver.name},\n\nAnda telah menerima penugasan pesanan baru. Berikut detailnya : \n\n==Customer==\nNama: ${ord.customer.name}\nEmail: ${ord.customer.email}\nAlamat: ${ord.customer.address}Kontak: https://wa.me/${ord.customer.telephone}\nPinpoint: ${ord.maps_pinpoint}\n\n==LAUNDRY==\n${ord.laundry_partner.name}, ${ord.laundry_partner.area}, ${ord.laundry_partner.city}\nKontak laundry: https://wa.me/${ord.customer.telephone}\n\nTerima kasih atas kerjasamanya!, jangan lupa untuk selalu mengecek dashboard driver anda :D\n\n====================\n\n_Pesan ini dikirim otomatis oleh sistem AkuCuciin._`,
+    jid: `${driver.telephone}@s.whatsapp.net`,
+    content: `*[Assigned]*\n\nHalo ${driver.name},\n\nAnda telah menerima penugasan pesanan baru. Berikut detailnya : \n\n==Customer==\nNama: ${ord.customer.name}\nEmail: ${ord.customer.email}\nAlamat: ${ord.customer.address}\nKontak: https://wa.me/${ord.customer.telephone}\nPinpoint: ${ord.maps_pinpoint}\n\n==LAUNDRY==\n${ord.laundry_partner.name}, ${ord.laundry_partner.area}, ${ord.laundry_partner.city}\nKontak laundry: https://wa.me/${ord.customer.telephone}\n\nTerima kasih atas kerjasamanya!, jangan lupa untuk selalu mengecek dashboard driver anda :D\n\n====================\n\n_Pesan ini dikirim otomatis oleh sistem AkuCuciin._`,
   };
 
   await sendWhatsappMessageHelper(payload);

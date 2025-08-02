@@ -1,8 +1,8 @@
 import db from '../connection.mjs';
 
 const OrderQuery = {
-  assignDriver: async function (order_id, driver_id) {
-    const [results] = await db.query(
+  assignDriver: async function (order_id, driver_id, conn = db) {
+    const [results] = await conn.query(
       `
       UPDATE orders
       SET driver_id = ?
