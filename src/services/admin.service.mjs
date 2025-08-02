@@ -326,6 +326,15 @@ const AdminService = {
 
     return workbook;
   },
+  getOrderById: async (req) => {
+    const { id: order_id } = req.params;
+    const orders = await OrderQuery.getOrderJoinedById(order_id);
+    const order = orders[0];
+    if (!order) throw new BadRequestError('Failed, Order not found');
+
+    const formattedOrder = formatOrderFromDb(order);
+    return formattedOrder;
+  },
   getOrdersJoined: async (req) => {
     let { startDate, endDate } = req.query;
 
@@ -444,7 +453,7 @@ const AdminService = {
 
     withTransaction(async (trx) => {
       await OrderQuery.assignDriver(order_id, driver_id, trx);
-      
+
       const ord = formatOrdersFromDb(orders)[0];
       await sendOrderAssignedToDriver(ord, driver);
     });
