@@ -26,6 +26,13 @@ export const formatOrdersFromDb = function (orders) {
       address: row.c_address,
       telephone: row.c_telephone,
     },
+    coupon: {
+      name: row.coupon_code,
+      multiplier: row.coupon_multiplier,
+      description: row.coupon_description,
+      min_weight: row.coupon_min_weight,
+      max_discount: row.coupon_max_discount,
+    },
     laundry_partner: {
       id: row.lp_id,
       name: row.lp_name,
@@ -82,6 +89,13 @@ export const formatOrderFromDb = function (row) {
       email: row.c_email,
       address: row.c_address,
       telephone: row.c_telephone,
+    },
+    coupon: {
+      name: row.coupon_code,
+      multiplier: row.coupon_multiplier,
+      description: row.coupon_description,
+      min_weight: row.coupon_min_weight,
+      max_discount: row.coupon_max_discount,
     },
     laundry_partner: {
       id: row.lp_id,

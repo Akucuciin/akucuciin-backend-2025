@@ -51,6 +51,10 @@ const OrderQuery = {
         o.price,
         o.price_after,
         o.coupon_code ,
+        co.multiplier AS coupon_multiplier,
+        co.description AS coupon_description,
+        co.min_weight AS coupon_min_weight,
+        co.max_discount AS coupon_max_discount,
         o.referral_code ,
         o.note,
         o.pickup_date,
@@ -63,6 +67,7 @@ const OrderQuery = {
         INNER JOIN customers c ON o.customer_id = c.id
         INNER JOIN laundry_partners lp ON o.laundry_partner_id  = lp.id 
         INNER JOIN laundry_partners_packages lpp ON o.package_id = lpp.id
+        LEFT JOIN coupons co ON o.coupon_code = co.name
         LEFT JOIN drivers d ON o.driver_id = d.id
       `;
 
@@ -110,6 +115,10 @@ const OrderQuery = {
         o.price,
         o.price_after,
         o.coupon_code ,
+        co.multiplier AS coupon_multiplier,
+        co.description AS coupon_description,
+        co.min_weight AS coupon_min_weight,
+        co.max_discount AS coupon_max_discount,
         o.referral_code ,
         o.note,
         o.pickup_date,
@@ -123,6 +132,7 @@ const OrderQuery = {
         INNER JOIN laundry_partners lp ON o.laundry_partner_id  = lp.id 
         INNER JOIN laundry_partners_packages lpp ON o.package_id = lpp.id
         LEFT JOIN drivers d ON o.driver_id = d.id
+        LEFT JOIN coupons co ON o.coupon_code = co.name
       `;
 
     const params = [];
@@ -170,6 +180,10 @@ const OrderQuery = {
         o.price,
         o.price_after,
         o.coupon_code ,
+        co.multiplier AS coupon_multiplier,
+        co.description AS coupon_description,
+        co.min_weight AS coupon_min_weight,
+        co.max_discount AS coupon_max_discount,
         o.referral_code ,
         o.note,
         o.pickup_date,
@@ -183,6 +197,7 @@ const OrderQuery = {
         INNER JOIN laundry_partners lp ON o.laundry_partner_id  = lp.id 
         INNER JOIN laundry_partners_packages lpp ON o.package_id = lpp.id
         LEFT JOIN drivers d ON o.driver_id = d.id
+        LEFT JOIN coupons co ON o.coupon_code = co.name
         WHERE o.customer_id = ?
       `,
       [customer_id]
@@ -277,6 +292,10 @@ const OrderQuery = {
         o.price,
         o.price_after,
         o.coupon_code ,
+        co.multiplier AS coupon_multiplier,
+        co.description AS coupon_description,
+        co.min_weight AS coupon_min_weight,
+        co.max_discount AS coupon_max_discount,
         o.referral_code ,
         o.note,
         o.pickup_date,
@@ -290,6 +309,7 @@ const OrderQuery = {
         INNER JOIN laundry_partners lp ON o.laundry_partner_id  = lp.id 
         INNER JOIN laundry_partners_packages lpp ON o.package_id = lpp.id
         LEFT JOIN drivers d ON o.driver_id = d.id
+        LEFT JOIN coupons co ON o.coupon_code = co.name
         WHERE o.id = ?
       `,
       [orderId]
