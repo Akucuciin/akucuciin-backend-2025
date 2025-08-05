@@ -10,11 +10,6 @@ import {
 } from '../errors/customErrors.mjs';
 
 const errorHandler = function (error, req, res, next) {
-  console.error('>>>------------------------------------------------');
-  console.error(`ERROR! ${new Date()} => ${req.method} ${req.url}`);
-  console.error(error);
-  console.error('----------------------------------------------END');
-
   if (
     error instanceof NotFoundError ||
     error instanceof AuthenticationError ||
