@@ -4,6 +4,7 @@ import AppConfig from '../configs/app.config.mjs';
 import CouponQuery from '../database/queries/coupon.query.mjs';
 import LaundryPartnerAppQuery from '../database/queries/laundryPartnerApp.query.mjs';
 import { BadRequestError } from '../errors/customErrors.mjs';
+import Logger from '../logger.mjs';
 import { generateInvoiceNumberForPayment } from '../utils/order.utils.mjs';
 
 export function generateDigest(jsonBody) {
@@ -153,7 +154,7 @@ const PaymentService = {
         if (discountApplied) {
           if (coupon.min_weight && _order.weight < coupon.min_weight) {
             // not meet minimum kg,  set coupon to be used again
-            console.error('not meet minimum kg');
+            Logger.error('not meet minimum kg for coupon');
             if (coupon.is_used == -1) {
               // coupon is indefinitely used, so no change
             }
@@ -214,7 +215,9 @@ const PaymentService = {
         pricing.driver_pay +
         pricing.referral_cut;
 
-      console.error(pricing);
+      Logger.info(
+        `Order ID: ${orderId} - Price Calculation: ${JSON.stringify(pricing)}`
+      );
 
       await LaundryPartnerAppQuery.updatePriceAfterOrder(
         orderId,
@@ -314,7 +317,6 @@ const PaymentService = {
 
         return paymentLink;
       } catch (err) {
-        //console.error(err);
         throw new BadRequestError(
           err?.response?.data?.message || 'Error Creating Payment'
         );

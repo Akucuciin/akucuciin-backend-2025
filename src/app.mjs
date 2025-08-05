@@ -10,7 +10,6 @@ import CustomerRouter from './routes/customer.route.mjs';
 
 import './auth/passport.auth.mjs';
 import pinoMiddleware from './middlewares/logger.middleware.mjs';
-import requestLogger from './middlewares/requestLogger.middleware.mjs';
 import AdminRouter from './routes/admin.route.mjs';
 import CouponRouter from './routes/coupon.route.mjs';
 import DriverRouter from './routes/driver.route.mjs';
@@ -21,7 +20,6 @@ import VersionRouter from './routes/version.route.mjs';
 import WebhookRouter from './routes/webhook.route.mjs';
 
 const app = express();
-app.use(requestLogger);
 
 app.set('trust proxy', 1);
 app.set('view engine', 'ejs');

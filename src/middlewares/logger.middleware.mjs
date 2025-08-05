@@ -13,7 +13,7 @@ const pinoMiddleware = pinoHttp({
   customSuccessMessage(req, res) {
     return `${req.method} ${req.url} completed with status code ${res.statusCode}`;
   },
-  customProps(req, res) {
+  customProps() {
     return {
       context: Logger.bindings().context,
       env: Logger.bindings().env,

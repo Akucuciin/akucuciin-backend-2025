@@ -151,7 +151,6 @@ const CustomerService = {
   },
   getLastOrder: async (req) => {
     const lastOrder = await OrderQuery.getLastOrder(req.user.id);
-    console.log(lastOrder);
     const lastOrderFormatted = formatOrderFromDb(lastOrder);
     return lastOrderFormatted;
   },
