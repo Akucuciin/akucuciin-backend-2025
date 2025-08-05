@@ -9,6 +9,7 @@ import AuthRouter from './routes/auth.route.mjs';
 import CustomerRouter from './routes/customer.route.mjs';
 
 import './auth/passport.auth.mjs';
+import pinoMiddleware from './middlewares/logger.middleware.mjs';
 import requestLogger from './middlewares/requestLogger.middleware.mjs';
 import AdminRouter from './routes/admin.route.mjs';
 import CouponRouter from './routes/coupon.route.mjs';
@@ -41,6 +42,7 @@ app.use(
 );
 app.use(passport.initialize());
 
+app.use(pinoMiddleware);
 app.use('/static', express.static('storage'));
 app.use(AdminRouter);
 app.use(DriverRouter);
