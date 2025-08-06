@@ -4,6 +4,10 @@ import Logger from '../logger.mjs';
 
 const pinoMiddleware = pinoHttp({
   logger: Logger,
+  redact: {
+    paths: ['req.headers.authorization', 'req.headers.cookie'],
+    censor: '[REDACTED]',
+  },
   customLogLevel(req, res, err) {
     if (res.statusCode >= 500 || err) return 'error';
     if (res.statusCode >= 400) return 'warn';
