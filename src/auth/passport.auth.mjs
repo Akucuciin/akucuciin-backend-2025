@@ -30,7 +30,6 @@ passport.use(
       const isEmailExists = await CustomerQuery.isEmailExists(emailFromOAuth);
 
       if (isEmailExists) {
-        console.error(`${new Date()} ${emailFromOAuth} ALREADY REGISTERED`);
         const customer =
           await CustomerQuery.getCustomerProfileByEmail(emailFromOAuth);
 
@@ -44,7 +43,6 @@ passport.use(
           role: 'customer',
         });
       } else {
-        console.error(`${new Date()} ${emailFromOAuth} DIDNT YET REGISTERED`);
         // if not exists then register it
         const newCustomerId = generateNanoidWithPrefix('GOOGLE-CUST');
         await CustomerQuery.registerCustomer(

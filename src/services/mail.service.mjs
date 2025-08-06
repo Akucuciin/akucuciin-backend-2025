@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import nodemailer from 'nodemailer';
 import path from 'path';
 import AppConfig from '../configs/app.config.mjs';
+import Logger from '../logger.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -40,9 +41,9 @@ const MailService = {
 
     transporter.sendMail(mailOptions, (err, info) => {
       if (err) {
-        console.error('Error sending email:', err);
+        Logger.error('Error sending email:', err);
       } else {
-        console.log('Email sent:', info.response);
+        Logger.info('Email sent:', info.response);
       }
     });
   },
@@ -64,9 +65,9 @@ const MailService = {
 
     transporter.sendMail(mailOptions, (err, info) => {
       if (err) {
-        console.error('Error sending email:', err);
+        Logger.error('Error sending email:', err);
       } else {
-        console.log('Email sent:', info.response);
+        Logger.info('Email sent:', info.response);
       }
     });
   },
@@ -88,9 +89,9 @@ const MailService = {
 
     transporter.sendMail(mailOptions, (err, info) => {
       if (err) {
-        console.error('Error sending email:', err);
+        Logger.error('Error sending email:', err);
       } else {
-        console.log('Email sent:', info.response);
+        Logger.info('Email sent:', info.response);
       }
     });
   },

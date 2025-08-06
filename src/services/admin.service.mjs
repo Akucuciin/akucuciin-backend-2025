@@ -350,7 +350,6 @@ const AdminService = {
       const parsedEnd = new Date(endDate);
       parsedEnd.setDate(parsedEnd.getDate() + 1);
       endDate = parsedEnd.toISOString();
-      console.log('startDate', startDate, 'endDate', endDate);
     }
 
     const orders = await OrderQuery.getOrdersJoined(startDate, endDate);

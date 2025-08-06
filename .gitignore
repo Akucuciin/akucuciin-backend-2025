@@ -4,3 +4,4 @@ todo.txt
 /storage/*
 /auth/whatsapp/*
 *.zip
+/logs/*
