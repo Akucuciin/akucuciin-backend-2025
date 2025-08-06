@@ -28,6 +28,10 @@ const AppConfig = {
     resetPasswordSecret: process.env.JWT_RESET_PASSWORD_SECRET,
     resetPasswordMaxAge: Number(process.env.RESET_PASSWORD_MAX_AGE),
   },
+  LOG: {
+    LOGTAIL_SOURCE_TOKEN: process.env.LOGTAIL_SOURCE_TOKEN,
+    LOGTAIL_ENDPOINT: process.env.LOGTAIL_ENDPOINT,
+  },
   MAILER: {
     smtpHost: process.env.MAILER_SMTP_HOST,
     smtpName: process.env.MAILER_SMTP_NAME,
