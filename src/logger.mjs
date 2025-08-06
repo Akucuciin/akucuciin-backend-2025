@@ -8,6 +8,7 @@ import AppConfig from './configs/app.config.mjs';
 dotenv.config();
 
 const isProd = AppConfig.Server.dev === 0;
+const isLogtailEnabled = AppConfig.LOG.logtailEnabled === 1;
 const logLevel = isProd ? 'info' : 'debug';
 const logsDir = join(process.cwd(), 'logs');
 
@@ -40,13 +41,13 @@ const transportTargets = [
 ];
 
 // Only logtail if in production
-if (isProd) {
+if (isLogtailEnabled) {
   transportTargets.unshift({
     target: '@logtail/pino',
     level: logLevel,
     options: {
-      sourceToken: AppConfig.LOG.LOGTAIL_SOURCE_TOKEN,
-      options: { endpoint: AppConfig.LOG.LOGTAIL_ENDPOINT },
+      sourceToken: AppConfig.LOG.logtailSourceToken,
+      options: { endpoint: AppConfig.LOG.logtailEndpoint },
     },
   });
 }
