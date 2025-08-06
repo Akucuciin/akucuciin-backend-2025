@@ -158,7 +158,6 @@ const CustomerController = {
       const result = await CustomerService.verify(req);
       res.redirect(AppConfig.URL.verifyEmailSuccess);
     } catch (error) {
-      console.log(error.message);
       if (error instanceof TokenExpiredError) {
         try {
           const { email } = req.params;

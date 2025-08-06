@@ -50,7 +50,9 @@ WebhookRouter.post('/api/payment/webhook', async (req, res) => {
     const _order = formatOrderFromDb(orderJoined);
 
     await sendOrderPaymentCompletedToCustomer(_order, rawInvoice);
-    console.log('Pembayaran sukses untuk order', orderId);
+    req.log.info(
+      `Payment successful for order ${orderId} with invoice ${rawInvoice}`
+    );
   }
 
   return res.status(200).send('OK');
@@ -73,11 +75,9 @@ WebhookRouter.get(
 
     try {
       await AuthQuery.addRefreshToken(id, refreshToken);
-      console.log('webhook add refresh');
     } catch (e) {
       try {
         await AuthQuery.updateRefreshTokenLogin(id, refreshToken);
-        console.log('webhook update refresh');
       } catch (e) {}
     }
 

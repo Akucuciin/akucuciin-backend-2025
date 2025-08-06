@@ -223,7 +223,9 @@ const LaundryPartnerAppService = {
     try {
       await sendOrderPaymentToCustomer(orderToSend, paymentLink);
     } catch (error) {
-      console.error('Failed to send WhatsApp message:', error);
+      req.log.error(
+        `Failed to send payment notification for order ${order_id}: ${error.message}`
+      );
     }
 
     return { url: paymentLink };
