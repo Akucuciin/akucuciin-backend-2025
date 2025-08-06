@@ -29,8 +29,9 @@ const AppConfig = {
     resetPasswordMaxAge: Number(process.env.RESET_PASSWORD_MAX_AGE),
   },
   LOG: {
-    LOGTAIL_SOURCE_TOKEN: process.env.LOGTAIL_SOURCE_TOKEN,
-    LOGTAIL_ENDPOINT: process.env.LOGTAIL_ENDPOINT,
+    logtailEnabled: Number(process.env.LOGTAIL_ENABLED),
+    logtailSourceToken: process.env.LOGTAIL_SOURCE_TOKEN,
+    logtailEndpoint: process.env.LOGTAIL_ENDPOINT,
   },
   MAILER: {
     smtpHost: process.env.MAILER_SMTP_HOST,

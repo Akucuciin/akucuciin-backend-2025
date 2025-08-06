@@ -15,12 +15,16 @@ const pinoMiddleware = pinoHttp({
     return 'info';
   },
   customSuccessMessage(req, res) {
-    return `${req.method} ${req.url} completed with status code ${res.statusCode}`;
+    const userId = req.user?.id || 'NO_USER';
+    const userEmail = req.user?.email || 'NO_EMAIL';
+    return `${req.method} ${req.url} completed with status code ${res.statusCode} from user ${userId} (${userEmail})`;
   },
-  customProps() {
+  customProps(req, res) {
     return {
       context: Logger.bindings().context,
       env: Logger.bindings().env,
+      userId: req.user?.id || 'NO_USER',
+      userEmail: req.user?.email || 'NO_EMAIL',
     };
   },
 });
