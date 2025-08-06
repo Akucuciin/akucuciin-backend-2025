@@ -7,42 +7,58 @@ import AppConfig from './configs/app.config.mjs';
 
 dotenv.config();
 
-const logLevel = AppConfig.Server.dev === 0 ? 'info' : 'debug';
+const isProd = AppConfig.Server.dev === 0;
+const logLevel = isProd ? 'info' : 'debug';
 const logsDir = join(process.cwd(), 'logs');
 
 if (!fs.existsSync(logsDir)) {
   fs.mkdirSync(logsDir);
 }
 
+// Base transport targets
+const transportTargets = [
+  {
+    target: 'pino-roll',
+    level: logLevel,
+    options: {
+      file: `${logsDir}/app`,
+      extension: 'log',
+      frequency: 'daily',
+      size: '20m',
+      dateFormat: 'yyyy-MM-dd',
+    },
+  },
+  {
+    target: 'pino-pretty',
+    level: logLevel,
+    options: {
+      colorize: true,
+      translateTime: 'SYS:standard',
+      ignore: 'pid,hostname',
+    },
+  },
+];
+
+// Only logtail if in production
+if (isProd) {
+  transportTargets.unshift({
+    target: '@logtail/pino',
+    level: logLevel,
+    options: {
+      sourceToken: AppConfig.LOG.LOGTAIL_SOURCE_TOKEN,
+      options: { endpoint: AppConfig.LOG.LOGTAIL_ENDPOINT },
+    },
+  });
+}
+
 const Logger = pino({
   level: 'trace',
   base: {
-    context: `[Akucuciin ${AppConfig.Server.dev === 1 ? 'Development' : 'Production'}]`,
-    env: AppConfig.Server.dev === 1 ? 'development' : 'production',
+    context: `[Akucuciin ${isProd ? 'Production' : 'Development'}]`,
+    env: isProd ? 'production' : 'development',
   },
   transport: {
-    targets: [
-      {
-        target: 'pino-roll',
-        level: logLevel,
-        options: {
-          file: `${logsDir}/app`,
-          extension: 'log',
-          frequency: 'daily',
-          size: '20m',
-          dateFormat: 'yyyy-MM-dd',
-        },
-      },
-      {
-        target: 'pino-pretty',
-        level: logLevel,
-        options: {
-          colorize: true,
-          translateTime: 'SYS:standard',
-          ignore: 'pid,hostname',
-        },
-      },
-    ],
+    targets: transportTargets,
   },
 });
 
