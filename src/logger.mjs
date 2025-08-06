@@ -40,7 +40,7 @@ const transportTargets = [
   },
 ];
 
-// Only logtail if in production
+// Only logtail if enabled
 if (isLogtailEnabled) {
   transportTargets.unshift({
     target: '@logtail/pino',
