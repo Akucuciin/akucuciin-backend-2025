@@ -239,6 +239,10 @@ const OrderService = {
         // Send To Whatsapp - Laundry
         await sendOrderConfirmationToLaundry(ord);
       } catch (err) {
+        Logger.fatal(
+          `Gagal mengirim notifikasi Whatsapp untuk order ${ord.id}`,
+          err
+        );
         throw new BadRequestError(
           'Gagal, tidak bisa mengirim notifikasi Whatsapp, silahkan coba lagi'
         );
