@@ -5,6 +5,7 @@ import {
   AuthorizationError,
   BadRequestError,
 } from '../errors/customErrors.mjs';
+import Logger from '../logger.mjs';
 import { withTransaction } from '../utils/db.utils.mjs';
 import { formatOrdersFromDb } from '../utils/order.utils.mjs';
 import { generateNanoidWithPrefix } from '../utils/utils.mjs';
@@ -120,6 +121,10 @@ const OrderService = {
         // Send To Whatsapp - Laundry
         await sendOrderConfirmationToLaundry(ord);
       } catch (err) {
+        Logger.fatal(
+          `Gagal mengirim notifikasi Whatsapp untuk order ${ord.id}`,
+          err
+        );
         throw new BadRequestError(
           'Gagal, tidak bisa mengirim notifikasi Whatsapp, silahkan coba lagi'
         );
