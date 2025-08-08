@@ -6,6 +6,7 @@ import {
   AuthorizationError,
   BadRequestError,
 } from '../errors/customErrors.mjs';
+import Logger from '../logger.mjs';
 import { withTransaction } from '../utils/db.utils.mjs';
 import { formatOrdersFromDb } from '../utils/order.utils.mjs';
 import {
@@ -68,7 +69,7 @@ const OrderService = {
         );
 
         // Gacha voucher, generate new voucher from base coupon code
-        if (coupon.name === 'AKUMABA') {
+        if (coupon.name === 'AKUMABA' || coupon.name === 'AKUNGEKOS') {
           const COUPON_GACHA_RULES = [
             { discount: 62, quota: 40 },
             { discount: 16, quota: 400 },
@@ -91,29 +92,30 @@ const OrderService = {
           }
 
           try {
-            const [thisUserOrderWithAkuMaba] = await trx.query(
-              `SELECT * FROM orders WHERE coupon_code LIKE 'AKUMABA-%' AND customer_id = ?`,
-              [req.user.id]
+            const [thisUserOrderWithGachaCoupon] = await trx.query(
+              `SELECT * FROM orders WHERE coupon_code LIKE ? AND customer_id = ?`,
+              [`${coupon.name}-%`, req.user.id]
             );
-            if (thisUserOrderWithAkuMaba.length > 0) {
+            if (thisUserOrderWithGachaCoupon.length > 0) {
               throw new BadRequestError(
-                'Gagal, Anda sudah pernah menggunakan voucher gacha Akumaba sebelumnya'
+                `Gagal, Anda sudah pernah menggunakan voucher gacha ${coupon.name} sebelumnya`
               );
             }
 
-            const [akuMabaCoupons] = await trx.query(
-              `SELECT COUNT(*) AS count FROM coupons WHERE name LIKE 'AKUMABA-%'`
+            const [gachaCoupons] = await trx.query(
+              `SELECT COUNT(*) AS count FROM coupons WHERE name LIKE ?`,
+              [`${coupon.name}-%`]
             );
-            if (akuMabaCoupons[0].count >= TOTAL_CHANCE) {
+            if (gachaCoupons[0].count >= TOTAL_CHANCE) {
               throw new BadRequestError(
-                `Gagal, Kuota kupon gacha Akumaba (${TOTAL_CHANCE} kuota) sudah habis :(`
+                `Gagal, Kuota kupon gacha ${coupon.name} (${TOTAL_CHANCE} kuota) sudah habis :(`
               );
             }
 
             async function getRemainingQuotaOfDiscount(discount, trx) {
               const [rows] = await trx.query(
-                `SELECT COUNT(*) AS count FROM coupons WHERE name LIKE 'AKUMABA-%' AND multiplier = ?`,
-                [discount]
+                `SELECT COUNT(*) AS count FROM coupons WHERE name LIKE ? AND multiplier = ?`,
+                [`${coupon.name}-%`, discount]
               );
               return rows[0].count;
             }
@@ -143,7 +145,7 @@ const OrderService = {
 
               if (used < rule.quota) {
                 const generatedName = generateCouponName(
-                  'AKUMABA',
+                  coupon.name,
                   5,
                   req.user.email,
                   true
@@ -152,7 +154,7 @@ const OrderService = {
                 await CouponQuery.create(
                   generatedName,
                   discount,
-                  `Kupon Gacha Akumaba - Diskon ${discount}% untuk ${req.user.email}`,
+                  `Kupon Gacha ${coupon.name} - Diskon ${discount}% untuk ${req.user.email}`,
                   1,
                   1,
                   null,
@@ -163,8 +165,8 @@ const OrderService = {
                 );
 
                 generatedCoupon = await CouponQuery.get(generatedName, trx);
-                console.log(
-                  `Generated coupon: ${generatedCoupon.name} with discount ${discount}%`
+                Logger.info(
+                  `Generated coupon: ${generatedCoupon.name} with discount ${discount}% for ${order.id}`
                 );
                 order.coupon_code = generatedCoupon.name;
                 break;
@@ -172,7 +174,7 @@ const OrderService = {
             }
             if (!generatedCoupon) {
               throw new BadRequestError(
-                'Gagal, tidak bisa menghasilkan kupon gacha Akumaba, silahkan coba lagi'
+                `Gagal, tidak bisa menghasilkan kupon gacha ${coupon.name}, silahkan coba lagi`
               );
             }
           } finally {

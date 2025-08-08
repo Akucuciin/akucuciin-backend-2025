@@ -278,7 +278,10 @@ const CustomerService = {
 
     await OrderQuery.cancelOrder(order_id, cancel_reason);
     if (order[0].coupon_code) {
-      if (order[0].coupon_code.startsWith('AKUMABA-')) {
+      if (
+        order[0].coupon_code.startsWith('AKUMABA-') ||
+        order[0].coupon_code.startsWith('AKUNGEKOS-')
+      ) {
         await CouponQuery.delete(order[0].coupon_code);
       } else {
         const coupon = await CouponQuery.get(order[0].coupon_code);
