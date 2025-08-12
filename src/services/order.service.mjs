@@ -71,13 +71,13 @@ const OrderService = {
         // Gacha voucher, generate new voucher from base coupon code
         if (coupon.name === 'AKUMABA' || coupon.name === 'AKUNGEKOS') {
           const COUPON_GACHA_RULES = [
-            { discount: 62, quota: 40 },
-            { discount: 16, quota: 400 },
-            { discount: 10, quota: 3000 },
-            { discount: 6, quota: 1560 },
+            { discount: 62, quota: 20 },
+            { discount: 16, quota: 50 },
+            { discount: 10, quota: 80 },
+            { discount: 6, quota: 50 },
           ];
 
-          const TOTAL_CHANCE = 5000;
+          const TOTAL_CHANCE = 200;
 
           // global mutex to prevent concurrent gacha attempts
           const [lockResult] = await trx.query(
