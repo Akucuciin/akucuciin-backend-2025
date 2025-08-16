@@ -10,6 +10,9 @@ import {
 } from '../errors/customErrors.mjs';
 
 const errorHandler = function (error, req, res, next) {
+  // pass the error to logger
+  req.rawError = error;
+
   if (
     error instanceof NotFoundError ||
     error instanceof AuthenticationError ||

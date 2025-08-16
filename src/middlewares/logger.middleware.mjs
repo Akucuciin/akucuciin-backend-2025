@@ -24,6 +24,11 @@ const pinoMiddleware = pinoHttp({
     const userEmail = req.user?.email || 'NO_EMAIL';
     return `${req.method} ${req.url} completed with status code ${res.statusCode} from user ${userId} (${userEmail})`;
   },
+  customErrorMessage(req, res, error) {
+    const userId = req.user?.id || 'NO_USER';
+    const userEmail = req.user?.email || 'NO_EMAIL';
+    return `UNEXPECTED ERROR ${req.method} ${req.url} failed with status code ${res.statusCode} from user ${userId} (${userEmail}) - Error: ${error.message}`;
+  },
   customProps(req, res) {
     let durationMs = '0.00';
     if (Array.isArray(req._startAt)) {
@@ -38,6 +43,13 @@ const pinoMiddleware = pinoHttp({
       userEmail: req.user?.email || 'NO_EMAIL',
       duration: `${durationMs} ms`,
       ip: req.ip,
+      error: req.rawError
+        ? {
+            type: req.rawError.name || 'Error',
+            message: req.rawError.message,
+            stack: req.rawError.stack,
+          }
+        : undefined,
     };
   },
 });
