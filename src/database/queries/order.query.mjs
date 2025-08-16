@@ -338,6 +338,7 @@ const OrderQuery = {
         lpp.name AS p_name,
         lpp.price_text AS p_price_text,
         lpp.description AS p_description ,
+        lpp.features AS p_features,
         o.driver_id AS d_id,
         d.name AS d_name,
         d.email AS d_email,
